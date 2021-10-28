@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Database;
+namespace Ibexa\Tests\DoctrineSchema\Database;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -40,3 +40,5 @@ class TestDatabaseFactory
         return $this->databaseBuildersForPlatforms[$name]->buildDatabase();
     }
 }
+
+class_alias(TestDatabaseFactory::class, 'EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory');

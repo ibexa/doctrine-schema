@@ -6,12 +6,12 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Database\DbPlatform;
+namespace Ibexa\Tests\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\ParameterType;
-use EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
-use EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory;
+use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
 use PHPUnit\Framework\TestCase;
 
 class SqliteDbPlatformTest extends TestCase
@@ -64,3 +64,5 @@ class SqliteDbPlatformTest extends TestCase
         $connection->insert($secondaryTable->getName(), ['id' => 2], [ParameterType::INTEGER]);
     }
 }
+
+class_alias(SqliteDbPlatformTest::class, 'EzSystems\Tests\DoctrineSchema\Database\DbPlatform\SqliteDbPlatformTest');
