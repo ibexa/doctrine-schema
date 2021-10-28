@@ -11,11 +11,11 @@ cache:
 matrix:
     fast_finish: true
     include:
-        - name: 'Unit tests on PHP 7.3'
-          php: '7.3'
+        - name: 'Unit tests on PHP 7.4'
+          php: '7.4'
           env: CMD='composer test' MYSQL_DATABASE_URL='mysql://root@localhost/testdb'
         - name: 'Code Style validation'
-          php: '7.3'
+          php: '7.4'
           env: CMD='php ./vendor/bin/php-cs-fixer fix --dry-run -v --show-progress=estimating'
 
 # test only master, stable branches and pull requests
