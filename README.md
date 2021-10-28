@@ -6,32 +6,29 @@ It introduces custom Yaml format for schema definition and provides autowired AP
 
 ## Schema Builder
 
-Provided by APIs defined on the `\EzSystems\DoctrineSchema\API\SchemaImporter` interface,
+Provided by APIs defined on the `\Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface` interface,
 imports given Yaml source string or Yaml file into `\Doctrine\DBAL\Schema` object.
 
 ## Schema Exporter
 
-Provided by APIs defined on the `\EzSystems\DoctrineSchema\API\SchemaExporter` interface,
+Provided by APIs defined on the `\Ibexa\Contracts\DoctrineSchema\SchemaExporterInterface` interface,
 exports given `\Doctrine\DBAL\Schema` object to the custom Yaml format.
 
 ## SchemaBuilder
 
-Provided by APIs defined on the `\EzSystems\DoctrineSchema\API\Builder\SchemaBuilder` interface,
-is an extensibility point to be used by Symfony-based projects.
+Provided by APIs defined on the `\Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface`
+interface, is an extensibility point to be used by Symfony-based projects.
 
 The `SchemaBuilder` is event-driven. To hook into the process of building schema, a custom `EventSubscriber` is required, e.g.
 
 ```php
-use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvent;
-use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvents;
+use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
+use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BuildSchemaSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var string
-     */
-    private $schemaFilePath;
+    private string $schemaFilePath;
 
     public function __construct(string $schemaFilePath)
     {
@@ -39,8 +36,6 @@ class BuildSchemaSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Returns an array of events this subscriber wants to listen to.
-     *
      * @return string[]
      */
     public static function getSubscribedEvents()
@@ -50,9 +45,6 @@ class BuildSchemaSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param \EzSystems\DoctrineSchema\API\Builder\SchemaBuilderEvent $event
-     */
     public function onBuildSchema(SchemaBuilderEvent $event)
     {
         $event
@@ -70,7 +62,7 @@ Schema provided in this way can be imported into Schema object by e.g.:
         $this->schemaBuilder = $schemaBuilder;
     }
 
-    public function importSchema()
+    public function importSchema(): void
     {
         $schema = $this->schemaBuilder->buildSchema();
         // ...
