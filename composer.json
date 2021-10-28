@@ -3,6 +3,9 @@
     "description": "Abstraction layer, on top of Doctrine, for cross-DBMS schema import",
     "type": "ibexa-bundle",
     "license": "GPL-2.0-only",
+    "replace": {
+        "ezsystems/doctrine-dbal-schema": "*"
+    },
     "require": {
         "php": "^7.4",
         "doctrine/dbal": "^2.13",
