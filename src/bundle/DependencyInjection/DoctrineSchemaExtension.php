@@ -47,7 +47,7 @@ class DoctrineSchemaExtension extends Extension
 
         if (isset($config['tables']['options'])) {
             $container->setParameter(
-                'ez_doctrine_schema.default_table_options',
+                'ibexa.schema.default_table_options',
                 $config['tables']['options']
             );
         }

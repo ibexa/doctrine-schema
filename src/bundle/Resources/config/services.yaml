@@ -1,5 +1,5 @@
 parameters:
-    ez_doctrine_schema.default_table_options: []
+    ibexa.schema.default_table_options: []
 
 services:
     _defaults:
@@ -25,6 +25,6 @@ services:
 
     Ibexa\DoctrineSchema\Builder\SchemaBuilder:
         arguments:
-            $defaultTableOptions: '%ez_doctrine_schema.default_table_options%'
+            $defaultTableOptions: '%ibexa.schema.default_table_options%'
 
     Doctrine\Common\EventManager: ~
