@@ -6,14 +6,14 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Builder;
+namespace Ibexa\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
-use EzSystems\DoctrineSchema\API\Builder\SchemaBuilder as APISchemaBuilder;
-use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvent;
-use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvents;
-use EzSystems\DoctrineSchema\API\SchemaImporter;
+use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface as APISchemaBuilder;
+use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
+use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
+use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -47,7 +47,7 @@ class SchemaBuilder implements APISchemaBuilder
 
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        SchemaImporter $schemaImporter,
+        SchemaImporterInterface $schemaImporter,
         array $defaultTableOptions = []
     ) {
         $this->eventDispatcher = $eventDispatcher;
@@ -74,3 +74,5 @@ class SchemaBuilder implements APISchemaBuilder
         return $this->schemaImporter->importFromFile($schemaFilePath, $this->schema);
     }
 }
+
+class_alias(SchemaBuilder::class, 'EzSystems\DoctrineSchema\Builder\SchemaBuilder');

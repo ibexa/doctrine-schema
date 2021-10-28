@@ -6,10 +6,10 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Database;
+namespace Ibexa\DoctrineSchema\Database;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use EzSystems\DoctrineSchema\API\DbPlatformFactory as APIDbPlatformFactory;
+use Ibexa\Contracts\DoctrineSchema\DbPlatformFactoryInterface as APIDbPlatformFactory;
 
 class DbPlatformFactory implements APIDbPlatformFactory
 {
@@ -34,3 +34,5 @@ class DbPlatformFactory implements APIDbPlatformFactory
         return $this->dbPlatforms[$driverName] ?? null;
     }
 }
+
+class_alias(DbPlatformFactory::class, 'EzSystems\DoctrineSchema\Database\DbPlatformFactory');

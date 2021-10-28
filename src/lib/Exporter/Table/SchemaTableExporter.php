@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Exporter\Table;
+namespace Ibexa\DoctrineSchema\Exporter\Table;
 
 use Doctrine\DBAL\Schema\Table;
 
@@ -151,3 +151,5 @@ class SchemaTableExporter
         return $tableMetadata;
     }
 }
+
+class_alias(SchemaTableExporter::class, 'EzSystems\DoctrineSchema\Exporter\Table\SchemaTableExporter');

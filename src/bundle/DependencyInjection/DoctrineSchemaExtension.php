@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchemaBundle\DependencyInjection;
+namespace Ibexa\Bundle\DoctrineSchema\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
@@ -53,3 +53,5 @@ class DoctrineSchemaExtension extends Extension
         }
     }
 }
+
+class_alias(DoctrineSchemaExtension::class, 'EzSystems\DoctrineSchemaBundle\DependencyInjection\DoctrineSchemaExtension');

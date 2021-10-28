@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Database\DbPlatform;
+namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Event\SchemaDropTableEventArgs;
@@ -15,7 +15,7 @@ use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
 use Doctrine\DBAL\Schema\Table;
 use InvalidArgumentException;
 
-class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatform
+class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatformInterface
 {
     /**
      * {@inheritdoc}
@@ -72,3 +72,5 @@ class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatform
         return 'DROP TABLE IF EXISTS ' . $table . ' CASCADE';
     }
 }
+
+class_alias(PostgreSqlDbPlatform::class, 'EzSystems\DoctrineSchema\Database\DbPlatform\PostgreSqlDbPlatform');

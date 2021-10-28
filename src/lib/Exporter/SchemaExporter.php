@@ -6,11 +6,11 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Exporter;
+namespace Ibexa\DoctrineSchema\Exporter;
 
 use Doctrine\DBAL\Schema\Schema;
-use EzSystems\DoctrineSchema\API\SchemaExporter as APISchemaExporter;
-use EzSystems\DoctrineSchema\Exporter\Table\SchemaTableExporter;
+use Ibexa\Contracts\DoctrineSchema\SchemaExporterInterface as APISchemaExporter;
+use Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -50,3 +50,5 @@ class SchemaExporter implements APISchemaExporter
         return Yaml::dump($schemaDefinition, 4);
     }
 }
+
+class_alias(SchemaExporter::class, 'EzSystems\DoctrineSchema\Exporter\SchemaExporter');
