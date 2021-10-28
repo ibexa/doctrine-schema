@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 class DoctrineSchemaExtension extends Extension
 {
     /**
-     * Override default extension alias name to include eZ vendor in name.
+     * Override default extension alias name to include Ibexa vendor in name.
      */
     public function getAlias(): string
     {

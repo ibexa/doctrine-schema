@@ -24,7 +24,7 @@ interface SchemaImporterInterface
      *
      * @return \Doctrine\DBAL\Schema\Schema imported schema
      *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema;
@@ -36,7 +36,7 @@ interface SchemaImporterInterface
      *
      * @return \Doctrine\DBAL\Schema\Schema imported schema
      *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema;

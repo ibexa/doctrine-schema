@@ -16,13 +16,11 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Export the given database Schema object to the custom Yaml format.
  *
- * @internal Type-hint API interface \EzSystems\DoctrineSchema\API\SchemaExporter
+ * @internal Type-hint API interface \Ibexa\Contracts\DoctrineSchema\SchemaExporterInterface
  */
 class SchemaExporter implements APISchemaExporter
 {
-    /**
-     * @var \EzSystems\DoctrineSchema\Exporter\Table\SchemaTableExporter
-     */
+    /** @var \Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter */
     private $tableExporter;
 
     public function __construct(SchemaTableExporter $tableYamlExporter)

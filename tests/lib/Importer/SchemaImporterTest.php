@@ -197,7 +197,7 @@ class SchemaImporterTest extends TestCase
      *
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function testImportFromFile(

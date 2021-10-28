@@ -13,9 +13,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class TestDatabaseFactory
 {
-    /**
-     * @var \EzSystems\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder[]
-     */
+    /** @var \Ibexa\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder[] */
     private $databaseBuildersForPlatforms = [];
 
     public function __construct()
@@ -27,7 +25,7 @@ class TestDatabaseFactory
     }
 
     /**
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function prepareAndConnect(AbstractPlatform $databasePlatform): Connection

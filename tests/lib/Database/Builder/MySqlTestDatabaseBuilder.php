@@ -17,7 +17,7 @@ class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
 {
     /**
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
     public function buildDatabase(): Connection
     {

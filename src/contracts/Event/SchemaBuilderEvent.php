@@ -14,9 +14,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class SchemaBuilderEvent extends Event
 {
-    /**
-     * @var \EzSystems\DoctrineSchema\API\Builder\SchemaBuilder
-     */
+    /** @var \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface */
     private $schemaBuilder;
 
     /**

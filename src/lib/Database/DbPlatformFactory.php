@@ -14,14 +14,14 @@ use Ibexa\Contracts\DoctrineSchema\DbPlatformFactoryInterface as APIDbPlatformFa
 class DbPlatformFactory implements APIDbPlatformFactory
 {
     /**
-     * @var \EzSystems\DoctrineSchema\Database\DbPlatform\DbPlatform[]
+     * @var \Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface[]
      */
     private $dbPlatforms = [];
 
     public function __construct(iterable $dbPlatforms)
     {
         foreach ($dbPlatforms as $dbPlatform) {
-            /** @var \EzSystems\DoctrineSchema\Database\DbPlatform\DbPlatform $dbPlatform */
+            /** @var \Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface $dbPlatform */
             $this->dbPlatforms[$dbPlatform->getDriverName()] = $dbPlatform;
         }
     }

@@ -16,14 +16,10 @@ use PHPUnit\Framework\TestCase;
 
 class SqliteDbPlatformTest extends TestCase
 {
-    /**
-     * @var \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory
-     */
+    /** @var \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory */
     private $testDatabaseFactory;
 
-    /**
-     * @var \EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform
-     */
+    /** @var \Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform */
     private $sqliteDbPlatform;
 
     public function setUp(): void
@@ -34,7 +30,7 @@ class SqliteDbPlatformTest extends TestCase
 
     /**
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
     public function testForeignKeys(): void
     {

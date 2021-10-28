@@ -20,14 +20,10 @@ use PHPUnit\Framework\TestCase;
 
 class SchemaExporterTest extends TestCase
 {
-    /**
-     * @var \EzSystems\DoctrineSchema\Exporter\SchemaExporter
-     */
+    /** @var \Ibexa\DoctrineSchema\Exporter\SchemaExporter */
     private $exporter;
 
-    /**
-     * @var \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory
-     */
+    /** @var \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory */
     private $testDatabaseFactory;
 
     public function setUp(): void
@@ -131,7 +127,7 @@ class SchemaExporterTest extends TestCase
     }
 
     /**
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getDatabaseConnection(AbstractPlatform $databasePlatform): Connection

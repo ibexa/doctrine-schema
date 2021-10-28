@@ -19,9 +19,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * SchemaBuilder implementation.
  *
- * @see \EzSystems\DoctrineSchema\API\Builder\SchemaBuilder
+ * @see \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface
  *
- * @internal type-hint against the \EzSystems\DoctrineSchema\API\Builder\SchemaBuilder interface
+ * @internal type-hint against the \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface
  */
 class SchemaBuilder implements APISchemaBuilder
 {
@@ -31,7 +31,7 @@ class SchemaBuilder implements APISchemaBuilder
     private $eventDispatcher;
 
     /**
-     * @var \EzSystems\DoctrineSchema\API\SchemaImporter
+     * @var \Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface
      */
     private $schemaImporter;
 
