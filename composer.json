@@ -12,7 +12,7 @@
         "symfony/yaml": "^5.0"
     },
     "require-dev": {
-        "ezsystems/ezplatform-code-style": "^0.4.0",
+        "ezsystems/ezplatform-code-style": "^2.0.0",
         "phpunit/phpunit": "^8.5"
     },
     "autoload": {
@@ -27,7 +27,8 @@
         }
     },
     "scripts": {
-        "fix-cs": "@php ./vendor/bin/php-cs-fixer fix -v --show-progress=estimating",
+        "fix-cs": "php-cs-fixer fix -v --show-progress=dots",
+        "check-cs": "@fix-cs --diff --dry-run",
         "test": "@php ./vendor/bin/phpunit -vc phpunit.xml"
     },
     "extra": {
