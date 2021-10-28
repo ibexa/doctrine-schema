@@ -1,7 +1,7 @@
 {
-    "name": "ezsystems/doctrine-dbal-schema",
+    "name": "ibexa/doctrine-dbal-schema",
     "description": "Abstraction layer, on top of Doctrine, for cross-DBMS schema import",
-    "type": "ezplatform-bundle",
+    "type": "ibexa-bundle",
     "license": "GPL-2.0-only",
     "require": {
         "php": "^7.3",
@@ -17,13 +17,16 @@
     },
     "autoload": {
         "psr-4": {
+            "Ibexa\\DoctrineSchema\\": "src/lib/",
+            "Ibexa\\Bundle\\DoctrineSchema\\": "src/bundle/",
+            "Ibexa\\Contracts\\DoctrineSchema\\": "src/contracts/",
             "EzSystems\\DoctrineSchemaBundle\\": "src/bundle",
             "EzSystems\\DoctrineSchema\\": "src/lib"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "EzSystems\\Tests\\DoctrineSchema\\": "tests/lib"
+            "Ibexa\\Tests\\DoctrineSchema\\": "tests/lib/"
         }
     },
     "scripts": {
@@ -33,11 +36,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.0.x-dev"
-        },
-        "thanks": {
-            "name": "ezsystems/ezplatform",
-            "url": "https://github.com/ezsystems/ezplatform"
+            "dev-main": "4.0.x-dev"
         }
     }
 }
