@@ -9,7 +9,7 @@ declare(strict_types=1);
 use Ibexa\CodeStyle\PhpCsFixer\InternalConfigFactory;
 
 $finder = PhpCsFixer\Finder::create()
-    ->in(__DIR__)
+    ->in([__DIR__ . '/src', __DIR__ . '/tests'])
     ->files()->name('*.php');
 
 return InternalConfigFactory::build()
