@@ -38,14 +38,14 @@ class BuildSchemaSubscriber implements EventSubscriberInterface
     /**
      * @return string[]
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             SchemaBuilderEvents::BUILD_SCHEMA => ['onBuildSchema', 200],
         ];
     }
 
-    public function onBuildSchema(SchemaBuilderEvent $event)
+    public function onBuildSchema(SchemaBuilderEvent $event): void
     {
         $event
             ->getSchemaBuilder()
