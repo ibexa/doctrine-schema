@@ -67,7 +67,6 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
     public function getDropForeignKeySQL($foreignKey, $table): string
     {
         // dropping FKs is not supported by Sqlite
-
         return '-- ';
     }
 

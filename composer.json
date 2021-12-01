@@ -15,7 +15,7 @@
         "symfony/yaml": "^5.3"
     },
     "require-dev": {
-        "ezsystems/ezplatform-code-style": "^2.0.0",
+        "ibexa/code-style": "^1.0",
         "phpunit/phpunit": "^8.5"
     },
     "autoload": {
