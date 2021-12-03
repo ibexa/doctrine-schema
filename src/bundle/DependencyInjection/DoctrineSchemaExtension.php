@@ -16,12 +16,14 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class DoctrineSchemaExtension extends Extension
 {
+    public const EXTENSION_NAME = 'ibexa_doctrine_schema';
+
     /**
      * Override default extension alias name to include Ibexa vendor in name.
      */
     public function getAlias(): string
     {
-        return 'ez_doctrine_schema';
+        return self::EXTENSION_NAME;
     }
 
     /**
