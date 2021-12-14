@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Database\Builder;
+namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 
 use Doctrine\DBAL\Connection;
 
@@ -14,7 +14,9 @@ interface TestDatabaseBuilder
 {
     /**
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
     public function buildDatabase(): Connection;
 }
+
+class_alias(TestDatabaseBuilder::class, 'EzSystems\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder');

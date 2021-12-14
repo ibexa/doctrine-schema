@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Importer;
+namespace Ibexa\Tests\DoctrineSchema\Importer;
 
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
@@ -14,7 +14,7 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
-use EzSystems\DoctrineSchema\Importer\SchemaImporter;
+use Ibexa\DoctrineSchema\Importer\SchemaImporter;
 use PHPUnit\Framework\TestCase;
 
 class SchemaImporterTest extends TestCase
@@ -179,7 +179,8 @@ class SchemaImporterTest extends TestCase
                             [
                                 (new Column(
                                     'data',
-                                    Type::getType('decimal'))
+                                    Type::getType('decimal')
+                                )
                                 )->setPrecision(19)->setScale(4),
                             ]
                         ),
@@ -196,7 +197,7 @@ class SchemaImporterTest extends TestCase
      *
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function testImportFromFile(
@@ -218,3 +219,5 @@ class SchemaImporterTest extends TestCase
         );
     }
 }
+
+class_alias(SchemaImporterTest::class, 'EzSystems\Tests\DoctrineSchema\Importer\SchemaImporterTest');

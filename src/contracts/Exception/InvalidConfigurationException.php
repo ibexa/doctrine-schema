@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\API\Exception;
+namespace Ibexa\Contracts\DoctrineSchema\Exception;
 
 use Exception;
 use Throwable;
@@ -18,3 +18,5 @@ class InvalidConfigurationException extends Exception
         parent::__construct("Invalid schema configuration: {$message}", $code, $previous);
     }
 }
+
+class_alias(InvalidConfigurationException::class, 'EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException');

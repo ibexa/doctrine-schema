@@ -6,18 +6,18 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Database\Builder;
+namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 
 class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
 {
     /**
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
     public function buildDatabase(): Connection
     {
@@ -42,3 +42,5 @@ class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
         return $connection;
     }
 }
+
+class_alias(MySqlTestDatabaseBuilder::class, 'EzSystems\Tests\DoctrineSchema\Database\Builder\MySqlTestDatabaseBuilder');

@@ -6,13 +6,13 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchemaBundle\DependencyInjection;
+namespace Ibexa\Bundle\DoctrineSchema\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * Symfony extension configuration definition for ez_doctrine_schema extension.
+ * Symfony's extension configuration definition for ibexa_doctrine_schema extension.
  */
 class Configuration implements ConfigurationInterface
 {
@@ -21,7 +21,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('ez_doctrine_schema');
+        $treeBuilder = new TreeBuilder(DoctrineSchemaExtension::EXTENSION_NAME);
 
         $rootNode = $treeBuilder->getRootNode();
         $rootNode
@@ -40,3 +40,5 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 }
+
+class_alias(Configuration::class, 'EzSystems\DoctrineSchemaBundle\DependencyInjection\Configuration');

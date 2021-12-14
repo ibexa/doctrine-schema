@@ -6,17 +6,15 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\API\Event;
+namespace Ibexa\Contracts\DoctrineSchema\Event;
 
 use Doctrine\DBAL\Schema\Schema;
-use EzSystems\DoctrineSchema\API\Builder\SchemaBuilder;
+use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class SchemaBuilderEvent extends Event
 {
-    /**
-     * @var \EzSystems\DoctrineSchema\API\Builder\SchemaBuilder
-     */
+    /** @var \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface */
     private $schemaBuilder;
 
     /**
@@ -24,7 +22,7 @@ class SchemaBuilderEvent extends Event
      */
     private $schema;
 
-    public function __construct(SchemaBuilder $schemaBuilder, Schema $schema)
+    public function __construct(SchemaBuilderInterface $schemaBuilder, Schema $schema)
     {
         $this->schemaBuilder = $schemaBuilder;
         $this->schema = $schema;
@@ -35,8 +33,10 @@ class SchemaBuilderEvent extends Event
         return $this->schema;
     }
 
-    public function getSchemaBuilder(): SchemaBuilder
+    public function getSchemaBuilder(): SchemaBuilderInterface
     {
         return $this->schemaBuilder;
     }
 }
+
+class_alias(SchemaBuilderEvent::class, 'EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvent');

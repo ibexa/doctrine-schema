@@ -6,24 +6,20 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Database\DbPlatform;
+namespace Ibexa\Tests\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\ParameterType;
-use EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
-use EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory;
+use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
 use PHPUnit\Framework\TestCase;
 
 class SqliteDbPlatformTest extends TestCase
 {
-    /**
-     * @var \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory
-     */
+    /** @var \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory */
     private $testDatabaseFactory;
 
-    /**
-     * @var \EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform
-     */
+    /** @var \Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform */
     private $sqliteDbPlatform;
 
     public function setUp(): void
@@ -34,7 +30,7 @@ class SqliteDbPlatformTest extends TestCase
 
     /**
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
     public function testForeignKeys(): void
     {
@@ -64,3 +60,5 @@ class SqliteDbPlatformTest extends TestCase
         $connection->insert($secondaryTable->getName(), ['id' => 2], [ParameterType::INTEGER]);
     }
 }
+
+class_alias(SqliteDbPlatformTest::class, 'EzSystems\Tests\DoctrineSchema\Database\DbPlatform\SqliteDbPlatformTest');

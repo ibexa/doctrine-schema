@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\API;
+namespace Ibexa\Contracts\DoctrineSchema;
 
 use Doctrine\DBAL\Schema\Schema;
 
@@ -15,7 +15,7 @@ use Doctrine\DBAL\Schema\Schema;
  *
  * @see \Doctrine\DBAL\Schema\Schema
  */
-interface SchemaImporter
+interface SchemaImporterInterface
 {
     /**
      * Import database schema into \Doctrine\DBAL\Schema from file containing custom Yaml format.
@@ -24,7 +24,7 @@ interface SchemaImporter
      *
      * @return \Doctrine\DBAL\Schema\Schema imported schema
      *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema;
@@ -36,8 +36,10 @@ interface SchemaImporter
      *
      * @return \Doctrine\DBAL\Schema\Schema imported schema
      *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema;
 }
+
+class_alias(SchemaImporterInterface::class, 'EzSystems\DoctrineSchema\API\SchemaImporter');

@@ -6,11 +6,11 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Importer;
+namespace Ibexa\DoctrineSchema\Importer;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
-use EzSystems\DoctrineSchema\API\SchemaImporter as APISchemaImporter;
+use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface as APISchemaImporter;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -94,7 +94,10 @@ class SchemaImporter implements APISchemaImporter
         if (isset($tableConfiguration['indexes'])) {
             foreach ($tableConfiguration['indexes'] as $indexName => $index) {
                 $table->addIndex(
-                    $index['fields'], $indexName, [], $index['options'] ?? []
+                    $index['fields'],
+                    $indexName,
+                    [],
+                    $index['options'] ?? []
                 );
             }
         }
@@ -102,7 +105,9 @@ class SchemaImporter implements APISchemaImporter
         if (isset($tableConfiguration['uniqueConstraints'])) {
             foreach ($tableConfiguration['uniqueConstraints'] as $indexName => $index) {
                 $table->addUniqueIndex(
-                    $index['fields'], $indexName, $index['options'] ?? []
+                    $index['fields'],
+                    $indexName,
+                    $index['options'] ?? []
                 );
             }
         }
@@ -140,3 +145,5 @@ class SchemaImporter implements APISchemaImporter
         }
     }
 }
+
+class_alias(SchemaImporter::class, 'EzSystems\DoctrineSchema\Importer\SchemaImporter');

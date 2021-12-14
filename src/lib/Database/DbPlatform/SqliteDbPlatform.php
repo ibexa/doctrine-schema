@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Database\DbPlatform;
+namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Event\Listeners\SQLSessionInit;
@@ -14,7 +14,7 @@ use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 
-class SqliteDbPlatform extends SqlitePlatform implements DbPlatform
+class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
 {
     /**
      * {@inheritdoc}
@@ -81,3 +81,5 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatform
         return '-- ';
     }
 }
+
+class_alias(SqliteDbPlatform::class, 'EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform');
