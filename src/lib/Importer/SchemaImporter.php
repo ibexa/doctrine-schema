@@ -130,7 +130,7 @@ class SchemaImporter implements APISchemaImporter
     private function addSchemaTableColumns(Table $table, array $columnList): void
     {
         foreach ($columnList as $columnName => $columnConfiguration) {
-            $this->ensureNoExtraKeys($columnConfiguration, $table->getName(), [
+            $this->ensureNoExtraKeys($columnConfiguration, $table->getName() . '.fields', [
                 'length',
                 'scale',
                 'precision',
@@ -163,13 +163,13 @@ class SchemaImporter implements APISchemaImporter
         }
     }
 
-    private function ensureNoExtraKeys(array $tableConfiguration, string $tableName, array $allowedKeys): void
+    private function ensureNoExtraKeys(array $tableConfiguration, string $location, array $allowedKeys): void
     {
         $diff = array_diff(array_keys($tableConfiguration), $allowedKeys);
         if (!empty($diff)) {
             throw new InvalidConfigurationException(sprintf(
-                'Unhandled property in schema configuration for table "%s". "%s" keys are not allowed. Allowed keys: "%s".',
-                $tableName,
+                'Unhandled property in schema configuration for "%s". "%s" keys are not allowed. Allowed keys: "%s".',
+                $location,
                 implode('", "', $diff),
                 implode('", "', $allowedKeys),
             ));

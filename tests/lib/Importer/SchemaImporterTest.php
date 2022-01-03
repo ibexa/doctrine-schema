@@ -226,7 +226,7 @@ class SchemaImporterTest extends TestCase
 
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage(
-            'Unhandled property in schema configuration for table "my_table". "foo" keys are not allowed. Allowed keys:'
+            'Unhandled property in schema configuration for "my_table". "foo" keys are not allowed. Allowed keys:'
             . ' "id", "fields", "foreignKeys", "indexes", "uniqueConstraints".'
         );
         $importer->importFromFile(__DIR__ . '/_fixtures/failing-import.yaml');
@@ -238,7 +238,7 @@ class SchemaImporterTest extends TestCase
 
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage(
-            'Unhandled property in schema configuration for table "my_table". "bar" keys are not allowed. Allowed keys:'
+            'Unhandled property in schema configuration for "my_table.fields". "bar" keys are not allowed. Allowed keys:'
             . ' "length", "scale", "precision", "type", "nullable", "options".'
         );
         $importer->importFromFile(__DIR__ . '/_fixtures/failing-import-column.yaml');
