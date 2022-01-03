@@ -14,6 +14,7 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
+use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\DoctrineSchema\Importer\SchemaImporter;
 use PHPUnit\Framework\TestCase;
 
@@ -217,6 +218,30 @@ class SchemaImporterTest extends TestCase
             $actualSchema,
             "Yaml schema definition {$yamlSchemaDefinitionFile} produced unexpected Schema object"
         );
+    }
+
+    public function testTableImportFailsIfUnhandledKeys(): void
+    {
+        $importer = new SchemaImporter();
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Unhandled property in schema configuration for table "my_table". "foo" keys are not allowed. Allowed keys:'
+            . ' "id", "fields", "foreignKeys", "indexes", "uniqueConstraints".'
+        );
+        $importer->importFromFile(__DIR__ . '/_fixtures/failing-import.yaml');
+    }
+
+    public function testColumnImportFailsIfUnhandledKeys(): void
+    {
+        $importer = new SchemaImporter();
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Unhandled property in schema configuration for table "my_table". "bar" keys are not allowed. Allowed keys:'
+            . ' "length", "scale", "precision", "type", "nullable", "options".'
+        );
+        $importer->importFromFile(__DIR__ . '/_fixtures/failing-import-column.yaml');
     }
 }
 

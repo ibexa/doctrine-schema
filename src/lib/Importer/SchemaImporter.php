@@ -10,6 +10,7 @@ namespace Ibexa\DoctrineSchema\Importer;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface as APISchemaImporter;
 use Symfony\Component\Yaml\Yaml;
 
@@ -70,6 +71,14 @@ class SchemaImporter implements APISchemaImporter
     ): void {
         $table = $schema->createTable($tableName);
 
+        $this->ensureNoExtraKeys($tableConfiguration, $tableName, [
+            'id',
+            'fields',
+            'foreignKeys',
+            'indexes',
+            'uniqueConstraints',
+        ]);
+
         if (isset($tableConfiguration['id'])) {
             $this->addSchemaTableColumns($table, $tableConfiguration['id']);
             $table->setPrimaryKey(array_keys($tableConfiguration['id']));
@@ -121,6 +130,15 @@ class SchemaImporter implements APISchemaImporter
     private function addSchemaTableColumns(Table $table, array $columnList): void
     {
         foreach ($columnList as $columnName => $columnConfiguration) {
+            $this->ensureNoExtraKeys($columnConfiguration, $table->getName(), [
+                'length',
+                'scale',
+                'precision',
+                'type',
+                'nullable',
+                'options',
+            ]);
+
             if (isset($columnConfiguration['length'])) {
                 $columnConfiguration['options']['length'] = $columnConfiguration['length'];
             }
@@ -142,6 +160,19 @@ class SchemaImporter implements APISchemaImporter
             if (isset($columnConfiguration['nullable'])) {
                 $column->setNotnull(!$columnConfiguration['nullable']);
             }
+        }
+    }
+
+    private function ensureNoExtraKeys(array $tableConfiguration, string $tableName, array $allowedKeys): void
+    {
+        $diff = array_diff(array_keys($tableConfiguration), $allowedKeys);
+        if (!empty($diff)) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for table "%s". "%s" keys are not allowed. Allowed keys: "%s".',
+                $tableName,
+                implode('", "', $diff),
+                implode('", "', $allowedKeys),
+            ));
         }
     }
 }
