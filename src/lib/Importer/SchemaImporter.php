@@ -130,7 +130,8 @@ class SchemaImporter implements APISchemaImporter
     private function addSchemaTableColumns(Table $table, array $columnList): void
     {
         foreach ($columnList as $columnName => $columnConfiguration) {
-            $this->ensureNoExtraKeys($columnConfiguration, $table->getName() . '.fields', [
+            $location = sprintf('%s.fields.%s', $table->getName(), $columnName);
+            $this->ensureNoExtraKeys($columnConfiguration, $location, [
                 'length',
                 'scale',
                 'precision',

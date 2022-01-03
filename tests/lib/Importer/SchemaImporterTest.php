@@ -238,7 +238,7 @@ class SchemaImporterTest extends TestCase
 
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage(
-            'Unhandled property in schema configuration for "my_table.fields". "bar" keys are not allowed. Allowed keys:'
+            'Unhandled property in schema configuration for "my_table.fields.foo". "bar" keys are not allowed. Allowed keys:'
             . ' "length", "scale", "precision", "type", "nullable", "options".'
         );
         $importer->importFromFile(__DIR__ . '/_fixtures/failing-import-column.yaml');
