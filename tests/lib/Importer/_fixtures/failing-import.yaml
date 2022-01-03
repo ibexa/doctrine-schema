@@ -1,0 +1,3 @@
+tables:
+    my_table:
+        foo: bar
