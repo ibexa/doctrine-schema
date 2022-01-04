@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Importer;
+namespace Ibexa\Tests\DoctrineSchema\Importer;
 
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
@@ -14,7 +14,8 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
-use EzSystems\DoctrineSchema\Importer\SchemaImporter;
+use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
+use Ibexa\DoctrineSchema\Importer\SchemaImporter;
 use PHPUnit\Framework\TestCase;
 
 class SchemaImporterTest extends TestCase
@@ -179,7 +180,8 @@ class SchemaImporterTest extends TestCase
                             [
                                 (new Column(
                                     'data',
-                                    Type::getType('decimal'))
+                                    Type::getType('decimal')
+                                )
                                 )->setPrecision(19)->setScale(4),
                             ]
                         ),
@@ -196,7 +198,7 @@ class SchemaImporterTest extends TestCase
      *
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function testImportFromFile(
@@ -217,4 +219,30 @@ class SchemaImporterTest extends TestCase
             "Yaml schema definition {$yamlSchemaDefinitionFile} produced unexpected Schema object"
         );
     }
+
+    public function testTableImportFailsIfUnhandledKeys(): void
+    {
+        $importer = new SchemaImporter();
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Unhandled property in schema configuration for "my_table". "foo" keys are not allowed. Allowed keys:'
+            . ' "id", "fields", "foreignKeys", "indexes", "uniqueConstraints".'
+        );
+        $importer->importFromFile(__DIR__ . '/_fixtures/failing-import.yaml');
+    }
+
+    public function testColumnImportFailsIfUnhandledKeys(): void
+    {
+        $importer = new SchemaImporter();
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Unhandled property in schema configuration for "my_table.fields.foo". "bar" keys are not allowed. Allowed keys:'
+            . ' "length", "scale", "precision", "type", "nullable", "options".'
+        );
+        $importer->importFromFile(__DIR__ . '/_fixtures/failing-import-column.yaml');
+    }
 }
+
+class_alias(SchemaImporterTest::class, 'EzSystems\Tests\DoctrineSchema\Importer\SchemaImporterTest');

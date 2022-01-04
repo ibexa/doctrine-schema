@@ -6,11 +6,11 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Database\DbPlatform;
+namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
 
-interface DbPlatform
+interface DbPlatformInterface
 {
     /**
      * Get name of the driver associated with Database Platform implementation.
@@ -27,3 +27,5 @@ interface DbPlatform
      */
     public function addEventSubscribers(EventManager $eventManager): void;
 }
+
+class_alias(DbPlatformInterface::class, 'EzSystems\DoctrineSchema\Database\DbPlatform\DbPlatform');

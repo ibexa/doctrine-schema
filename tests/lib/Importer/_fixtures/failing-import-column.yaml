@@ -1,0 +1,5 @@
+tables:
+    my_table:
+        fields:
+            foo:
+                bar: ~
