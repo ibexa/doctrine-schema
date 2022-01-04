@@ -8,7 +8,7 @@ services:
         public: false
     _instanceof:
         Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface:
-            tags: ['doctrine.dbplatform']
+            tags: [ ibexa.doctrine.db.platform ]
 
     Ibexa\DoctrineSchema\Exporter\:
         resource: '../../../lib/Exporter/*'
@@ -18,7 +18,7 @@ services:
 
     Ibexa\DoctrineSchema\Database\DbPlatformFactory:
         arguments:
-            $dbPlatforms: !tagged doctrine.dbplatform
+            $dbPlatforms: !tagged ibexa.doctrine.db.platform
 
     Ibexa\DoctrineSchema\Database\DbPlatform\:
         resource: '../../../lib/Database/DbPlatform/*'
