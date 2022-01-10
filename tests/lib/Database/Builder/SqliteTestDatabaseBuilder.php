@@ -6,13 +6,13 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Database\Builder;
+namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
+use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 
 class SqliteTestDatabaseBuilder implements TestDatabaseBuilder
 {
@@ -35,3 +35,5 @@ class SqliteTestDatabaseBuilder implements TestDatabaseBuilder
         );
     }
 }
+
+class_alias(SqliteTestDatabaseBuilder::class, 'EzSystems\Tests\DoctrineSchema\Database\Builder\SqliteTestDatabaseBuilder');

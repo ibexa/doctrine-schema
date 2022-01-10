@@ -6,16 +6,14 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Database;
+namespace Ibexa\Tests\DoctrineSchema\Database;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class TestDatabaseFactory
 {
-    /**
-     * @var \EzSystems\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder[]
-     */
+    /** @var \Ibexa\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder[] */
     private $databaseBuildersForPlatforms = [];
 
     public function __construct()
@@ -27,7 +25,7 @@ class TestDatabaseFactory
     }
 
     /**
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function prepareAndConnect(AbstractPlatform $databasePlatform): Connection
@@ -40,3 +38,5 @@ class TestDatabaseFactory
         return $this->databaseBuildersForPlatforms[$name]->buildDatabase();
     }
 }
+
+class_alias(TestDatabaseFactory::class, 'EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory');

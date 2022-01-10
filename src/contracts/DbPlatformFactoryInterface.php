@@ -6,11 +6,11 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\API;
+namespace Ibexa\Contracts\DoctrineSchema;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
-interface DbPlatformFactory
+interface DbPlatformFactoryInterface
 {
     /**
      * Create instance of Doctrine AbstractPlatform for the given driver name.
@@ -26,3 +26,5 @@ interface DbPlatformFactory
      */
     public function createDatabasePlatformFromDriverName(string $driverName): ?AbstractPlatform;
 }
+
+class_alias(DbPlatformFactoryInterface::class, 'EzSystems\DoctrineSchema\API\DbPlatformFactory');

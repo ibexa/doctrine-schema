@@ -6,28 +6,24 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Exporter;
+namespace Ibexa\Tests\DoctrineSchema\Exporter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
-use EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
-use EzSystems\DoctrineSchema\Exporter\SchemaExporter;
-use EzSystems\DoctrineSchema\Exporter\Table\SchemaTableExporter;
-use EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
-use EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory;
+use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
+use Ibexa\DoctrineSchema\Exporter\SchemaExporter;
+use Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
 use PHPUnit\Framework\TestCase;
 
 class SchemaExporterTest extends TestCase
 {
-    /**
-     * @var \EzSystems\DoctrineSchema\Exporter\SchemaExporter
-     */
+    /** @var \Ibexa\DoctrineSchema\Exporter\SchemaExporter */
     private $exporter;
 
-    /**
-     * @var \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory
-     */
+    /** @var \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory */
     private $testDatabaseFactory;
 
     public function setUp(): void
@@ -131,7 +127,7 @@ class SchemaExporterTest extends TestCase
     }
 
     /**
-     * @throws \EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      */
     private function getDatabaseConnection(AbstractPlatform $databasePlatform): Connection
@@ -139,3 +135,5 @@ class SchemaExporterTest extends TestCase
         return $this->testDatabaseFactory->prepareAndConnect($databasePlatform);
     }
 }
+
+class_alias(SchemaExporterTest::class, 'EzSystems\Tests\DoctrineSchema\Exporter\SchemaExporterTest');

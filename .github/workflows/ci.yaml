@@ -8,13 +8,24 @@ on:
     pull_request: ~
 
 jobs:
-    cs-fix:
-        name: Run code style check
+    tests:
+        name: Tests on SQLite
         runs-on: "ubuntu-20.04"
+        timeout-minutes: 10
+        continue-on-error: ${{ matrix.experimental }}
+
         strategy:
+            fail-fast: false
             matrix:
                 php:
-                    - '8.0'
+                    - '7.4'
+                composer_options: [ "" ]
+                experimental: [false]
+                include:
+                    - php: '8.0'
+                      composer_options: "--ignore-platform-req php"
+                      experimental: true
+
         steps:
             - uses: actions/checkout@v2
 
@@ -23,21 +34,28 @@ jobs:
               with:
                   php-version: ${{ matrix.php }}
                   coverage: none
-                  extensions: 'pdo_sqlite, gd'
+                  extensions: pdo_sqlite, gd
                   tools: cs2pr
 
             - uses: "ramsey/composer-install@v1"
               with:
                   dependency-versions: "highest"
+                  composer-options: "${{ matrix.composer_options }}"
+
+            - name: Setup problem matchers for PHPUnit
+              run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
             - name: Run code style check
               run: composer run-script check-cs -- --format=checkstyle | cs2pr
 
-    integration-tests-mysql:
-        name: MySQL integration tests
+            - name: Run test suite on SQLite
+              run: composer run-script --timeout=600 test
+
+    mysql-tests:
+        name: Tests on MySQL
         services:
             mysql:
-                image: mysql:5.7
+                image: mysql:8.0
                 ports:
                     - 3306/tcp
                 env:
@@ -50,18 +68,17 @@ jobs:
                     --health-interval=10s
                     --health-timeout=5s
                     --health-retries=5
-                    --tmpfs=/var/lib/mysql
         runs-on: "ubuntu-20.04"
         timeout-minutes: 60
+        continue-on-error: ${{ matrix.experimental }}
 
         strategy:
             fail-fast: false
             matrix:
+                experimental: [ false ]
                 php:
-                    - '7.3'
                     - '7.4'
-                    - '8.0'
-                    - '8.1'
+                composer_options: [ "" ]
 
         steps:
             -   uses: actions/checkout@v2
@@ -77,11 +94,12 @@ jobs:
             -   uses: "ramsey/composer-install@v1"
                 with:
                     dependency-versions: "highest"
+                    composer-options: "${{ matrix.composer_options }}"
 
             -   name: Setup problem matchers for PHPUnit
                 run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
             -   name: Run integration test suite vs MySQL
-                run: composer run test
+                run: composer run-script test
                 env:
                     MYSQL_DATABASE_URL: "mysql://mysql:mysql@127.0.0.1:${{ job.services.mysql.ports[3306] }}/testdb"

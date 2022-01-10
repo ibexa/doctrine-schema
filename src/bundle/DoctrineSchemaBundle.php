@@ -6,9 +6,9 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchemaBundle;
+namespace Ibexa\Bundle\DoctrineSchema;
 
-use EzSystems\DoctrineSchemaBundle\DependencyInjection\DoctrineSchemaExtension;
+use Ibexa\Bundle\DoctrineSchema\DependencyInjection\DoctrineSchemaExtension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -22,3 +22,5 @@ class DoctrineSchemaBundle extends Bundle
         return new DoctrineSchemaExtension();
     }
 }
+
+class_alias(DoctrineSchemaBundle::class, 'EzSystems\DoctrineSchemaBundle\DoctrineSchemaBundle');
