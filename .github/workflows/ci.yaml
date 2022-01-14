@@ -19,12 +19,10 @@ jobs:
             matrix:
                 php:
                     - '7.4'
+                    - '8.0'
+                    - '8.1'
                 composer_options: [ "" ]
                 experimental: [false]
-                include:
-                    - php: '8.0'
-                      composer_options: "--ignore-platform-req php"
-                      experimental: true
 
         steps:
             - uses: actions/checkout@v2
@@ -78,6 +76,8 @@ jobs:
                 experimental: [ false ]
                 php:
                     - '7.4'
+                    - '8.0'
+                    - '8.1'
                 composer_options: [ "" ]
 
         steps:

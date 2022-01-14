@@ -35,7 +35,7 @@
     "scripts": {
         "fix-cs": "php-cs-fixer fix --config=.php-cs-fixer.php -v --show-progress=dots",
         "check-cs": "@fix-cs --diff --dry-run",
-        "test": "@php ./vendor/bin/phpunit -vc phpunit.xml"
+        "test": "phpunit -vc phpunit.xml"
     },
     "extra": {
         "branch-alias": {
