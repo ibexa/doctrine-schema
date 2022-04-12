@@ -6,14 +6,14 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\Tests\DoctrineSchema\Builder;
+namespace Ibexa\Tests\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
-use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvent;
-use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvents;
-use EzSystems\DoctrineSchema\API\SchemaImporter;
-use EzSystems\DoctrineSchema\Builder\SchemaBuilder;
+use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
+use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
+use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface;
+use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -26,7 +26,7 @@ class SchemaBuilderTest extends TestCase
 
         $builder = new SchemaBuilder(
             $eventDispatcher,
-            $this->createMock(SchemaImporter::class)
+            $this->createMock(SchemaImporterInterface::class)
         );
 
         $eventDispatcher->addSubscriber(
@@ -52,3 +52,5 @@ class SchemaBuilderTest extends TestCase
         );
     }
 }
+
+class_alias(SchemaBuilderTest::class, 'EzSystems\Tests\DoctrineSchema\Builder\SchemaBuilderTest');

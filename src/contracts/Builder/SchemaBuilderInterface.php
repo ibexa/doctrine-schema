@@ -6,14 +6,14 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\API\Builder;
+namespace Ibexa\Contracts\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
 
 /**
  * Doctrine\DBAL\Schema event-driven builder.
  */
-interface SchemaBuilder
+interface SchemaBuilderInterface
 {
     /**
      * Build schema by dispatching the SchemaBuilderEvent event.
@@ -21,8 +21,8 @@ interface SchemaBuilder
      * To build schema you should implement EventSubscriber subscribing to SchemaBuilderEvents::BUILD_SCHEMA.
      * The method handling this event accepts single argument of SchemaBuilderEvent type
      *
-     * @see \EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvent
-     * @see \EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvents::BUILD_SCHEMA
+     * @see \Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent
+     * @see \Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents::BUILD_SCHEMA
      */
     public function buildSchema(): Schema;
 
@@ -31,3 +31,5 @@ interface SchemaBuilder
      */
     public function importSchemaFromFile(string $schemaFilePath): Schema;
 }
+
+class_alias(SchemaBuilderInterface::class, 'EzSystems\DoctrineSchema\API\Builder\SchemaBuilder');

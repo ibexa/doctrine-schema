@@ -1,5 +1,5 @@
 parameters:
-    ez_doctrine_schema.default_table_options: []
+    ibexa.schema.default_table_options: []
 
 services:
     _defaults:
@@ -7,24 +7,24 @@ services:
         autoconfigure: true
         public: false
     _instanceof:
-        EzSystems\DoctrineSchema\Database\DbPlatform\DbPlatform:
-            tags: ['doctrine.dbplatform']
+        Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface:
+            tags: [ ibexa.doctrine.db.platform ]
 
-    EzSystems\DoctrineSchema\Exporter\:
+    Ibexa\DoctrineSchema\Exporter\:
         resource: '../../../lib/Exporter/*'
 
-    EzSystems\DoctrineSchema\Importer\:
+    Ibexa\DoctrineSchema\Importer\:
         resource: '../../../lib/Importer/*'
 
-    EzSystems\DoctrineSchema\Database\DbPlatformFactory:
+    Ibexa\DoctrineSchema\Database\DbPlatformFactory:
         arguments:
-            $dbPlatforms: !tagged doctrine.dbplatform
+            $dbPlatforms: !tagged ibexa.doctrine.db.platform
 
-    EzSystems\DoctrineSchema\Database\DbPlatform\:
+    Ibexa\DoctrineSchema\Database\DbPlatform\:
         resource: '../../../lib/Database/DbPlatform/*'
 
-    EzSystems\DoctrineSchema\Builder\SchemaBuilder:
+    Ibexa\DoctrineSchema\Builder\SchemaBuilder:
         arguments:
-            $defaultTableOptions: '%ez_doctrine_schema.default_table_options%'
+            $defaultTableOptions: '%ibexa.schema.default_table_options%'
 
     Doctrine\Common\EventManager: ~

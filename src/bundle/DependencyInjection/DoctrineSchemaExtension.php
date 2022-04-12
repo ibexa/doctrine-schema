@@ -6,7 +6,7 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchemaBundle\DependencyInjection;
+namespace Ibexa\Bundle\DoctrineSchema\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
@@ -16,12 +16,14 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class DoctrineSchemaExtension extends Extension
 {
+    public const EXTENSION_NAME = 'ibexa_doctrine_schema';
+
     /**
-     * Override default extension alias name to include eZ vendor in name.
+     * Override default extension alias name to include Ibexa vendor in name.
      */
     public function getAlias(): string
     {
-        return 'ez_doctrine_schema';
+        return self::EXTENSION_NAME;
     }
 
     /**
@@ -47,9 +49,11 @@ class DoctrineSchemaExtension extends Extension
 
         if (isset($config['tables']['options'])) {
             $container->setParameter(
-                'ez_doctrine_schema.default_table_options',
+                'ibexa.schema.default_table_options',
                 $config['tables']['options']
             );
         }
     }
 }
+
+class_alias(DoctrineSchemaExtension::class, 'EzSystems\DoctrineSchemaBundle\DependencyInjection\DoctrineSchemaExtension');

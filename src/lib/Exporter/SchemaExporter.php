@@ -6,23 +6,21 @@
  */
 declare(strict_types=1);
 
-namespace EzSystems\DoctrineSchema\Exporter;
+namespace Ibexa\DoctrineSchema\Exporter;
 
 use Doctrine\DBAL\Schema\Schema;
-use EzSystems\DoctrineSchema\API\SchemaExporter as APISchemaExporter;
-use EzSystems\DoctrineSchema\Exporter\Table\SchemaTableExporter;
+use Ibexa\Contracts\DoctrineSchema\SchemaExporterInterface as APISchemaExporter;
+use Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter;
 use Symfony\Component\Yaml\Yaml;
 
 /**
  * Export the given database Schema object to the custom Yaml format.
  *
- * @internal Type-hint API interface \EzSystems\DoctrineSchema\API\SchemaExporter
+ * @internal Type-hint API interface \Ibexa\Contracts\DoctrineSchema\SchemaExporterInterface
  */
 class SchemaExporter implements APISchemaExporter
 {
-    /**
-     * @var \EzSystems\DoctrineSchema\Exporter\Table\SchemaTableExporter
-     */
+    /** @var \Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter */
     private $tableExporter;
 
     public function __construct(SchemaTableExporter $tableYamlExporter)
@@ -50,3 +48,5 @@ class SchemaExporter implements APISchemaExporter
         return Yaml::dump($schemaDefinition, 4);
     }
 }
+
+class_alias(SchemaExporter::class, 'EzSystems\DoctrineSchema\Exporter\SchemaExporter');
