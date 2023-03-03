@@ -10,9 +10,8 @@ on:
 jobs:
     tests:
         name: Tests on SQLite
-        runs-on: "ubuntu-20.04"
+        runs-on: "ubuntu-22.04"
         timeout-minutes: 10
-        continue-on-error: ${{ matrix.experimental }}
 
         strategy:
             fail-fast: false
@@ -21,11 +20,9 @@ jobs:
                     - '7.4'
                     - '8.0'
                     - '8.1'
-                composer_options: [ "" ]
-                experimental: [false]
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
 
             - name: Setup PHP Action
               uses: shivammathur/setup-php@v2
@@ -35,16 +32,18 @@ jobs:
                   extensions: pdo_sqlite, gd
                   tools: cs2pr
 
-            - uses: "ramsey/composer-install@v1"
+            - uses: ramsey/composer-install@v2
               with:
-                  dependency-versions: "highest"
-                  composer-options: "${{ matrix.composer_options }}"
+                  dependency-versions: highest
 
             - name: Setup problem matchers for PHPUnit
               run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
             - name: Run code style check
               run: composer run-script check-cs -- --format=checkstyle | cs2pr
+
+            - name: Run PHPStan analysis
+              run: composer run-script phpstan
 
             - name: Run test suite on SQLite
               run: composer run-script --timeout=600 test
@@ -66,9 +65,8 @@ jobs:
                     --health-interval=10s
                     --health-timeout=5s
                     --health-retries=5
-        runs-on: "ubuntu-20.04"
+        runs-on: "ubuntu-22.04"
         timeout-minutes: 60
-        continue-on-error: ${{ matrix.experimental }}
 
         strategy:
             fail-fast: false
@@ -78,10 +76,9 @@ jobs:
                     - '7.4'
                     - '8.0'
                     - '8.1'
-                composer_options: [ "" ]
 
         steps:
-            -   uses: actions/checkout@v2
+            -   uses: actions/checkout@v3
 
             -   name: Setup PHP Action
                 uses: shivammathur/setup-php@v2
@@ -91,10 +88,9 @@ jobs:
                     extensions: pdo_mysql, gd
                     tools: cs2pr
 
-            -   uses: "ramsey/composer-install@v1"
+            -   uses: ramsey/composer-install@v2
                 with:
-                    dependency-versions: "highest"
-                    composer-options: "${{ matrix.composer_options }}"
+                    dependency-versions: highest
 
             -   name: Setup problem matchers for PHPUnit
                 run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
