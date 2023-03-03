@@ -5,6 +5,11 @@ includes:
 
 parameters:
     level: 8
+    ignoreErrors:
+        -
+            message: "#^Cannot call method (fetchOne|fetchAllAssociative)\\(\\) on Doctrine\\\\DBAL\\\\ForwardCompatibility\\\\Result\\|int\\|string\\.$#"
+            paths:
+                - src/*
     paths:
         - src
         - tests
