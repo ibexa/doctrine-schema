@@ -11,17 +11,13 @@ jobs:
     cs-fix:
         name: Run code style check
         runs-on: "ubuntu-22.04"
-        strategy:
-            matrix:
-                php:
-                    - '8.1'
         steps:
             -   uses: actions/checkout@v3
 
             -   name: Setup PHP Action
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: ${{ matrix.php }}
+                    php-version: '8.1'
                     coverage: none
                     extensions: pdo_sqlite, gd
                     tools: cs2pr
