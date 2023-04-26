@@ -28,3 +28,7 @@ services:
             $defaultTableOptions: '%ibexa.schema.default_table_options%'
 
     Doctrine\Common\EventManager: ~
+
+    Ibexa\Bundle\DoctrineSchema\Command\DumpSqlCommand:
+        tags:
+            - { name: console.command }
