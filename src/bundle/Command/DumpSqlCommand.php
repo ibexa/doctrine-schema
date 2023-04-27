@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class DumpSqlCommand extends Command
 {
-    protected static $defaultName = 'ibexa:schema:dump-sql';
+    protected static $defaultName = 'ibexa:doctrine:schema:dump-sql';
 
     private Connection $db;
 
@@ -42,8 +42,9 @@ final class DumpSqlCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->hasArgument('file')) {
-            $schema = $this->schemaBuilder->importSchemaFromFile($input->getArgument('file'));
+        $file = $input->getArgument('file');
+        if ($file !== null) {
+            $schema = $this->schemaBuilder->importSchemaFromFile($file);
         } else {
             $schema = $this->schemaBuilder->buildSchema();
         }

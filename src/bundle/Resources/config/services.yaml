@@ -29,6 +29,4 @@ services:
 
     Doctrine\Common\EventManager: ~
 
-    Ibexa\Bundle\DoctrineSchema\Command\DumpSqlCommand:
-        tags:
-            - { name: console.command }
+    Ibexa\Bundle\DoctrineSchema\Command\DumpSqlCommand: ~
