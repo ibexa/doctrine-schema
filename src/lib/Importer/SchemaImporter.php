@@ -126,6 +126,8 @@ class SchemaImporter implements APISchemaImporter
      * Adds columns to the given $table.
      *
      * @param array $columnList list of columns with their configuration
+     *
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
     private function addSchemaTableColumns(Table $table, array $columnList): void
     {
@@ -164,8 +166,10 @@ class SchemaImporter implements APISchemaImporter
             }
 
             if (isset($columnConfiguration['index'])) {
+                $indexConfig = $this->normalizeIndexConfig($columnConfiguration['index'], $location);
+
                 $this->addIndexToColumn(
-                    $columnConfiguration['index'],
+                    $indexConfig,
                     $location . '.index',
                     $table,
                     $column->getName(),
@@ -188,26 +192,12 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * @param string|array<string, mixed> $indexConfig
+     * @param array<string, mixed> $indexConfig
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
-    private function addIndexToColumn($indexConfig, string $location, Table $table, string $columnName): void
+    private function addIndexToColumn(array $indexConfig, string $location, Table $table, string $columnName): void
     {
-        if (!is_string($indexConfig) && !is_array($indexConfig)) {
-            throw new InvalidConfigurationException(sprintf(
-                'Unhandled property in schema configuration for "%s". Expected a string or an array, found %s.',
-                $location,
-                get_debug_type($indexConfig),
-            ));
-        }
-
-        if (is_string($indexConfig)) {
-            $indexConfig = [
-                'name' => $indexConfig,
-            ];
-        }
-
         if (!isset($indexConfig['name']) || !is_string($indexConfig['name'])) {
             throw new InvalidConfigurationException(sprintf(
                 'Unhandled property in schema configuration for "%s". Expected "name" to be a string, found %s.',
@@ -227,6 +217,32 @@ class SchemaImporter implements APISchemaImporter
         } else {
             $table->addIndex([$columnName], $indexConfig['name'], [], $indexConfig['options'] ?? []);
         }
+    }
+
+    /**
+     * @phpstan-param string|array<string, mixed> $indexConfig
+     *
+     * @return array<string, mixed>
+     *
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     */
+    private function normalizeIndexConfig($indexConfig, string $location): array
+    {
+        if (!is_string($indexConfig) && !is_array($indexConfig)) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected a string or an array, found %s.',
+                $location . '.index',
+                get_debug_type($indexConfig),
+            ));
+        }
+
+        if (is_string($indexConfig)) {
+            $indexConfig = [
+                'name' => $indexConfig,
+            ];
+        }
+
+        return $indexConfig;
     }
 }
 
