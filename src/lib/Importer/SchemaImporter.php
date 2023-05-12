@@ -164,7 +164,12 @@ class SchemaImporter implements APISchemaImporter
             }
 
             if (isset($columnConfiguration['index'])) {
-                $this->addIndexToColumn($columnConfiguration['index'], $location . '.index', $table, $column->getName());
+                $this->addIndexToColumn(
+                    $columnConfiguration['index'],
+                    $location . '.index',
+                    $table,
+                    $column->getName(),
+                );
             }
         }
     }
