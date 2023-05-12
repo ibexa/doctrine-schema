@@ -126,11 +126,6 @@ parameters:
 			path: tests/lib/Exporter/SchemaExporterTest.php
 
 		-
-			message: "#^Method Ibexa\\\\Tests\\\\DoctrineSchema\\\\Importer\\\\SchemaImporterTest\\:\\:providerForTestImportFromFile\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: tests/lib/Importer/SchemaImporterTest.php
-
-		-
 			message: "#^Method Ibexa\\\\Tests\\\\DoctrineSchema\\\\Importer\\\\SchemaImporterTest\\:\\:testImportFromFile\\(\\) has no return type specified\\.$#"
 			count: 1
 			path: tests/lib/Importer/SchemaImporterTest.php

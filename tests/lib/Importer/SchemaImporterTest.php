@@ -25,172 +25,205 @@ class SchemaImporterTest extends TestCase
      *
      * @see testImportFromFile
      *
-     * @return array [[$yamlSchemaDefinitionFile, $expectedSchema]]
+     * @phpstan-return iterable<array{non-empty-string, \Doctrine\DBAL\Schema\Schema}>
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function providerForTestImportFromFile(): array
+    public function providerForTestImportFromFile(): iterable
     {
-        $data = [
-            0 => [
-                '00-simple_pk.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('id', Type::getType('integer')))->setAutoincrement(
-                                    true
-                                ),
-                            ],
-                            [
-                                new Index('primary', ['id'], false, true),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            1 => [
-                '01-composite_pk.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('id', Type::getType('integer')))->setDefault(0),
-                                (new Column('version', Type::getType('integer')))->setDefault(0),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('primary', ['id', 'version'], false, true),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            2 => [
-                '02-composite_pk_with_ai.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('id', Type::getType('integer')))
-                                    ->setAutoincrement(true),
-                                (new Column('version', Type::getType('integer')))->setDefault(0),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('primary', ['id', 'version'], false, true),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            3 => [
-                '03-foreign_key.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_main_table',
-                            [
-                                (new Column('id', Type::getType('integer')))
-                                    ->setAutoincrement(true),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('primary', ['id'], false, true),
-                            ]
-                        ),
-                        new Table(
-                            'my_secondary_table',
-                            [
-                                (new Column('id', Type::getType('integer')))
-                                    ->setAutoincrement(true),
-                                new Column('main_id', Type::getType('integer')),
-                            ],
-                            [
-                                new Index('primary', ['id'], false, true),
-                            ],
-                            [
-                                new ForeignKeyConstraint(
-                                    ['main_id'],
-                                    'my_main_table',
-                                    ['id'],
-                                    'fk_my_secondary_table_id_main',
-                                    ['onDelete' => 'CASCADE', 'onUpdate' => 'CASCADE']
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            4 => [
-                '04-nullable_field.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('data', Type::getType('integer')))->setNotnull(false),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            5 => [
-                '05-varchar_length.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('name', Type::getType('string')))->setLength(64),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            6 => [
-                '06-index.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                new Column('data1', Type::getType('integer')),
-                                new Column('data2', Type::getType('integer')),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('ix_simple', ['data1'], false, false),
-                                new Index('ix_composite', ['data1', 'data2'], false, false),
-                                new Index('ux_name', ['name'], true, false),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            7 => [
-                '07-numeric-options.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column(
-                                    'data',
-                                    Type::getType('decimal')
-                                )
-                                )->setPrecision(19)->setScale(4),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
+        yield [
+            '00-simple_pk.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            (new Column('id', Type::getType('integer')))->setAutoincrement(
+                                true
+                            ),
+                        ],
+                        [
+                            new Index('primary', ['id'], false, true),
+                        ]
+                    ),
+                ]
+            ),
         ];
 
-        return $data;
+        yield [
+            '01-composite_pk.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            (new Column('id', Type::getType('integer')))->setDefault(0),
+                            (new Column('version', Type::getType('integer')))->setDefault(0),
+                            new Column('name', Type::getType('string')),
+                        ],
+                        [
+                            new Index('primary', ['id', 'version'], false, true),
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        yield [
+            '02-composite_pk_with_ai.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            (new Column('id', Type::getType('integer')))
+                                ->setAutoincrement(true),
+                            (new Column('version', Type::getType('integer')))->setDefault(0),
+                            new Column('name', Type::getType('string')),
+                        ],
+                        [
+                            new Index('primary', ['id', 'version'], false, true),
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        yield [
+            '03-foreign_key.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_main_table',
+                        [
+                            (new Column('id', Type::getType('integer')))
+                                ->setAutoincrement(true),
+                            new Column('name', Type::getType('string')),
+                        ],
+                        [
+                            new Index('primary', ['id'], false, true),
+                        ]
+                    ),
+                    new Table(
+                        'my_secondary_table',
+                        [
+                            (new Column('id', Type::getType('integer')))
+                                ->setAutoincrement(true),
+                            new Column('main_id', Type::getType('integer')),
+                        ],
+                        [
+                            new Index('primary', ['id'], false, true),
+                        ],
+                        [
+                            new ForeignKeyConstraint(
+                                ['main_id'],
+                                'my_main_table',
+                                ['id'],
+                                'fk_my_secondary_table_id_main',
+                                ['onDelete' => 'CASCADE', 'onUpdate' => 'CASCADE']
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        yield [
+            '04-nullable_field.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            (new Column('data', Type::getType('integer')))->setNotnull(false),
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        yield [
+            '05-varchar_length.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            (new Column('name', Type::getType('string')))->setLength(64),
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        yield [
+            '06-index.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            new Column('data1', Type::getType('integer')),
+                            new Column('data2', Type::getType('integer')),
+                            new Column('name', Type::getType('string')),
+                        ],
+                        [
+                            new Index('ix_simple', ['data1'], false, false),
+                            new Index('ix_composite', ['data1', 'data2'], false, false),
+                            new Index('ux_name', ['name'], true, false),
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        yield [
+            '07-numeric-options.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            (new Column(
+                                'data',
+                                Type::getType('decimal')
+                            )
+                            )->setPrecision(19)->setScale(4),
+                        ]
+                    ),
+                ]
+            ),
+        ];
+
+        yield [
+            'short-index.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            (new Column(
+                                'data1',
+                                Type::getType('integer'),
+                            )),
+                            (new Column(
+                                'data2',
+                                Type::getType('integer'),
+                            )),
+                            (new Column(
+                                'data3',
+                                Type::getType('string'),
+                            )),
+                        ],
+                        [
+                            new Index('data1_idx', ['data1'], false, false),
+                            new Index('data2_idx', ['data2'], false, false),
+                            new Index('data3_uidx', ['data3'], true, false),
+                        ],
+                    ),
+                ]
+            ),
+        ];
     }
 
     /**
@@ -239,7 +272,7 @@ class SchemaImporterTest extends TestCase
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage(
             'Unhandled property in schema configuration for "my_table.fields.foo". "bar" keys are not allowed. Allowed keys:'
-            . ' "length", "scale", "precision", "type", "nullable", "options".'
+            . ' "length", "scale", "precision", "type", "nullable", "options", "index".'
         );
         $importer->importFromFile(__DIR__ . '/_fixtures/failing-import-column.yaml');
     }

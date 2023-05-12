@@ -138,6 +138,7 @@ class SchemaImporter implements APISchemaImporter
                 'type',
                 'nullable',
                 'options',
+                'index',
             ]);
 
             if (isset($columnConfiguration['length'])) {
@@ -161,6 +162,10 @@ class SchemaImporter implements APISchemaImporter
             if (isset($columnConfiguration['nullable'])) {
                 $column->setNotnull(!$columnConfiguration['nullable']);
             }
+
+            if (isset($columnConfiguration['index'])) {
+                $this->addIndexToColumn($columnConfiguration['index'], $location . '.index', $table, $column->getName());
+            }
         }
     }
 
@@ -174,6 +179,48 @@ class SchemaImporter implements APISchemaImporter
                 implode('", "', $diff),
                 implode('", "', $allowedKeys),
             ));
+        }
+    }
+
+    /**
+     * @param string|array<string, mixed> $indexConfig
+     *
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     */
+    private function addIndexToColumn($indexConfig, string $location, Table $table, string $columnName): void
+    {
+        if (!is_string($indexConfig) && !is_array($indexConfig)) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected a string or an array, found %s.',
+                $location,
+                get_debug_type($indexConfig),
+            ));
+        }
+
+        if (is_string($indexConfig)) {
+            $indexConfig = [
+                'name' => $indexConfig,
+            ];
+        }
+
+        if (!isset($indexConfig['name']) || !is_string($indexConfig['name'])) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected "name" to be a string, found %s.',
+                $location,
+                get_debug_type($indexConfig['name']),
+            ));
+        }
+
+        $this->ensureNoExtraKeys($indexConfig, $location . '.index', [
+            'name',
+            'unique',
+            'options',
+        ]);
+
+        if ($indexConfig['unique'] ?? false) {
+            $table->addUniqueIndex([$columnName], $indexConfig['name'], $indexConfig['options'] ?? []);
+        } else {
+            $table->addIndex([$columnName], $indexConfig['name'], [], $indexConfig['options'] ?? []);
         }
     }
 }
