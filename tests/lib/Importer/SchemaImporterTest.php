@@ -196,7 +196,7 @@ class SchemaImporterTest extends TestCase
         ];
 
         yield [
-            'short-index.yaml',
+            'simple-field-index.yaml',
             new Schema(
                 [
                     new Table(
