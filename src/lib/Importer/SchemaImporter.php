@@ -192,7 +192,11 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * @param array<string, mixed> $indexConfig
+     * @phpstan-param array{
+     *     name: string,
+     *     unique?: bool,
+     *     options?: array<mixed>,
+     * } $indexConfig
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
@@ -222,7 +226,11 @@ class SchemaImporter implements APISchemaImporter
     /**
      * @phpstan-param string|array<string, mixed> $indexConfig
      *
-     * @return array<string, mixed>
+     * @phpstan-return array<string, {
+     *     name: string,
+     *     unique?: bool,
+     *     options?: array<mixed>,
+     * }>
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
