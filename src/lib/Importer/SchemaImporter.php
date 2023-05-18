@@ -224,13 +224,17 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * @phpstan-param string|array<string, mixed> $indexConfig
+     * @phpstan-param string|array{
+     *     name: string,
+     *     unique?: bool,
+     *     options: array<mixed>,
+     * } $indexConfig
      *
-     * @phpstan-return array<string, {
+     * @phpstan-return array{
      *     name: string,
      *     unique?: bool,
      *     options?: array<mixed>,
-     * }>
+     * }
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
