@@ -25,13 +25,13 @@ class SchemaImporterTest extends TestCase
      *
      * @see testImportFromFile
      *
-     * @return array [[$yamlSchemaDefinitionFile, $expectedSchema]]
+     * @phpstan-return iterable<array{non-empty-string, \Doctrine\DBAL\Schema\Schema}>
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function providerForTestImportFromFile(): array
+    public function providerForTestImportFromFile(): iterable
     {
-        $data = [
+        yield from [
             0 => [
                 '00-simple_pk.yaml',
                 new Schema(
@@ -190,7 +190,26 @@ class SchemaImporterTest extends TestCase
             ],
         ];
 
-        return $data;
+        yield [
+            'simple-field-index.yaml',
+            new Schema(
+                [
+                    new Table(
+                        'my_table',
+                        [
+                            new Column('data1', Type::getType('integer')),
+                            new Column('data2', Type::getType('integer')),
+                            new Column('data3', Type::getType('string')),
+                        ],
+                        [
+                            new Index('data1_idx', ['data1'], false, false),
+                            new Index('data2_idx', ['data2'], false, false),
+                            new Index('data3_uidx', ['data3'], true, false),
+                        ],
+                    ),
+                ]
+            ),
+        ];
     }
 
     /**
@@ -239,7 +258,7 @@ class SchemaImporterTest extends TestCase
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage(
             'Unhandled property in schema configuration for "my_table.fields.foo". "bar" keys are not allowed. Allowed keys:'
-            . ' "length", "scale", "precision", "type", "nullable", "options".'
+            . ' "length", "scale", "precision", "type", "nullable", "options", "index".'
         );
         $importer->importFromFile(__DIR__ . '/_fixtures/failing-import-column.yaml');
     }

@@ -126,6 +126,8 @@ class SchemaImporter implements APISchemaImporter
      * Adds columns to the given $table.
      *
      * @param array $columnList list of columns with their configuration
+     *
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
     private function addSchemaTableColumns(Table $table, array $columnList): void
     {
@@ -138,6 +140,7 @@ class SchemaImporter implements APISchemaImporter
                 'type',
                 'nullable',
                 'options',
+                'index',
             ]);
 
             if (isset($columnConfiguration['length'])) {
@@ -161,6 +164,17 @@ class SchemaImporter implements APISchemaImporter
             if (isset($columnConfiguration['nullable'])) {
                 $column->setNotnull(!$columnConfiguration['nullable']);
             }
+
+            if (isset($columnConfiguration['index'])) {
+                $indexConfig = $this->normalizeIndexConfig($columnConfiguration['index'], $location);
+
+                $this->addIndexToColumn(
+                    $indexConfig,
+                    $location . '.index',
+                    $table,
+                    $column->getName(),
+                );
+            }
         }
     }
 
@@ -175,6 +189,72 @@ class SchemaImporter implements APISchemaImporter
                 implode('", "', $allowedKeys),
             ));
         }
+    }
+
+    /**
+     * @phpstan-param array{
+     *     name: string,
+     *     unique?: bool,
+     *     options?: array<mixed>,
+     * } $indexConfig
+     *
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     */
+    private function addIndexToColumn(array $indexConfig, string $location, Table $table, string $columnName): void
+    {
+        if (!isset($indexConfig['name']) || !is_string($indexConfig['name'])) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected "name" to be a string, found %s.',
+                $location,
+                get_debug_type($indexConfig['name']),
+            ));
+        }
+
+        $this->ensureNoExtraKeys($indexConfig, $location . '.index', [
+            'name',
+            'unique',
+            'options',
+        ]);
+
+        if ($indexConfig['unique'] ?? false) {
+            $table->addUniqueIndex([$columnName], $indexConfig['name'], $indexConfig['options'] ?? []);
+        } else {
+            $table->addIndex([$columnName], $indexConfig['name'], [], $indexConfig['options'] ?? []);
+        }
+    }
+
+    /**
+     * @phpstan-param string|array{
+     *     name: string,
+     *     unique?: bool,
+     *     options: array<mixed>,
+     * } $indexConfig
+     *
+     * @phpstan-return array{
+     *     name: string,
+     *     unique?: bool,
+     *     options?: array<mixed>,
+     * }
+     *
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     */
+    private function normalizeIndexConfig($indexConfig, string $location): array
+    {
+        if (!is_string($indexConfig) && !is_array($indexConfig)) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected a string or an array, found %s.',
+                $location . '.index',
+                get_debug_type($indexConfig),
+            ));
+        }
+
+        if (is_string($indexConfig)) {
+            $indexConfig = [
+                'name' => $indexConfig,
+            ];
+        }
+
+        return $indexConfig;
     }
 }
 
