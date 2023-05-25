@@ -197,18 +197,9 @@ class SchemaImporterTest extends TestCase
                     new Table(
                         'my_table',
                         [
-                            (new Column(
-                                'data1',
-                                Type::getType('integer'),
-                            )),
-                            (new Column(
-                                'data2',
-                                Type::getType('integer'),
-                            )),
-                            (new Column(
-                                'data3',
-                                Type::getType('string'),
-                            )),
+                            new Column('data1', Type::getType('integer')),
+                            new Column('data2', Type::getType('integer')),
+                            new Column('data3', Type::getType('string')),
                         ],
                         [
                             new Index('data1_idx', ['data1'], false, false),
