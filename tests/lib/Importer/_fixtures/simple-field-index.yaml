@@ -1,0 +1,18 @@
+tables:
+    my_table:
+        fields:
+            data1:
+                type: integer
+                nullable: false
+                index: data1_idx
+            data2:
+                type: integer
+                nullable: false
+                index:
+                    name: data2_idx
+            data3:
+                type: string
+                nullable: false
+                index:
+                    name: data3_uidx
+                    unique: true
