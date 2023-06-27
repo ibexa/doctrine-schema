@@ -1,0 +1,47 @@
+tables:
+    my_table:
+        id:
+            id:
+                type: integer
+                nullable: false
+                foreignKey:
+                    name: id_fk
+                    table: foreign_table_id
+                    field: foreign_id
+        fields:
+            data1:
+                type: integer
+                nullable: false
+                foreignKey:
+                    table: foreign_table_1
+                    field: foreign_data1
+            data2:
+                type: integer
+                nullable: false
+                foreignKey:
+                    table: foreign_table_2
+                    field: foreign_data2
+                    name: foreign_data2_fk_name
+                index: data2_idx
+            data3:
+                type: string
+                nullable: false
+                foreignKey:
+                    table: foreign_table_3
+                    field: foreign_data3
+                    name: foreign_data3_fk_name
+                index:
+                    name: data3_idx
+            data4:
+                type: string
+                nullable: false
+                foreignKey:
+                    table: foreign_table_4
+                    field: foreign_data4
+                    name: foreign_data4_fk_name
+                    options:
+                        onDelete: CASCADE
+                        onUpdate: RESTRICT
+                index:
+                    name: data4_uidx
+                    unique: true

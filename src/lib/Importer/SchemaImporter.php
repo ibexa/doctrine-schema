@@ -141,6 +141,7 @@ class SchemaImporter implements APISchemaImporter
                 'nullable',
                 'options',
                 'index',
+                'foreignKey',
             ]);
 
             if (isset($columnConfiguration['length'])) {
@@ -174,6 +175,30 @@ class SchemaImporter implements APISchemaImporter
                     $table,
                     $column->getName(),
                 );
+            }
+
+            if (isset($columnConfiguration['foreignKey'])) {
+                $foreignKey = $columnConfiguration['foreignKey'];
+                $foreignField = $foreignKey['field'];
+
+                $table->addForeignKeyConstraint(
+                    $foreignKey['table'],
+                    [$columnName],
+                    [$foreignField],
+                    $foreignKey['options'] ?? [],
+                    $foreignKey['name'] ?? null,
+                );
+
+                if (isset($foreignKey['index'])) {
+                    $indexConfig = $this->normalizeIndexConfig($foreignKey['index'], $location);
+
+                    $this->addIndexToColumn(
+                        $indexConfig,
+                        $location . '.foreignKey',
+                        $table,
+                        $column->getName(),
+                    );
+                }
             }
         }
     }
