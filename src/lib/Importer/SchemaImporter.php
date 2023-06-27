@@ -178,27 +178,16 @@ class SchemaImporter implements APISchemaImporter
             }
 
             if (isset($columnConfiguration['foreignKey'])) {
-                $foreignKey = $columnConfiguration['foreignKey'];
-                $foreignField = $foreignKey['field'];
+                $foreignKeyConfig = $columnConfiguration['foreignKey'];
+                $foreignField = $foreignKeyConfig['field'];
 
                 $table->addForeignKeyConstraint(
-                    $foreignKey['table'],
-                    [$columnName],
+                    $foreignKeyConfig['table'],
+                    [$column->getName()],
                     [$foreignField],
-                    $foreignKey['options'] ?? [],
-                    $foreignKey['name'] ?? null,
+                    $foreignKeyConfig['options'] ?? [],
+                    $foreignKeyConfig['name'] ?? null,
                 );
-
-                if (isset($foreignKey['index'])) {
-                    $indexConfig = $this->normalizeIndexConfig($foreignKey['index'], $location);
-
-                    $this->addIndexToColumn(
-                        $indexConfig,
-                        $location . '.foreignKey',
-                        $table,
-                        $column->getName(),
-                    );
-                }
             }
         }
     }
