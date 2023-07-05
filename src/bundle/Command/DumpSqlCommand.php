@@ -16,6 +16,7 @@ use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -41,6 +42,13 @@ final class DumpSqlCommand extends Command
             'file',
             InputArgument::OPTIONAL
         );
+
+        $this->addOption(
+            'compare',
+            null,
+            InputOption::VALUE_NONE,
+            'Compare against current database',
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -52,14 +60,19 @@ final class DumpSqlCommand extends Command
             $toSchema = $this->schemaBuilder->buildSchema();
         }
 
-        $schemaManager = $this->getSchemaManager();
-        $fromSchema = $this->introspectSchema($schemaManager);
+        if ($input->getOption('compare')) {
+            $schemaManager = $this->getSchemaManager();
+            $fromSchema = $this->introspectSchema($schemaManager);
 
-        $comparator = new Comparator();
-        $diff = $comparator->compare($fromSchema, $toSchema);
+            $comparator = new Comparator();
+            $diff = $comparator->compare($fromSchema, $toSchema);
+            $sqls = $diff->toSql($this->db->getDatabasePlatform());
+        } else {
+            $sqls = $toSchema->toSql($this->db->getDatabasePlatform());
+        }
 
         $io = new SymfonyStyle($input, $output);
-        foreach ($diff->toSql($this->db->getDatabasePlatform()) as $sql) {
+        foreach ($sqls as $sql) {
             $io->writeln($sql . ';');
         }
 
