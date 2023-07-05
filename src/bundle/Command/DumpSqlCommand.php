@@ -9,6 +9,9 @@ declare(strict_types=1);
 namespace Ibexa\Bundle\DoctrineSchema\Command;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Comparator;
+use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -44,16 +47,33 @@ final class DumpSqlCommand extends Command
     {
         $file = $input->getArgument('file');
         if ($file !== null) {
-            $schema = $this->schemaBuilder->importSchemaFromFile($file);
+            $toSchema = $this->schemaBuilder->importSchemaFromFile($file);
         } else {
-            $schema = $this->schemaBuilder->buildSchema();
+            $toSchema = $this->schemaBuilder->buildSchema();
         }
 
+        $schemaManager = $this->getSchemaManager();
+        $fromSchema = $this->introspectSchema($schemaManager);
+
+        $comparator = new Comparator();
+        $diff = $comparator->compare($fromSchema, $toSchema);
+
         $io = new SymfonyStyle($input, $output);
-        foreach ($schema->toSql($this->db->getDatabasePlatform()) as $sql) {
+        foreach ($diff->toSql($this->db->getDatabasePlatform()) as $sql) {
             $io->writeln($sql . ';');
         }
 
         return self::SUCCESS;
+    }
+
+
+    private function getSchemaManager(): AbstractSchemaManager
+    {
+        return $this->db->getSchemaManager();
+    }
+
+    private function introspectSchema(AbstractSchemaManager $schemaManager): Schema
+    {
+        return $schemaManager->createSchema();
     }
 }
