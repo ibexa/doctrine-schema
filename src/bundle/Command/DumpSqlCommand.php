@@ -72,6 +72,16 @@ final class DumpSqlCommand extends Command
         }
 
         $io = new SymfonyStyle($input, $output);
+        $io->getErrorStyle()->caution(
+            [
+                'This operation should not be executed in a production environment!',
+                '',
+                'Use the incremental update to detect changes during development and use',
+                'the SQL DDL provided to manually update your database in production.',
+                '',
+            ]
+        );
+
         foreach ($sqls as $sql) {
             $io->writeln($sql . ';');
         }
