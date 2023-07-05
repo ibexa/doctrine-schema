@@ -66,7 +66,6 @@ final class DumpSqlCommand extends Command
         return self::SUCCESS;
     }
 
-
     private function getSchemaManager(): AbstractSchemaManager
     {
         return $this->db->getSchemaManager();
