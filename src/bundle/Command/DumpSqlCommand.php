@@ -9,10 +9,14 @@ declare(strict_types=1);
 namespace Ibexa\Bundle\DoctrineSchema\Command;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Comparator;
+use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -38,22 +42,60 @@ final class DumpSqlCommand extends Command
             'file',
             InputArgument::OPTIONAL
         );
+
+        $this->addOption(
+            'compare',
+            null,
+            InputOption::VALUE_NONE,
+            'Compare against current database',
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = $input->getArgument('file');
         if ($file !== null) {
-            $schema = $this->schemaBuilder->importSchemaFromFile($file);
+            $toSchema = $this->schemaBuilder->importSchemaFromFile($file);
         } else {
-            $schema = $this->schemaBuilder->buildSchema();
+            $toSchema = $this->schemaBuilder->buildSchema();
+        }
+
+        if ($input->getOption('compare')) {
+            $schemaManager = $this->getSchemaManager();
+            $fromSchema = $this->introspectSchema($schemaManager);
+
+            $comparator = new Comparator();
+            $diff = $comparator->compare($fromSchema, $toSchema);
+            $sqls = $diff->toSql($this->db->getDatabasePlatform());
+        } else {
+            $sqls = $toSchema->toSql($this->db->getDatabasePlatform());
         }
 
         $io = new SymfonyStyle($input, $output);
-        foreach ($schema->toSql($this->db->getDatabasePlatform()) as $sql) {
+        $io->getErrorStyle()->caution(
+            [
+                'This operation should not be executed in a production environment!',
+                '',
+                'Use the incremental update to detect changes during development and use',
+                'the SQL DDL provided to manually update your database in production.',
+                '',
+            ]
+        );
+
+        foreach ($sqls as $sql) {
             $io->writeln($sql . ';');
         }
 
         return self::SUCCESS;
+    }
+
+    private function getSchemaManager(): AbstractSchemaManager
+    {
+        return $this->db->getSchemaManager();
+    }
+
+    private function introspectSchema(AbstractSchemaManager $schemaManager): Schema
+    {
+        return $schemaManager->createSchema();
     }
 }
