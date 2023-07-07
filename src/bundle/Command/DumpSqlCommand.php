@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Ibexa\Bundle\DoctrineSchema\Command;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MariaDb1027Platform;
 use Doctrine\DBAL\Platforms\MySQL57Platform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
@@ -127,7 +128,7 @@ final class DumpSqlCommand extends Command
         return $schemaManager->createSchema();
     }
 
-    private function getPlatformForInput(InputInterface $input)
+    private function getPlatformForInput(InputInterface $input): AbstractPlatform
     {
         $forcePlatform = $input->getOption('force-platform');
 
@@ -144,6 +145,7 @@ final class DumpSqlCommand extends Command
         }
 
         $platformClass = self::PLATFORM_MAP[$forcePlatform];
+
         return new $platformClass();
     }
 }
