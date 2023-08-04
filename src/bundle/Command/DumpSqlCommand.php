@@ -9,6 +9,12 @@ declare(strict_types=1);
 namespace Ibexa\Bundle\DoctrineSchema\Command;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\MariaDb1027Platform;
+use Doctrine\DBAL\Platforms\MySQL57Platform;
+use Doctrine\DBAL\Platforms\MySQL80Platform;
+use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Schema;
@@ -27,6 +33,17 @@ final class DumpSqlCommand extends Command
     private Connection $db;
 
     private SchemaBuilder $schemaBuilder;
+
+    /**
+     * @phpstan-var array<non-empty-string, class-string<\Doctrine\DBAL\Platforms\AbstractPlatform>>
+     */
+    private const PLATFORM_MAP = [
+        'mysql8' => MySQL80Platform::class,
+        'mysql57' => MySQL57Platform::class,
+        'mysql' => MySqlPlatform::class,
+        'mariadb' => MariaDb1027Platform::class,
+        'postgres' => PostgreSQL100Platform::class,
+    ];
 
     public function __construct(Connection $db, SchemaBuilder $schemaBuilder)
     {
@@ -49,6 +66,16 @@ final class DumpSqlCommand extends Command
             InputOption::VALUE_NONE,
             'Compare against current database',
         );
+
+        $this->addOption(
+            'force-platform',
+            null,
+            InputOption::VALUE_REQUIRED,
+            sprintf(
+                'Provide a platform name to use. One of: "%s"',
+                implode('","', array_keys(self::PLATFORM_MAP)),
+            ),
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -60,15 +87,17 @@ final class DumpSqlCommand extends Command
             $toSchema = $this->schemaBuilder->buildSchema();
         }
 
+        $platform = $this->getPlatformForInput($input);
+
         if ($input->getOption('compare')) {
             $schemaManager = $this->getSchemaManager();
             $fromSchema = $this->introspectSchema($schemaManager);
 
             $comparator = new Comparator();
             $diff = $comparator->compare($fromSchema, $toSchema);
-            $sqls = $diff->toSql($this->db->getDatabasePlatform());
+            $sqls = $diff->toSql($platform);
         } else {
-            $sqls = $toSchema->toSql($this->db->getDatabasePlatform());
+            $sqls = $toSchema->toSql($platform);
         }
 
         $io = new SymfonyStyle($input, $output);
@@ -97,5 +126,26 @@ final class DumpSqlCommand extends Command
     private function introspectSchema(AbstractSchemaManager $schemaManager): Schema
     {
         return $schemaManager->createSchema();
+    }
+
+    private function getPlatformForInput(InputInterface $input): AbstractPlatform
+    {
+        $forcePlatform = $input->getOption('force-platform');
+
+        if ($forcePlatform === null) {
+            return $this->db->getDatabasePlatform();
+        }
+
+        if (!isset(self::PLATFORM_MAP[$forcePlatform])) {
+            throw new \InvalidArgumentException(sprintf(
+                'Invalid --force-platform option. Received "%s", expected one of: "%s"',
+                $forcePlatform,
+                implode('","', array_keys(self::PLATFORM_MAP)),
+            ));
+        }
+
+        $platformClass = self::PLATFORM_MAP[$forcePlatform];
+
+        return new $platformClass();
     }
 }
