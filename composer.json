@@ -7,7 +7,7 @@
         "ezsystems/doctrine-dbal-schema": "*"
     },
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": " >=8.3",
         "doctrine/dbal": "^2.13",
         "symfony/config": "^5.3",
         "symfony/console": "^5.3",
@@ -17,10 +17,10 @@
     },
     "require-dev": {
         "ibexa/code-style": "^1.0",
-        "phpunit/phpunit": "^8.5",
         "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-phpunit": "^1.3",
         "phpstan/phpstan-symfony": "^1.2",
-        "phpstan/phpstan-phpunit": "^1.3"
+        "phpunit/phpunit": "^8.5"
     },
     "autoload": {
         "psr-4": {
@@ -46,5 +46,8 @@
         "branch-alias": {
             "dev-main": "5.0.x-dev"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
