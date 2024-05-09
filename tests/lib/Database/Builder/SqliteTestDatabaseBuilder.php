@@ -17,7 +17,7 @@ use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 class SqliteTestDatabaseBuilder implements TestDatabaseBuilder
 {
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function buildDatabase(): Connection
     {

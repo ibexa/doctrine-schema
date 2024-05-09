@@ -33,7 +33,7 @@ class SchemaExporter implements APISchemaExporter
      *
      * @return string representation of database schema in Yaml format
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function export(Schema $schema): string
     {

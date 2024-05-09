@@ -13,11 +13,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MariaDb1027Platform;
 use Doctrine\DBAL\Platforms\MySQL57Platform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
-use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -40,7 +38,7 @@ final class DumpSqlCommand extends Command
     private const PLATFORM_MAP = [
         'mysql8' => MySQL80Platform::class,
         'mysql57' => MySQL57Platform::class,
-        'mysql' => MySqlPlatform::class,
+        'mysql' => MySQLPlatform::class,
         'mariadb' => MariaDb1027Platform::class,
         'postgres' => PostgreSQL100Platform::class,
     ];
@@ -90,11 +88,11 @@ final class DumpSqlCommand extends Command
         $platform = $this->getPlatformForInput($input);
 
         if ($input->getOption('compare')) {
-            $schemaManager = $this->getSchemaManager();
-            $fromSchema = $this->introspectSchema($schemaManager);
+            $schemaManager = $this->db->createSchemaManager();
+            $fromSchema = $schemaManager->introspectSchema();
 
             $comparator = new Comparator();
-            $diff = $comparator->compare($fromSchema, $toSchema);
+            $diff = $comparator->compareSchemas($fromSchema, $toSchema);
             $sqls = $diff->toSql($platform);
         } else {
             $sqls = $toSchema->toSql($platform);
@@ -116,16 +114,6 @@ final class DumpSqlCommand extends Command
         }
 
         return self::SUCCESS;
-    }
-
-    private function getSchemaManager(): AbstractSchemaManager
-    {
-        return $this->db->getSchemaManager();
-    }
-
-    private function introspectSchema(AbstractSchemaManager $schemaManager): Schema
-    {
-        return $schemaManager->createSchema();
     }
 
     private function getPlatformForInput(InputInterface $input): AbstractPlatform

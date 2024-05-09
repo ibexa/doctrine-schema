@@ -30,3 +30,7 @@ services:
     Doctrine\Common\EventManager: ~
 
     Ibexa\Bundle\DoctrineSchema\Command\DumpSqlCommand: ~
+
+    Ibexa\Bundle\DoctrineSchema\EventSubscriber\DoctrineOrmSchemaSubscriber:
+        arguments:
+            $em: '@doctrine.orm.ibexa_default_entity_manager'

@@ -10,7 +10,7 @@ namespace Ibexa\Tests\DoctrineSchema\Exporter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 use Ibexa\DoctrineSchema\Exporter\SchemaExporter;
 use Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter;
@@ -43,7 +43,7 @@ class SchemaExporterTest extends TestCase
     {
         $data = [];
 
-        $databasePlatforms = [new SqliteDbPlatform(), new MySqlPlatform()];
+        $databasePlatforms = [new SqliteDbPlatform(), new MySQLPlatform()];
 
         // iterate over output files to avoid loading it for each platform
         $directoryIterator = new \DirectoryIterator(__DIR__ . '/_fixtures/output');
@@ -84,7 +84,7 @@ class SchemaExporterTest extends TestCase
      *
      * @param string $inputSchemaSQL
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function testExport(
         AbstractPlatform $databasePlatform,
@@ -128,7 +128,7 @@ class SchemaExporterTest extends TestCase
 
     /**
      * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     private function getDatabaseConnection(AbstractPlatform $databasePlatform): Connection
     {

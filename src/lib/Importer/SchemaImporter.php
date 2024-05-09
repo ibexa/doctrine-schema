@@ -139,22 +139,12 @@ class SchemaImporter implements APISchemaImporter
                 'precision',
                 'type',
                 'nullable',
+                'unsigned',
+                'fixed',
                 'options',
                 'index',
                 'foreignKey',
             ]);
-
-            if (isset($columnConfiguration['length'])) {
-                $columnConfiguration['options']['length'] = $columnConfiguration['length'];
-            }
-
-            if (isset($columnConfiguration['scale'])) {
-                $columnConfiguration['options']['scale'] = $columnConfiguration['scale'];
-            }
-
-            if (isset($columnConfiguration['precision'])) {
-                $columnConfiguration['options']['precision'] = $columnConfiguration['precision'];
-            }
 
             $column = $table->addColumn(
                 $columnName,
@@ -162,8 +152,32 @@ class SchemaImporter implements APISchemaImporter
                 $columnConfiguration['options'] ?? []
             );
 
+            if (isset($columnConfiguration['length'])) {
+                $column->setLength($columnConfiguration['length']);
+            }
+
+            if (isset($columnConfiguration['scale'])) {
+                $column->setScale($columnConfiguration['scale']);
+            }
+
+            if (isset($columnConfiguration['precision'])) {
+                $column->setPrecision($columnConfiguration['precision']);
+            }
+
             if (isset($columnConfiguration['nullable'])) {
                 $column->setNotnull(!$columnConfiguration['nullable']);
+            }
+
+            if (isset($columnConfiguration['default'])) {
+                $column->setDefault($columnConfiguration['default']);
+            }
+
+            if (isset($columnConfiguration['unsigned'])) {
+                $column->setUnsigned($columnConfiguration['unsigned']);
+            }
+
+            if (isset($columnConfiguration['fixed'])) {
+                $column->setFixed($columnConfiguration['fixed']);
             }
 
             if (isset($columnConfiguration['index'])) {
