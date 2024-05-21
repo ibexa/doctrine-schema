@@ -26,9 +26,7 @@
         "psr-4": {
             "Ibexa\\DoctrineSchema\\": "src/lib/",
             "Ibexa\\Bundle\\DoctrineSchema\\": "src/bundle/",
-            "Ibexa\\Contracts\\DoctrineSchema\\": "src/contracts/",
-            "EzSystems\\DoctrineSchemaBundle\\": "src/bundle",
-            "EzSystems\\DoctrineSchema\\": "src/lib"
+            "Ibexa\\Contracts\\DoctrineSchema\\": "src/contracts/"
         }
     },
     "autoload-dev": {
