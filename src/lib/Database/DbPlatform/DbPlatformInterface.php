@@ -27,5 +27,3 @@ interface DbPlatformInterface
      */
     public function addEventSubscribers(EventManager $eventManager): void;
 }
-
-class_alias(DbPlatformInterface::class, 'EzSystems\DoctrineSchema\Database\DbPlatform\DbPlatform');

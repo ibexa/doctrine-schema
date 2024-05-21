@@ -12,5 +12,3 @@ class SchemaBuilderEvents
 {
     public const BUILD_SCHEMA = 'ibexa.schema.build_schema';
 }
-
-class_alias(SchemaBuilderEvents::class, 'EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvents');

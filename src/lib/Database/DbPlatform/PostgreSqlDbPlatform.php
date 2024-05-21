@@ -72,5 +72,3 @@ class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatformIn
         return 'DROP TABLE IF EXISTS ' . $table . ' CASCADE';
     }
 }
-
-class_alias(PostgreSqlDbPlatform::class, 'EzSystems\DoctrineSchema\Database\DbPlatform\PostgreSqlDbPlatform');

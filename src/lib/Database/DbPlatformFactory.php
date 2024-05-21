@@ -34,5 +34,3 @@ class DbPlatformFactory implements APIDbPlatformFactory
         return $this->dbPlatforms[$driverName] ?? null;
     }
 }
-
-class_alias(DbPlatformFactory::class, 'EzSystems\DoctrineSchema\Database\DbPlatformFactory');

@@ -22,5 +22,3 @@ class DoctrineSchemaBundle extends Bundle
         return new DoctrineSchemaExtension();
     }
 }
-
-class_alias(DoctrineSchemaBundle::class, 'EzSystems\DoctrineSchemaBundle\DoctrineSchemaBundle');

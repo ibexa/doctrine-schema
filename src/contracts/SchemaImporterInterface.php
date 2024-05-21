@@ -41,5 +41,3 @@ interface SchemaImporterInterface
      */
     public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema;
 }
-
-class_alias(SchemaImporterInterface::class, 'EzSystems\DoctrineSchema\API\SchemaImporter');

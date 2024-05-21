@@ -18,5 +18,3 @@ class InvalidConfigurationException extends Exception
         parent::__construct("Invalid schema configuration: {$message}", $code, $previous);
     }
 }
-
-class_alias(InvalidConfigurationException::class, 'EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException');

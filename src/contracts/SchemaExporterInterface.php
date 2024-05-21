@@ -20,5 +20,3 @@ interface SchemaExporterInterface
      */
     public function export(Schema $schemaDefinition): string;
 }
-
-class_alias(SchemaExporterInterface::class, 'EzSystems\DoctrineSchema\API\SchemaExporter');

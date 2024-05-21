@@ -74,5 +74,3 @@ class SchemaBuilder implements APISchemaBuilder
         return $this->schemaImporter->importFromFile($schemaFilePath, $this->schema);
     }
 }
-
-class_alias(SchemaBuilder::class, 'EzSystems\DoctrineSchema\Builder\SchemaBuilder');

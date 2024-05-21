@@ -48,5 +48,3 @@ class SchemaExporter implements APISchemaExporter
         return Yaml::dump($schemaDefinition, 4);
     }
 }
-
-class_alias(SchemaExporter::class, 'EzSystems\DoctrineSchema\Exporter\SchemaExporter');
