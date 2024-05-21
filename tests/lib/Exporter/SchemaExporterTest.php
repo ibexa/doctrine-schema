@@ -135,5 +135,3 @@ class SchemaExporterTest extends TestCase
         return $this->testDatabaseFactory->prepareAndConnect($databasePlatform);
     }
 }
-
-class_alias(SchemaExporterTest::class, 'EzSystems\Tests\DoctrineSchema\Exporter\SchemaExporterTest');

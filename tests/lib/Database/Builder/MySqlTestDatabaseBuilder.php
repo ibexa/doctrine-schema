@@ -42,5 +42,3 @@ class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
         return $connection;
     }
 }
-
-class_alias(MySqlTestDatabaseBuilder::class, 'EzSystems\Tests\DoctrineSchema\Database\Builder\MySqlTestDatabaseBuilder');

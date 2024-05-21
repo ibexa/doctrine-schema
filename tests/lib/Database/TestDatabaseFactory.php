@@ -38,5 +38,3 @@ class TestDatabaseFactory
         return $this->databaseBuildersForPlatforms[$name]->buildDatabase();
     }
 }
-
-class_alias(TestDatabaseFactory::class, 'EzSystems\Tests\DoctrineSchema\Database\TestDatabaseFactory');
