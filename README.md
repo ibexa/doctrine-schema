@@ -70,7 +70,7 @@ Schema provided in this way can be imported into Schema object by e.g.:
 ```
 
 ## COPYRIGHT
-Copyright (C) 1999-2021 Ibexa AS (formerly eZ Systems AS). All rights reserved.
+Copyright (C) 1999-2024 Ibexa AS (formerly eZ Systems AS). All rights reserved.
 
 ## LICENSE
 This source code is available separately under the following licenses:
