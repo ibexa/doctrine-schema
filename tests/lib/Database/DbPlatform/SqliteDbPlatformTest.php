@@ -60,5 +60,3 @@ class SqliteDbPlatformTest extends TestCase
         $connection->insert($secondaryTable->getName(), ['id' => 2], [ParameterType::INTEGER]);
     }
 }
-
-class_alias(SqliteDbPlatformTest::class, 'EzSystems\Tests\DoctrineSchema\Database\DbPlatform\SqliteDbPlatformTest');

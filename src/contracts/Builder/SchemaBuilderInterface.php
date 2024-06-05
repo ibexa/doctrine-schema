@@ -31,5 +31,3 @@ interface SchemaBuilderInterface
      */
     public function importSchemaFromFile(string $schemaFilePath): Schema;
 }
-
-class_alias(SchemaBuilderInterface::class, 'EzSystems\DoctrineSchema\API\Builder\SchemaBuilder');

@@ -55,5 +55,3 @@ class DoctrineSchemaExtension extends Extension
         }
     }
 }
-
-class_alias(DoctrineSchemaExtension::class, 'EzSystems\DoctrineSchemaBundle\DependencyInjection\DoctrineSchemaExtension');

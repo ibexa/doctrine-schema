@@ -26,5 +26,3 @@ interface DbPlatformFactoryInterface
      */
     public function createDatabasePlatformFromDriverName(string $driverName): ?AbstractPlatform;
 }
-
-class_alias(DbPlatformFactoryInterface::class, 'EzSystems\DoctrineSchema\API\DbPlatformFactory');

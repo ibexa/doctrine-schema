@@ -18,5 +18,3 @@ interface TestDatabaseBuilder
      */
     public function buildDatabase(): Connection;
 }
-
-class_alias(TestDatabaseBuilder::class, 'EzSystems\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder');

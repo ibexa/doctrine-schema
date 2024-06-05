@@ -35,5 +35,3 @@ class SqliteTestDatabaseBuilder implements TestDatabaseBuilder
         );
     }
 }
-
-class_alias(SqliteTestDatabaseBuilder::class, 'EzSystems\Tests\DoctrineSchema\Database\Builder\SqliteTestDatabaseBuilder');

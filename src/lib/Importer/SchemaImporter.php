@@ -271,5 +271,3 @@ class SchemaImporter implements APISchemaImporter
         return $indexConfig;
     }
 }
-
-class_alias(SchemaImporter::class, 'EzSystems\DoctrineSchema\Importer\SchemaImporter');

@@ -52,5 +52,3 @@ class SchemaBuilderTest extends TestCase
         );
     }
 }
-
-class_alias(SchemaBuilderTest::class, 'EzSystems\Tests\DoctrineSchema\Builder\SchemaBuilderTest');

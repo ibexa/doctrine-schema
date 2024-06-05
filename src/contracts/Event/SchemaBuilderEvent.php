@@ -38,5 +38,3 @@ class SchemaBuilderEvent extends Event
         return $this->schemaBuilder;
     }
 }
-
-class_alias(SchemaBuilderEvent::class, 'EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvent');

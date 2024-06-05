@@ -81,5 +81,3 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
         return '-- ';
     }
 }
-
-class_alias(SqliteDbPlatform::class, 'EzSystems\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform');

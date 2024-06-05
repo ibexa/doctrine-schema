@@ -151,5 +151,3 @@ class SchemaTableExporter
         return $tableMetadata;
     }
 }
-
-class_alias(SchemaTableExporter::class, 'EzSystems\DoctrineSchema\Exporter\Table\SchemaTableExporter');
