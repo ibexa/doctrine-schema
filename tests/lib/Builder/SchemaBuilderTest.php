@@ -31,7 +31,7 @@ class SchemaBuilderTest extends TestCase
 
         $eventDispatcher->addSubscriber(
             new class() implements EventSubscriberInterface {
-                public static function getSubscribedEvents()
+                public static function getSubscribedEvents(): array
                 {
                     return [
                         SchemaBuilderEvents::BUILD_SCHEMA => ['onBuildSchema', 200],
