@@ -14,7 +14,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 class TestDatabaseFactory
 {
     /** @var \Ibexa\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder[] */
-    private $databaseBuildersForPlatforms = [];
+    private array $databaseBuildersForPlatforms = [];
 
     public function __construct()
     {

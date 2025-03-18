@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SchemaBuilderTest extends TestCase
 {
-    public function testBuildSchema()
+    public function testBuildSchema(): void
     {
         $eventDispatcher = new EventDispatcher();
 
@@ -38,7 +38,7 @@ class SchemaBuilderTest extends TestCase
                     ];
                 }
 
-                public function onBuildSchema(SchemaBuilderEvent $event)
+                public function onBuildSchema(SchemaBuilderEvent $event): void
                 {
                     $event
                         ->getSchema()->createTable('my_table');

@@ -286,7 +286,7 @@ class SchemaImporterTest extends TestCase
     public function testImportFromFile(
         string $yamlSchemaDefinitionFile,
         Schema $expectedSchema
-    ) {
+    ): void {
         $yamlSchemaDefinitionFilePath = realpath(__DIR__ . "/_fixtures/{$yamlSchemaDefinitionFile}");
         if (false === $yamlSchemaDefinitionFilePath) {
             self::markTestIncomplete("Missing output fixture {$yamlSchemaDefinitionFilePath}");

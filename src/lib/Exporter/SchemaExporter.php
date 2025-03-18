@@ -20,8 +20,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class SchemaExporter implements APISchemaExporter
 {
-    /** @var \Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter */
-    private $tableExporter;
+    private SchemaTableExporter $tableExporter;
 
     public function __construct(SchemaTableExporter $tableYamlExporter)
     {
