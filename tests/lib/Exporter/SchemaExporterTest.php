@@ -20,10 +20,8 @@ use PHPUnit\Framework\TestCase;
 
 class SchemaExporterTest extends TestCase
 {
-    /** @var \Ibexa\DoctrineSchema\Exporter\SchemaExporter */
     private SchemaExporter $exporter;
 
-    /** @var \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory */
     private TestDatabaseFactory $testDatabaseFactory;
 
     public function setUp(): void
