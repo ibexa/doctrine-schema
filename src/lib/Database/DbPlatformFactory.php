@@ -11,24 +11,26 @@ namespace Ibexa\DoctrineSchema\Database;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Ibexa\Contracts\DoctrineSchema\DbPlatformFactoryInterface as APIDbPlatformFactory;
 
-class DbPlatformFactory implements APIDbPlatformFactory
+/**
+ * @internal
+ */
+final class DbPlatformFactory implements APIDbPlatformFactory
 {
     /**
-     * @var \Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface[]
+     * @var array<\Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface&\Doctrine\DBAL\Platforms\AbstractPlatform>
      */
-    private $dbPlatforms = [];
+    private array $dbPlatforms = [];
 
+    /**
+     * @param iterable<\Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface&\Doctrine\DBAL\Platforms\AbstractPlatform> $dbPlatforms
+     */
     public function __construct(iterable $dbPlatforms)
     {
         foreach ($dbPlatforms as $dbPlatform) {
-            /** @var \Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface $dbPlatform */
             $this->dbPlatforms[$dbPlatform->getDriverName()] = $dbPlatform;
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createDatabasePlatformFromDriverName(string $driverName): ?AbstractPlatform
     {
         return $this->dbPlatforms[$driverName] ?? null;

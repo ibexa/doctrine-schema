@@ -17,13 +17,18 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Import database schema from custom Yaml Doctrine Schema format into Schema object.
  *
+ * @phpstan-type TTableConfigurationData array{
+ *     id?: array<string, mixed>,
+ *     fields?: array<string, mixed>,
+ *     foreignKeys?: array<string, mixed>,
+ *     indexes?: array<string, mixed>,
+ *     uniqueConstraints?: array<string, mixed>
+ * }
+ *
  * @see \Doctrine\DBAL\Schema\Schema
  */
 class SchemaImporter implements APISchemaImporter
 {
-    /**
-     * {@inheritdoc}
-     */
     public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema
     {
         return $this->importFromArray(
@@ -32,9 +37,6 @@ class SchemaImporter implements APISchemaImporter
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema
     {
         return $this->importFromArray(
@@ -45,6 +47,11 @@ class SchemaImporter implements APISchemaImporter
 
     /**
      * Import schema described by array loaded from Yaml custom format to the currently configured database.
+     *
+     * @phpstan-param array{tables: array<TTableConfigurationData>} $schemaDefinition
+     *
+     * @throws \Doctrine\DBAL\Schema\SchemaException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
     private function importFromArray(array $schemaDefinition, ?Schema $targetSchema = null): Schema
     {
@@ -61,6 +68,8 @@ class SchemaImporter implements APISchemaImporter
 
     /**
      * Import table from the given configuration to the given schema.
+     *
+     * @phpstan-param TTableConfigurationData $tableConfiguration
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\Schema\SchemaException
@@ -126,7 +135,7 @@ class SchemaImporter implements APISchemaImporter
     /**
      * Adds columns to the given $table.
      *
-     * @param array $columnList list of columns with their configuration
+     * @phpstan-param array<string, array<string, mixed>> $columnList list of columns with their configuration
      *
      * @throws \Doctrine\DBAL\Schema\SchemaException
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
@@ -194,16 +203,25 @@ class SchemaImporter implements APISchemaImporter
         }
     }
 
+    /**
+     * @phpstan-param array<string, mixed> $tableConfiguration
+     *
+     * @param array<string> $allowedKeys
+     *
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     */
     private function ensureNoExtraKeys(array $tableConfiguration, string $location, array $allowedKeys): void
     {
         $diff = array_diff(array_keys($tableConfiguration), $allowedKeys);
         if (!empty($diff)) {
-            throw new InvalidConfigurationException(sprintf(
-                'Unhandled property in schema configuration for "%s". "%s" keys are not allowed. Allowed keys: "%s".',
-                $location,
-                implode('", "', $diff),
-                implode('", "', $allowedKeys),
-            ));
+            throw new InvalidConfigurationException(
+                sprintf(
+                    'Unhandled property in schema configuration for "%s". "%s" keys are not allowed. Allowed keys: "%s".',
+                    $location,
+                    implode('", "', $diff),
+                    implode('", "', $allowedKeys),
+                )
+            );
         }
     }
 
@@ -220,11 +238,13 @@ class SchemaImporter implements APISchemaImporter
     private function addIndexToColumn(array $indexConfig, string $location, Table $table, string $columnName): void
     {
         if (!isset($indexConfig['name']) || !is_string($indexConfig['name'])) {
-            throw new InvalidConfigurationException(sprintf(
-                'Unhandled property in schema configuration for "%s". Expected "name" to be a string, found %s.',
-                $location,
-                get_debug_type($indexConfig['name']),
-            ));
+            throw new InvalidConfigurationException(
+                sprintf(
+                    'Unhandled property in schema configuration for "%s". Expected "name" to be a string, found %s.',
+                    $location,
+                    get_debug_type($indexConfig['name']),
+                )
+            );
         }
 
         $this->ensureNoExtraKeys($indexConfig, $location . '.index', [
@@ -258,11 +278,13 @@ class SchemaImporter implements APISchemaImporter
     private function normalizeIndexConfig($indexConfig, string $location): array
     {
         if (!is_string($indexConfig) && !is_array($indexConfig)) {
-            throw new InvalidConfigurationException(sprintf(
-                'Unhandled property in schema configuration for "%s". Expected a string or an array, found %s.',
-                $location . '.index',
-                get_debug_type($indexConfig),
-            ));
+            throw new InvalidConfigurationException(
+                sprintf(
+                    'Unhandled property in schema configuration for "%s". Expected a string or an array, found %s.',
+                    $location . '.index',
+                    get_debug_type($indexConfig),
+                )
+            );
         }
 
         if (is_string($indexConfig)) {

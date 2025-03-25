@@ -31,8 +31,12 @@ class SchemaBuilder implements APISchemaBuilder
 
     private ?Schema $schema = null;
 
+    /** @var mixed[] */
     private array $defaultTableOptions;
 
+    /**
+     * @param mixed[] $defaultTableOptions
+     */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
         SchemaImporterInterface $schemaImporter,

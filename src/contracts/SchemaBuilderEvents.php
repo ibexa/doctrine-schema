@@ -10,5 +10,5 @@ namespace Ibexa\Contracts\DoctrineSchema;
 
 class SchemaBuilderEvents
 {
-    public const BUILD_SCHEMA = 'ibexa.schema.build_schema';
+    public const string BUILD_SCHEMA = 'ibexa.schema.build_schema';
 }
