@@ -14,9 +14,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class DoctrineSchemaBundle extends Bundle
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getContainerExtension(): ExtensionInterface
     {
         return new DoctrineSchemaExtension();
