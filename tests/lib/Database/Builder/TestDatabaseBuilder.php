@@ -13,7 +13,7 @@ use Doctrine\DBAL\Connection;
 interface TestDatabaseBuilder
 {
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
     public function buildDatabase(): Connection;

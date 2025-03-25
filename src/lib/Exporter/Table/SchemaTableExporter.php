@@ -12,13 +12,15 @@ use Doctrine\DBAL\Schema\Table;
 
 /**
  * Exports \Doctrine\DBAL\Schema\Table to custom array representation.
+ *
+ * @phpstan-type TTableMetadata array<string, array<string, array<string, mixed>>>
  */
 class SchemaTableExporter
 {
     /**
      * Export \Doctrine\DBAL\Schema\Table to array representation.
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @phpstan-return array<string, TTableMetadata>
      */
     public function export(Table $table): array
     {
@@ -36,9 +38,9 @@ class SchemaTableExporter
     /**
      * Remove default \Doctrine\DBAL\Schema\Index options.
      *
-     * @param array $options Index options (
+     * @param array<string, mixed> $options Index options
      *
-     * @return array filtered Index options array
+     * @return array<string, mixed> filtered Index options array
      */
     private function filterOutIndexDefaultOptions(array $options): array
     {
@@ -53,7 +55,9 @@ class SchemaTableExporter
     /**
      * Export Schema Table indices.
      *
-     * @return array modified $tableMetadata
+     * @phpstan-param TTableMetadata $tableMetadata
+     *
+     * @phpstan-return TTableMetadata modified $tableMetadata
      */
     private function exportIndices(array $tableMetadata, Table $table): array
     {
@@ -88,17 +92,17 @@ class SchemaTableExporter
     /**
      * Export Schema Table columns.
      *
-     * @return array modified $tableMetadata
+     * @phpstan-param TTableMetadata $tableMetadata
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @phpstan-return TTableMetadata modified $tableMetadata
      */
     private function exportColumns(array $tableMetadata, Table $table): array
     {
-        $primaryKeyColumns = $table->hasPrimaryKey() ? $table->getPrimaryKeyColumns() : [];
+        $primaryKeyColumns = $table->getPrimaryKey()?->getColumns() ?? [];
         foreach ($table->getColumns() as $column) {
             $fieldName = $column->getName();
 
-            $fieldGroup = !in_array($fieldName, $primaryKeyColumns) ? 'fields' : 'id';
+            $fieldGroup = !in_array($fieldName, $primaryKeyColumns, true) ? 'fields' : 'id';
             $field = [
                 'type' => $column->getType()->getName(),
                 'nullable' => !$column->getNotnull(),
@@ -125,7 +129,9 @@ class SchemaTableExporter
     /**
      * Export Schema Table columns.
      *
-     * @return array modified $tableMetadata
+     * @phpstan-param TTableMetadata $tableMetadata
+     *
+     * @phpstan-return TTableMetadata modified $tableMetadata
      */
     private function exportForeignKeys(array $tableMetadata, Table $table): array
     {
@@ -140,7 +146,7 @@ class SchemaTableExporter
                     }
                 }
                 $tableMetadata['foreignKeys'][$foreignKeyName] = [
-                    'fields' => $foreignKey->getColumns(),
+                    'fields' => $foreignKey->getLocalColumns(),
                     'foreignTable' => $foreignKey->getForeignTableName(),
                     'foreignFields' => $foreignKey->getForeignColumns(),
                     'options' => $options,

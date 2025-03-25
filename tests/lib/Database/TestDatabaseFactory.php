@@ -26,7 +26,7 @@ class TestDatabaseFactory
 
     /**
      * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function prepareAndConnect(AbstractPlatform $databasePlatform): Connection
     {
