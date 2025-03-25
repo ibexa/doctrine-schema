@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Database\DbPlatform;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
@@ -52,7 +53,7 @@ class SqliteDbPlatformTest extends TestCase
         $connection->insert($secondaryTable->getName(), ['id' => 1], [ParameterType::INTEGER]);
 
         // insert broken record
-        $this->expectException(\Doctrine\DBAL\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('FOREIGN KEY constraint failed');
         $connection->insert($secondaryTable->getName(), ['id' => 2], [ParameterType::INTEGER]);
     }
