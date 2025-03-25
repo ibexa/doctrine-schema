@@ -94,7 +94,7 @@ class SchemaTableExporter
      */
     private function exportColumns(array $tableMetadata, Table $table): array
     {
-        $primaryKeyColumns = $table->hasPrimaryKey() ? $table->getPrimaryKeyColumns() : [];
+        $primaryKeyColumns = $table->getPrimaryKey()?->getColumns() ?? [];
         foreach ($table->getColumns() as $column) {
             $fieldName = $column->getName();
 
@@ -140,7 +140,7 @@ class SchemaTableExporter
                     }
                 }
                 $tableMetadata['foreignKeys'][$foreignKeyName] = [
-                    'fields' => $foreignKey->getColumns(),
+                    'fields' => $foreignKey->getLocalColumns(),
                     'foreignTable' => $foreignKey->getForeignTableName(),
                     'foreignFields' => $foreignKey->getForeignColumns(),
                     'options' => $options,

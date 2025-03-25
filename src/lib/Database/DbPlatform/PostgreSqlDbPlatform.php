@@ -9,33 +9,23 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Event\SchemaDropTableEventArgs;
-use Doctrine\DBAL\Events;
-use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Table;
 use InvalidArgumentException;
 
-class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatformInterface
+class PostgreSqlDbPlatform extends PostgreSQLPlatform implements DbPlatformInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function addEventSubscribers(EventManager $eventManager): void
     {
+        // Nothing to do
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDriverName(): string
     {
         return 'pdo_pgsql';
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCreateSchemaSQL($schemaName)
+    public function getCreateSchemaSQL($schemaName): string
     {
         return 'CREATE SCHEMA IF NOT EXISTS ' . $schemaName;
     }
@@ -49,24 +39,12 @@ class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatformIn
      */
     public function getDropTableSQL($table): string
     {
-        $tableArg = $table;
-
         if ($table instanceof Table) {
             $table = $table->getQuotedName($this);
         }
 
         if (!is_string($table)) {
             throw new InvalidArgumentException('getDropTableSQL() expects $table parameter to be string or \Doctrine\DBAL\Schema\Table.');
-        }
-
-        // note: unfortunately this logic was copied from parent
-        if ($this->_eventManager !== null && $this->_eventManager->hasListeners(Events::onSchemaDropTable)) {
-            $eventArgs = new SchemaDropTableEventArgs($tableArg, $this);
-            $this->_eventManager->dispatchEvent(Events::onSchemaDropTable, $eventArgs);
-
-            if ($eventArgs->isDefaultPrevented()) {
-                return $eventArgs->getSql();
-            }
         }
 
         return 'DROP TABLE IF EXISTS ' . $table . ' CASCADE';
