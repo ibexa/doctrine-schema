@@ -25,9 +25,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-/**
- * @template-covariant T of \Doctrine\DBAL\Platforms\AbstractPlatform
- */
 #[AsCommand(name: 'ibexa:doctrine:schema:dump-sql')]
 final class DumpSqlCommand extends Command
 {
