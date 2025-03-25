@@ -10,15 +10,15 @@ namespace Ibexa\Bundle\DoctrineSchema\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\MariaDb1027Platform;
-use Doctrine\DBAL\Platforms\MySQL57Platform;
+use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
-use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -37,12 +37,11 @@ final class DumpSqlCommand extends Command
     /**
      * @phpstan-var array<non-empty-string, class-string<\Doctrine\DBAL\Platforms\AbstractPlatform>>
      */
-    private const PLATFORM_MAP = [
+    private const array PLATFORM_MAP = [
         'mysql8' => MySQL80Platform::class,
-        'mysql57' => MySQL57Platform::class,
-        'mysql' => MySqlPlatform::class,
-        'mariadb' => MariaDb1027Platform::class,
-        'postgres' => PostgreSQL100Platform::class,
+        'mysql' => MySQLPlatform::class,
+        'mariadb' => MariaDBPlatform::class,
+        'postgres' => PostgreSQLPlatform::class,
     ];
 
     public function __construct(Connection $db, SchemaBuilder $schemaBuilder)
@@ -137,7 +136,7 @@ final class DumpSqlCommand extends Command
         }
 
         if (!isset(self::PLATFORM_MAP[$forcePlatform])) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Invalid --force-platform option. Received "%s", expected one of: "%s"',
                 $forcePlatform,
                 implode('","', array_keys(self::PLATFORM_MAP)),
