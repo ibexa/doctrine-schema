@@ -16,11 +16,9 @@ use PHPUnit\Framework\TestCase;
 
 class SqliteDbPlatformTest extends TestCase
 {
-    /** @var \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory */
-    private $testDatabaseFactory;
+    private TestDatabaseFactory $testDatabaseFactory;
 
-    /** @var \Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform */
-    private $sqliteDbPlatform;
+    private SqliteDbPlatform $sqliteDbPlatform;
 
     public function setUp(): void
     {

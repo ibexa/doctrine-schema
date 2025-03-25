@@ -25,25 +25,13 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class SchemaBuilder implements APISchemaBuilder
 {
-    /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * @var \Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface
-     */
-    private $schemaImporter;
+    private SchemaImporterInterface $schemaImporter;
 
-    /**
-     * @var \Doctrine\DBAL\Schema\Schema
-     */
-    private $schema;
+    private ?Schema $schema = null;
 
-    /**
-     * @var array
-     */
-    private $defaultTableOptions;
+    private array $defaultTableOptions;
 
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
