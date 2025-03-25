@@ -18,7 +18,7 @@ class SchemaTableExporter
     /**
      * Export \Doctrine\DBAL\Schema\Table to array representation.
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function export(Table $table): array
     {
@@ -90,7 +90,7 @@ class SchemaTableExporter
      *
      * @return array modified $tableMetadata
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     private function exportColumns(array $tableMetadata, Table $table): array
     {
