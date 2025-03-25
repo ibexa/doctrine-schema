@@ -32,7 +32,7 @@ class SqliteDbPlatformTest extends TestCase
     public function testForeignKeys(): void
     {
         $connection = $this->testDatabaseFactory->prepareAndConnect($this->sqliteDbPlatform);
-        $schema = $connection->getSchemaManager()->createSchema();
+        $schema = $connection->createSchemaManager()->introspectSchema();
 
         $primaryTable = $schema->createTable('my_primary_table');
         $primaryTable->addColumn('id', 'integer');
