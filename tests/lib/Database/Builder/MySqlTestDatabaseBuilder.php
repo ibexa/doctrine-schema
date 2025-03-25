@@ -16,7 +16,7 @@ use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
 {
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
     public function buildDatabase(): Connection
@@ -36,7 +36,7 @@ class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
             $connection->getDatabasePlatform()
         );
         foreach ($statements as $statement) {
-            $connection->exec($statement);
+            $connection->executeStatement($statement);
         }
 
         return $connection;

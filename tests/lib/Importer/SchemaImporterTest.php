@@ -27,7 +27,7 @@ class SchemaImporterTest extends TestCase
      *
      * @phpstan-return iterable<array{non-empty-string, \Doctrine\DBAL\Schema\Schema}>
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function providerForTestImportFromFile(): iterable
     {
@@ -281,7 +281,7 @@ class SchemaImporterTest extends TestCase
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function testImportFromFile(
         string $yamlSchemaDefinitionFile,

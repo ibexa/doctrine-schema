@@ -82,7 +82,7 @@ class SchemaExporterTest extends TestCase
      *
      * @param string $inputSchemaSQL
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function testExport(
         AbstractPlatform $databasePlatform,
@@ -99,7 +99,7 @@ class SchemaExporterTest extends TestCase
 
         try {
             $connection = $this->getDatabaseConnection($databasePlatform);
-            $connection->exec($inputSchemaSQL);
+            $connection->executeStatement($inputSchemaSQL);
             $inputSchema = $connection->getSchemaManager()->createSchema();
             $rootDir = dirname(__DIR__, 3);
 
@@ -117,7 +117,7 @@ class SchemaExporterTest extends TestCase
 
             // manually rollback changes, as some DBMS don't allow to rollback DDL
             foreach ($inputSchema->toDropSql($databasePlatform) as $dropSql) {
-                $connection->exec($dropSql);
+                $connection->executeStatement($dropSql);
             }
         } catch (TestDatabaseConfigurationException $e) {
             self::markTestSkipped($e->getMessage());
@@ -126,7 +126,7 @@ class SchemaExporterTest extends TestCase
 
     /**
      * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     private function getDatabaseConnection(AbstractPlatform $databasePlatform): Connection
     {
