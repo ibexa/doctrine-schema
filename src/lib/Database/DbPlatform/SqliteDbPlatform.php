@@ -9,29 +9,23 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Event\Listeners\SQLSessionInit;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 
 class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function addEventSubscribers(EventManager $eventManager): void
     {
-        $eventManager->addEventSubscriber(new SQLSessionInit('PRAGMA FOREIGN_KEYS = ON'));
+        // Nothing to do
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getCreateTableSQL(Table $table, $createFlags = null)
+    public function getCreateTableSQL(Table $table, $createFlags = null): array
     {
         $createFlags = $createFlags ?? self::CREATE_INDEXES | self::CREATE_FOREIGNKEYS;
 
-        $hasCompositePK = $table->hasPrimaryKey() && count($table->getPrimaryKeyColumns()) > 1;
+        $primaryKeyIndex = $table->getPrimaryKey();
+        $hasCompositePK = $primaryKeyIndex !== null && count($primaryKeyIndex->getColumns()) > 1;
 
         // drop autoincrement if table as composite key as this is not supported
         if ($hasCompositePK) {
@@ -43,9 +37,6 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
         return parent::getCreateTableSQL($table, $createFlags);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getDriverName(): string
     {
         return 'pdo_sqlite';

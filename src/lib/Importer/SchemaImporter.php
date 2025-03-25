@@ -62,7 +62,8 @@ class SchemaImporter implements APISchemaImporter
     /**
      * Import table from the given configuration to the given schema.
      *
-     * @param \Doctrine\DBAL\Schema\Schema target schema
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws \Doctrine\DBAL\Schema\SchemaException
      */
     private function importSchemaTable(
         Schema $schema,
@@ -127,6 +128,7 @@ class SchemaImporter implements APISchemaImporter
      *
      * @param array $columnList list of columns with their configuration
      *
+     * @throws \Doctrine\DBAL\Schema\SchemaException
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
     private function addSchemaTableColumns(Table $table, array $columnList): void
@@ -212,6 +214,7 @@ class SchemaImporter implements APISchemaImporter
      *     options?: array<mixed>,
      * } $indexConfig
      *
+     * @throws \Doctrine\DBAL\Schema\SchemaException
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
     private function addIndexToColumn(array $indexConfig, string $location, Table $table, string $columnName): void

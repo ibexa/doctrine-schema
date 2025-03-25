@@ -14,9 +14,7 @@ use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
-use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -27,6 +25,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * @template-covariant T of \Doctrine\DBAL\Platforms\AbstractPlatform
+ */
 #[AsCommand(name: 'ibexa:doctrine:schema:dump-sql')]
 final class DumpSqlCommand extends Command
 {
@@ -77,6 +78,11 @@ final class DumpSqlCommand extends Command
         );
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     * @throws \Doctrine\DBAL\Schema\SchemaException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = $input->getArgument('file');
@@ -89,14 +95,14 @@ final class DumpSqlCommand extends Command
         $platform = $this->getPlatformForInput($input);
 
         if ($input->getOption('compare')) {
-            $schemaManager = $this->getSchemaManager();
-            $fromSchema = $this->introspectSchema($schemaManager);
+            $schemaManager = $this->db->createSchemaManager();
+            $fromSchema = $schemaManager->introspectSchema();
 
             $comparator = new Comparator();
-            $diff = $comparator->compare($fromSchema, $toSchema);
-            $sqls = $diff->toSql($platform);
+            $diff = $comparator->compareSchemas($fromSchema, $toSchema);
+            $sqlStatements = $platform->getAlterSchemaSQL($diff);
         } else {
-            $sqls = $toSchema->toSql($platform);
+            $sqlStatements = $toSchema->toSql($platform);
         }
 
         $io = new SymfonyStyle($input, $output);
@@ -110,23 +116,16 @@ final class DumpSqlCommand extends Command
             ]
         );
 
-        foreach ($sqls as $sql) {
+        foreach ($sqlStatements as $sql) {
             $io->writeln($sql . ';');
         }
 
         return self::SUCCESS;
     }
 
-    private function getSchemaManager(): AbstractSchemaManager
-    {
-        return $this->db->getSchemaManager();
-    }
-
-    private function introspectSchema(AbstractSchemaManager $schemaManager): Schema
-    {
-        return $schemaManager->createSchema();
-    }
-
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     private function getPlatformForInput(InputInterface $input): AbstractPlatform
     {
         $forcePlatform = $input->getOption('force-platform');

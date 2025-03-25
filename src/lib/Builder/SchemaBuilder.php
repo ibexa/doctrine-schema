@@ -43,6 +43,9 @@ class SchemaBuilder implements APISchemaBuilder
         $this->defaultTableOptions = $defaultTableOptions;
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Schema\SchemaException
+     */
     public function buildSchema(): Schema
     {
         $config = new SchemaConfig();
@@ -57,6 +60,10 @@ class SchemaBuilder implements APISchemaBuilder
         return $this->schema;
     }
 
+    /**
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function importSchemaFromFile(string $schemaFilePath): Schema
     {
         return $this->schemaImporter->importFromFile($schemaFilePath, $this->schema);
