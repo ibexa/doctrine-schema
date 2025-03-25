@@ -80,8 +80,6 @@ class SchemaExporterTest extends TestCase
     /**
      * @dataProvider providerForTestExport
      *
-     * @param string $inputSchemaSQL
-     *
      * @throws \Doctrine\DBAL\Exception
      */
     public function testExport(
