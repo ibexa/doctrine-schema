@@ -9,11 +9,16 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Driver\AbstractSQLiteDriver\Middleware\EnableForeignKeys;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 
-class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
+/**
+ * @internal
+ */
+final class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
 {
     public function addEventSubscribers(EventManager $eventManager): void
     {
@@ -70,5 +75,10 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
     public function getCreateForeignKeySQL(ForeignKeyConstraint $foreignKey, $table): string
     {
         return '-- ';
+    }
+
+    public function configure(Configuration $dbalConfiguration): void
+    {
+        $dbalConfiguration->setMiddlewares([new EnableForeignKeys()]);
     }
 }

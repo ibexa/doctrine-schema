@@ -9,11 +9,15 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Table;
 use InvalidArgumentException;
 
-class PostgreSqlDbPlatform extends PostgreSQLPlatform implements DbPlatformInterface
+/**
+ * @internal
+ */
+final class PostgreSqlDbPlatform extends PostgreSQLPlatform implements DbPlatformInterface
 {
     public function addEventSubscribers(EventManager $eventManager): void
     {
@@ -48,5 +52,10 @@ class PostgreSqlDbPlatform extends PostgreSQLPlatform implements DbPlatformInter
         }
 
         return 'DROP TABLE IF EXISTS ' . $table . ' CASCADE';
+    }
+
+    public function configure(Configuration $dbalConfiguration): void
+    {
+        // Nothing to do
     }
 }
