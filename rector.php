@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Ibexa\Contracts\Rector\Sets\IbexaSetList;
 use Rector\Config\RectorConfig;
+use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\Symfony\Set\SymfonySetList;
 
 return RectorConfig::configure()
@@ -22,4 +23,10 @@ return RectorConfig::configure()
         SymfonySetList::SYMFONY_62,
         SymfonySetList::SYMFONY_63,
         SymfonySetList::SYMFONY_64,
+        SymfonySetList::SYMFONY_70,
+        SymfonySetList::SYMFONY_71,
+        SymfonySetList::SYMFONY_72,
+        DoctrineSetList::DOCTRINE_COMMON_20,
+        DoctrineSetList::DOCTRINE_DBAL_211,
+        DoctrineSetList::DOCTRINE_DBAL_30,
     ]);
