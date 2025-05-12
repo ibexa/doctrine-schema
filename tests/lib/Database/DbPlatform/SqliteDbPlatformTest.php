@@ -8,13 +8,19 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Database\DbPlatform;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
 use PHPUnit\Framework\TestCase;
 
-class SqliteDbPlatformTest extends TestCase
+/**
+ * @covers \Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform
+ * @covers \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory
+ */
+final class SqliteDbPlatformTest extends TestCase
 {
     private TestDatabaseFactory $testDatabaseFactory;
 
@@ -27,13 +33,13 @@ class SqliteDbPlatformTest extends TestCase
     }
 
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
      */
-    public function testForeignKeys(): void
+    public function testDatabaseFactoryEnablesForeignKeys(): void
     {
         $connection = $this->testDatabaseFactory->prepareAndConnect($this->sqliteDbPlatform);
-        $schema = $connection->getSchemaManager()->createSchema();
+        $schema = $connection->createSchemaManager()->introspectSchema();
 
         $primaryTable = $schema->createTable('my_primary_table');
         $primaryTable->addColumn('id', 'integer');
@@ -46,15 +52,38 @@ class SqliteDbPlatformTest extends TestCase
 
         // persist table structure
         foreach ($schema->toSql($connection->getDatabasePlatform()) as $query) {
-            $connection->executeUpdate($query);
+            $connection->executeStatement($query);
         }
 
         $connection->insert($primaryTable->getName(), ['id' => 1], [ParameterType::INTEGER]);
         $connection->insert($secondaryTable->getName(), ['id' => 1], [ParameterType::INTEGER]);
 
-        // insert broken record
-        $this->expectException(DBALException::class);
+        // insert a broken record
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('FOREIGN KEY constraint failed');
         $connection->insert($secondaryTable->getName(), ['id' => 2], [ParameterType::INTEGER]);
+    }
+
+    /**
+     * For external usage (e.g.: by ibexa/core, a configure method needs to be called to enable foreign keys).
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function testConfigureEnablesForeignKeys(): void
+    {
+        $configuration = new Configuration();
+        $this->sqliteDbPlatform->configure($configuration);
+
+        $connection = DriverManager::getConnection(
+            [
+                'url' => 'sqlite:///:memory:',
+                'platform' => $this->sqliteDbPlatform,
+            ],
+            $configuration
+        );
+        self::assertTrue(
+            (bool)$connection->executeQuery('PRAGMA foreign_keys')->fetchOne(),
+            'Foreign keys are not enabled'
+        );
     }
 }

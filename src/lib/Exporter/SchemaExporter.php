@@ -31,19 +31,17 @@ class SchemaExporter implements APISchemaExporter
      * Export \Doctrine\DBAL\Schema object to the custom Yaml format.
      *
      * @return string representation of database schema in Yaml format
-     *
-     * @throws \Doctrine\DBAL\DBALException
      */
-    public function export(Schema $schema): string
+    public function export(Schema $schemaDefinition): string
     {
-        $schemaDefinition = [];
-        foreach ($schema->getTables() as $table) {
-            $schemaDefinition['tables'] = array_merge(
-                $schemaDefinition['tables'] ?? [],
+        $schemaDefinitionData = [];
+        foreach ($schemaDefinition->getTables() as $table) {
+            $schemaDefinitionData['tables'] = array_merge(
+                $schemaDefinitionData['tables'] ?? [],
                 $this->tableExporter->export($table)
             );
         }
 
-        return Yaml::dump($schemaDefinition, 4);
+        return Yaml::dump($schemaDefinitionData, 4);
     }
 }

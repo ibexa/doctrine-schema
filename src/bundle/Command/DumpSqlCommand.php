@@ -10,15 +10,13 @@ namespace Ibexa\Bundle\DoctrineSchema\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\MariaDb1027Platform;
-use Doctrine\DBAL\Platforms\MySQL57Platform;
+use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
-use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
-use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Comparator;
-use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -37,12 +35,11 @@ final class DumpSqlCommand extends Command
     /**
      * @phpstan-var array<non-empty-string, class-string<\Doctrine\DBAL\Platforms\AbstractPlatform>>
      */
-    private const PLATFORM_MAP = [
+    private const array PLATFORM_MAP = [
         'mysql8' => MySQL80Platform::class,
-        'mysql57' => MySQL57Platform::class,
-        'mysql' => MySqlPlatform::class,
-        'mariadb' => MariaDb1027Platform::class,
-        'postgres' => PostgreSQL100Platform::class,
+        'mysql' => MySQLPlatform::class,
+        'mariadb' => MariaDBPlatform::class,
+        'postgres' => PostgreSQLPlatform::class,
     ];
 
     public function __construct(Connection $db, SchemaBuilder $schemaBuilder)
@@ -78,6 +75,11 @@ final class DumpSqlCommand extends Command
         );
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     * @throws \Doctrine\DBAL\Schema\SchemaException
+     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = $input->getArgument('file');
@@ -90,14 +92,14 @@ final class DumpSqlCommand extends Command
         $platform = $this->getPlatformForInput($input);
 
         if ($input->getOption('compare')) {
-            $schemaManager = $this->getSchemaManager();
-            $fromSchema = $this->introspectSchema($schemaManager);
+            $schemaManager = $this->db->createSchemaManager();
+            $fromSchema = $schemaManager->introspectSchema();
 
             $comparator = new Comparator();
-            $diff = $comparator->compare($fromSchema, $toSchema);
-            $sqls = $diff->toSql($platform);
+            $diff = $comparator->compareSchemas($fromSchema, $toSchema);
+            $sqlStatements = $platform->getAlterSchemaSQL($diff);
         } else {
-            $sqls = $toSchema->toSql($platform);
+            $sqlStatements = $toSchema->toSql($platform);
         }
 
         $io = new SymfonyStyle($input, $output);
@@ -111,23 +113,16 @@ final class DumpSqlCommand extends Command
             ]
         );
 
-        foreach ($sqls as $sql) {
+        foreach ($sqlStatements as $sql) {
             $io->writeln($sql . ';');
         }
 
         return self::SUCCESS;
     }
 
-    private function getSchemaManager(): AbstractSchemaManager
-    {
-        return $this->db->getSchemaManager();
-    }
-
-    private function introspectSchema(AbstractSchemaManager $schemaManager): Schema
-    {
-        return $schemaManager->createSchema();
-    }
-
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     private function getPlatformForInput(InputInterface $input): AbstractPlatform
     {
         $forcePlatform = $input->getOption('force-platform');
@@ -137,7 +132,7 @@ final class DumpSqlCommand extends Command
         }
 
         if (!isset(self::PLATFORM_MAP[$forcePlatform])) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Invalid --force-platform option. Received "%s", expected one of: "%s"',
                 $forcePlatform,
                 implode('","', array_keys(self::PLATFORM_MAP)),

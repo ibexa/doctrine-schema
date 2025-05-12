@@ -27,7 +27,7 @@ class SchemaImporterTest extends TestCase
      *
      * @phpstan-return iterable<array{non-empty-string, \Doctrine\DBAL\Schema\Schema}>
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function providerForTestImportFromFile(): iterable
     {
@@ -112,6 +112,7 @@ class SchemaImporterTest extends TestCase
                             [
                                 new Index('primary', ['id'], false, true),
                             ],
+                            [],
                             [
                                 new ForeignKeyConstraint(
                                     ['main_id'],
@@ -226,6 +227,7 @@ class SchemaImporterTest extends TestCase
                 new Index('data3_idx', ['data3'], false, false),
                 new Index('data4_uidx', ['data4'], true, false),
             ],
+            [],
             [
                 new ForeignKeyConstraint(
                     ['id'],
@@ -281,7 +283,7 @@ class SchemaImporterTest extends TestCase
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function testImportFromFile(
         string $yamlSchemaDefinitionFile,
@@ -302,6 +304,9 @@ class SchemaImporterTest extends TestCase
         );
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function testTableImportFailsIfUnhandledKeys(): void
     {
         $importer = new SchemaImporter();
@@ -314,6 +319,9 @@ class SchemaImporterTest extends TestCase
         $importer->importFromFile(__DIR__ . '/_fixtures/failing-import.yaml');
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
     public function testColumnImportFailsIfUnhandledKeys(): void
     {
         $importer = new SchemaImporter();

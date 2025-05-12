@@ -9,11 +9,15 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Configuration;
 
+/**
+ * @internal
+ */
 interface DbPlatformInterface
 {
     /**
-     * Get name of the driver associated with Database Platform implementation.
+     * Get the name of the driver associated with Database Platform implementation.
      *
      * Every Database Platform implementation should extend Doctrine AbstractPlatform
      * (or its implementation).
@@ -26,4 +30,9 @@ interface DbPlatformInterface
      * Add event subscribers predefined and required by an implementation.
      */
     public function addEventSubscribers(EventManager $eventManager): void;
+
+    /**
+     * Add platform-based configuration to DBAL.
+     */
+    public function configure(Configuration $dbalConfiguration): void;
 }

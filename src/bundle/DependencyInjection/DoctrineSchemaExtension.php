@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class DoctrineSchemaExtension extends Extension
 {
-    public const EXTENSION_NAME = 'ibexa_doctrine_schema';
+    public const string EXTENSION_NAME = 'ibexa_doctrine_schema';
 
     /**
      * Override default extension alias name to include Ibexa vendor in name.
