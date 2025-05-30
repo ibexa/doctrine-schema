@@ -18,7 +18,7 @@ services:
 
     Ibexa\DoctrineSchema\Database\DbPlatformFactory:
         arguments:
-            $dbPlatforms: !tagged ibexa.doctrine.db.platform
+            $dbPlatforms: !tagged_iterator ibexa.doctrine.db.platform
 
     Ibexa\DoctrineSchema\Database\DbPlatform\:
         resource: '../../../lib/Database/DbPlatform/*'
