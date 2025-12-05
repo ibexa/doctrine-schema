@@ -2,7 +2,7 @@
     "name": "ibexa/doctrine-schema",
     "description": "Abstraction layer, on top of Doctrine, for cross-DBMS schema import",
     "type": "ibexa-bundle",
-    "license": ["(GPL-2.0-only or proprietary)"],
+    "license": "(GPL-2.0-only or proprietary)",
     "replace": {
         "ezsystems/doctrine-dbal-schema": "*"
     },
