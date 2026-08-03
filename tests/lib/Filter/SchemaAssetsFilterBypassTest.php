@@ -35,7 +35,9 @@ final class SchemaAssetsFilterBypassTest extends TestCase
     public function testTemporarilyLiftsAndRestoresTheConfiguredFilter(): void
     {
         $originalFilter = static fn (): bool => false;
-        $this->configuration->method('getSchemaAssetsFilter')->willReturn($originalFilter);
+        $this->configuration->expects(self::once())
+            ->method('getSchemaAssetsFilter')
+            ->willReturn($originalFilter);
 
         $appliedFilters = [];
         $this->configuration->expects(self::exactly(2))
@@ -54,7 +56,9 @@ final class SchemaAssetsFilterBypassTest extends TestCase
 
     public function testRestoresAPermissiveFilterWhenNoneWasConfiguredBefore(): void
     {
-        $this->configuration->method('getSchemaAssetsFilter')->willReturn(null);
+        $this->configuration->expects(self::once())
+            ->method('getSchemaAssetsFilter')
+            ->willReturn(null);
 
         $appliedFilters = [];
         $this->configuration->method('setSchemaAssetsFilter')
@@ -70,7 +74,9 @@ final class SchemaAssetsFilterBypassTest extends TestCase
     public function testRestoresThePreviousFilterEvenWhenTheCallbackThrows(): void
     {
         $originalFilter = static fn (): bool => false;
-        $this->configuration->method('getSchemaAssetsFilter')->willReturn($originalFilter);
+        $this->configuration->expects(self::once())
+            ->method('getSchemaAssetsFilter')
+            ->willReturn($originalFilter);
 
         $appliedFilters = [];
         $this->configuration->method('setSchemaAssetsFilter')
