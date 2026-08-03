@@ -11,7 +11,7 @@ namespace Ibexa\DoctrineSchema\Filter;
 use Doctrine\DBAL\Connection;
 use Ibexa\Contracts\DoctrineSchema\SchemaAssetsFilterBypassInterface;
 
-final class SchemaAssetsFilterBypass implements SchemaAssetsFilterBypassInterface
+final readonly class SchemaAssetsFilterBypass implements SchemaAssetsFilterBypassInterface
 {
     public function call(Connection $connection, callable $callback)
     {
