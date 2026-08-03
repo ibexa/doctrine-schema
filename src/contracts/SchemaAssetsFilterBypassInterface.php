@@ -25,11 +25,11 @@ use Doctrine\DBAL\Connection;
 interface SchemaAssetsFilterBypassInterface
 {
     /**
-     * @template T
+     * @phpstan-template T
      *
-     * @param callable(): T $callback
+     * @phpstan-param callable(): T $callback
      *
-     * @return T
+     * @phpstan-return T
      */
     public function call(Connection $connection, callable $callback);
 }
