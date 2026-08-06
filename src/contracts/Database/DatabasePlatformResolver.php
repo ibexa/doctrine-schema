@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Ibexa\Contracts\DoctrineSchema\Database;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
@@ -57,15 +56,7 @@ final class DatabasePlatformResolver
     /**
      * @return string|null one of the {@see DatabasePlatformName} constants, or null if unrecognized
      */
-    public static function resolve(Connection $connection): ?string
-    {
-        return self::resolveFromPlatform($connection->getDatabasePlatform());
-    }
-
-    /**
-     * @return string|null one of the {@see DatabasePlatformName} constants, or null if unrecognized
-     */
-    public static function resolveFromPlatform(AbstractPlatform $platform): ?string
+    public static function resolveName(AbstractPlatform $platform): ?string
     {
         foreach (self::PLATFORM_CLASS_CANDIDATES as $name => $candidates) {
             foreach ($candidates as $candidate) {

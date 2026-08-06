@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Database;
 
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MariaDb1027Platform;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
@@ -37,29 +36,16 @@ class DatabasePlatformResolverTest extends TestCase
     /**
      * @dataProvider providePlatforms
      */
-    public function testResolveFromPlatform(AbstractPlatform $platform, ?string $expectedName): void
+    public function testResolveName(AbstractPlatform $platform, ?string $expectedName): void
     {
-        self::assertSame($expectedName, DatabasePlatformResolver::resolveFromPlatform($platform));
+        self::assertSame($expectedName, DatabasePlatformResolver::resolveName($platform));
     }
 
-    public function testResolveFromPlatformReturnsNullForUnrecognizedPlatform(): void
+    public function testResolveNameReturnsNullForUnrecognizedPlatform(): void
     {
         self::assertNull(
-            DatabasePlatformResolver::resolveFromPlatform($this->createMock(AbstractPlatform::class))
+            DatabasePlatformResolver::resolveName($this->createMock(AbstractPlatform::class))
         );
-    }
-
-    /**
-     * @dataProvider providePlatforms
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public function testResolve(AbstractPlatform $platform, ?string $expectedName): void
-    {
-        $connection = $this->createMock(Connection::class);
-        $connection->method('getDatabasePlatform')->willReturn($platform);
-
-        self::assertSame($expectedName, DatabasePlatformResolver::resolve($connection));
     }
 
     /**
@@ -69,7 +55,7 @@ class DatabasePlatformResolverTest extends TestCase
     {
         $resolved = [];
         foreach ($this->providePlatforms() as [$platform]) {
-            $resolved[] = DatabasePlatformResolver::resolveFromPlatform($platform);
+            $resolved[] = DatabasePlatformResolver::resolveName($platform);
         }
 
         self::assertEqualsCanonicalizing(
