@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver
  */
-class DatabasePlatformResolverTest extends TestCase
+final class DatabasePlatformResolverTest extends TestCase
 {
     /**
      * @return iterable<string, array{\Doctrine\DBAL\Platforms\AbstractPlatform, \Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformName}>
