@@ -18,6 +18,27 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  */
 final class DatabasePlatformResolver
 {
+    /**
+     * Platform class names, per platform name, ordered from the most to the least specific DBAL version.
+     *
+     * DBAL renamed several platform classes between major versions, hence more than one candidate.
+     * Only the class name matters here, so candidates missing from the installed DBAL are simply
+     * never matched.
+     *
+     * @var array<string, array<string>>
+     */
+    private const PLATFORM_CLASS_CANDIDATES = [
+        // base class of both the MySQL and the MariaDB platforms
+        DatabasePlatformName::MySQL->value => ['Doctrine\\DBAL\\Platforms\\AbstractMySQLPlatform'],
+        DatabasePlatformName::PostgreSQL->value => ['Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform'],
+        DatabasePlatformName::SQLite->value => [
+            // DBAL >= 4.0
+            'Doctrine\\DBAL\\Platforms\\SQLitePlatform',
+            // DBAL 3.x
+            'Doctrine\\DBAL\\Platforms\\SqlitePlatform',
+        ],
+    ];
+
     private function __construct()
     {
         // intentionally prevent instantiation
@@ -25,39 +46,17 @@ final class DatabasePlatformResolver
 
     public static function resolveName(AbstractPlatform $platform): ?DatabasePlatformName
     {
-        foreach (DatabasePlatformName::cases() as $name) {
-            foreach (self::getPlatformClassCandidates($name) as $candidate) {
+        foreach (self::PLATFORM_CLASS_CANDIDATES as $name => $candidates) {
+            foreach ($candidates as $candidate) {
                 // is_a() with an object subject compares against the already loaded class
                 // hierarchy, so a candidate absent from the installed DBAL never matches
                 // and is never autoloaded.
                 if (is_a($platform, $candidate)) {
-                    return $name;
+                    return DatabasePlatformName::from($name);
                 }
             }
         }
 
         return null;
-    }
-
-    /**
-     * Platform class names, ordered from the most to the least specific DBAL version.
-     *
-     * DBAL renamed several platform classes between major versions, hence more than one candidate.
-     *
-     * @return array<string>
-     */
-    private static function getPlatformClassCandidates(DatabasePlatformName $name): array
-    {
-        return match ($name) {
-            // base class of both the MySQL and the MariaDB platforms
-            DatabasePlatformName::MySQL => ['Doctrine\\DBAL\\Platforms\\AbstractMySQLPlatform'],
-            DatabasePlatformName::PostgreSQL => ['Doctrine\\DBAL\\Platforms\\PostgreSQLPlatform'],
-            DatabasePlatformName::SQLite => [
-                // DBAL >= 4.0
-                'Doctrine\\DBAL\\Platforms\\SQLitePlatform',
-                // DBAL 3.x
-                'Doctrine\\DBAL\\Platforms\\SqlitePlatform',
-            ],
-        };
     }
 }
