@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace Ibexa\Tests\DoctrineSchema\Database;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\MariaDb1027Platform;
-use Doctrine\DBAL\Platforms\MySqlPlatform;
-use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\DBAL\Platforms\MariaDBPlatform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformName;
 use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver;
@@ -20,23 +20,23 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver
  */
-class DatabasePlatformResolverTest extends TestCase
+final class DatabasePlatformResolverTest extends TestCase
 {
     /**
-     * @return iterable<string, array{\Doctrine\DBAL\Platforms\AbstractPlatform, string|null}>
+     * @return iterable<string, array{\Doctrine\DBAL\Platforms\AbstractPlatform, \Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformName}>
      */
     public function providePlatforms(): iterable
     {
-        yield 'MySQL' => [new MySqlPlatform(), DatabasePlatformName::MYSQL];
-        yield 'MariaDB' => [new MariaDb1027Platform(), DatabasePlatformName::MYSQL];
-        yield 'PostgreSQL' => [new PostgreSqlPlatform(), DatabasePlatformName::POSTGRESQL];
-        yield 'SQLite' => [new SqlitePlatform(), DatabasePlatformName::SQLITE];
+        yield 'MySQL' => [new MySQLPlatform(), DatabasePlatformName::MySQL];
+        yield 'MariaDB' => [new MariaDBPlatform(), DatabasePlatformName::MySQL];
+        yield 'PostgreSQL' => [new PostgreSQLPlatform(), DatabasePlatformName::PostgreSQL];
+        yield 'SQLite' => [new SqlitePlatform(), DatabasePlatformName::SQLite];
     }
 
     /**
      * @dataProvider providePlatforms
      */
-    public function testResolveName(AbstractPlatform $platform, ?string $expectedName): void
+    public function testResolveName(AbstractPlatform $platform, DatabasePlatformName $expectedName): void
     {
         self::assertSame($expectedName, DatabasePlatformResolver::resolveName($platform));
     }
@@ -49,9 +49,9 @@ class DatabasePlatformResolverTest extends TestCase
     }
 
     /**
-     * Guards against adding a name without a matching platform class candidate.
+     * Guards against adding a case without a matching platform class candidate.
      */
-    public function testEveryNameIsResolvable(): void
+    public function testEveryCaseIsResolvable(): void
     {
         $resolved = [];
         foreach ($this->providePlatforms() as [$platform]) {
@@ -59,8 +59,8 @@ class DatabasePlatformResolverTest extends TestCase
         }
 
         self::assertEqualsCanonicalizing(
-            DatabasePlatformName::all(),
-            array_values(array_unique(array_filter($resolved)))
+            DatabasePlatformName::cases(),
+            array_values(array_unique(array_filter($resolved), SORT_REGULAR))
         );
     }
 }

@@ -10,31 +10,12 @@ namespace Ibexa\Contracts\DoctrineSchema\Database;
 
 /**
  * Database platform identifiers recognized by {@see DatabasePlatformResolver}.
- *
- * Provided as class constants rather than an enum for PHP 7.4 compatibility.
  */
-final class DatabasePlatformName
+enum DatabasePlatformName: string
 {
-    public const MYSQL = 'mysql';
+    case MySQL = 'mysql';
 
-    public const POSTGRESQL = 'postgresql';
+    case PostgreSQL = 'postgresql';
 
-    public const SQLITE = 'sqlite';
-
-    private function __construct()
-    {
-        // intentionally prevent instantiation
-    }
-
-    /**
-     * @return array<string>
-     */
-    public static function all(): array
-    {
-        return [
-            self::MYSQL,
-            self::POSTGRESQL,
-            self::SQLITE,
-        ];
-    }
+    case SQLite = 'sqlite';
 }
