@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Exporter\Table;
 
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * Exports \Doctrine\DBAL\Schema\Table to custom array representation.
@@ -104,7 +105,7 @@ class SchemaTableExporter
 
             $fieldGroup = !in_array($fieldName, $primaryKeyColumns, true) ? 'fields' : 'id';
             $field = [
-                'type' => $column->getType()->getName(),
+                'type' => Type::lookupName($column->getType()),
                 'nullable' => !$column->getNotnull(),
             ];
 

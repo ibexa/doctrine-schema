@@ -14,7 +14,6 @@ use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Schema\Comparator;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -95,7 +94,7 @@ final class DumpSqlCommand extends Command
             $schemaManager = $this->db->createSchemaManager();
             $fromSchema = $schemaManager->introspectSchema();
 
-            $comparator = new Comparator();
+            $comparator = $schemaManager->createComparator();
             $diff = $comparator->compareSchemas($fromSchema, $toSchema);
             $sqlStatements = $platform->getAlterSchemaSQL($diff);
         } else {

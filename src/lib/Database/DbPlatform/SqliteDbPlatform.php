@@ -8,27 +8,22 @@ declare(strict_types=1);
 
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Driver\AbstractSQLiteDriver\Middleware\EnableForeignKeys;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Table;
 
 /**
  * @internal
  */
-final class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
+final class SqliteDbPlatform extends SQLitePlatform implements DbPlatformInterface
 {
-    public function addEventSubscribers(EventManager $eventManager): void
+    /**
+     * @return list<string>
+     */
+    public function getCreateTableSQL(Table $table): array
     {
-        // Nothing to do
-    }
-
-    public function getCreateTableSQL(Table $table, $createFlags = null): array
-    {
-        $createFlags = $createFlags ?? self::CREATE_INDEXES | self::CREATE_FOREIGNKEYS;
-
         $primaryKeyIndex = $table->getPrimaryKey();
         $hasCompositePK = $primaryKeyIndex !== null && count($primaryKeyIndex->getColumns()) > 1;
 
@@ -39,7 +34,7 @@ final class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterfa
             }
         }
 
-        return parent::getCreateTableSQL($table, $createFlags);
+        return parent::getCreateTableSQL($table);
     }
 
     public function getDriverName(): string
@@ -48,19 +43,11 @@ final class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterfa
     }
 
     /**
-     * Override default behavior of Sqlite db platform to force generating foreign keys.
-     */
-    public function supportsForeignKeyConstraints(): bool
-    {
-        return true;
-    }
-
-    /**
      * Override default behavior of Sqlite db platform not to throw exception for unsupported operation of dropping FKs.
      *
      * {@inheritdoc}
      */
-    public function getDropForeignKeySQL($foreignKey, $table): string
+    public function getDropForeignKeySQL(string $foreignKey, string $table): string
     {
         // dropping FKs is not supported by Sqlite
 
@@ -72,7 +59,7 @@ final class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterfa
      *
      * {@inheritdoc}
      */
-    public function getCreateForeignKeySQL(ForeignKeyConstraint $foreignKey, $table): string
+    public function getCreateForeignKeySQL(ForeignKeyConstraint $foreignKey, string $table): string
     {
         return '-- ';
     }

@@ -11,6 +11,7 @@ namespace Ibexa\Tests\DoctrineSchema\Exporter;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 use Ibexa\DoctrineSchema\Exporter\SchemaExporter;
 use Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter;
@@ -57,7 +58,7 @@ class SchemaExporterTest extends TestCase
                 $inputFilePath = sprintf(
                     '%s/_fixtures/input/%s/%s.sql',
                     __DIR__,
-                    $databasePlatform->getName(),
+                    DatabasePlatformResolver::resolveName($databasePlatform)->value ?? $databasePlatform::class,
                     basename($outputFile->getFilename(), '.yaml')
                 );
                 $inputSchemaSQL = file_exists($inputFilePath)
@@ -91,14 +92,18 @@ class SchemaExporterTest extends TestCase
     ): void {
         if (null === $inputSchemaSQL) {
             self::markTestIncomplete(
-                "Missing input SQL for {$databasePlatform->getName()} output available in {$outputFilePath}"
+                sprintf(
+                    'Missing input SQL for %s output available in %s',
+                    DatabasePlatformResolver::resolveName($databasePlatform)->value ?? $databasePlatform::class,
+                    $outputFilePath
+                )
             );
         }
 
         try {
             $connection = $this->getDatabaseConnection($databasePlatform);
             $connection->executeStatement($inputSchemaSQL);
-            $inputSchema = $connection->getSchemaManager()->createSchema();
+            $inputSchema = $connection->createSchemaManager()->introspectSchema();
             $rootDir = dirname(__DIR__, 3);
 
             self::assertEquals(
@@ -106,7 +111,7 @@ class SchemaExporterTest extends TestCase
                 $this->exporter->export($inputSchema),
                 sprintf(
                     "%s database export: SQL file\n\t%s\ndid not create expected yaml defined in\n\t%s",
-                    $databasePlatform->getName(),
+                    DatabasePlatformResolver::resolveName($databasePlatform)->value ?? $databasePlatform::class,
                     // left-trim name to make it more readable for debugging purposes
                     str_replace($rootDir, '.', $inputFilePath),
                     str_replace($rootDir, '.', $outputFilePath)

@@ -12,6 +12,7 @@ tables:
                     name: data2_idx
             data3:
                 type: string
+                length: 255
                 nullable: false
                 index:
                     name: data3_uidx

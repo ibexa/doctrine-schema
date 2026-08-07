@@ -25,6 +25,7 @@ tables:
                 index: data2_idx
             data3:
                 type: string
+                length: 255
                 nullable: false
                 foreignKey:
                     table: foreign_table_3
@@ -34,6 +35,7 @@ tables:
                     name: data3_idx
             data4:
                 type: string
+                length: 255
                 nullable: false
                 foreignKey:
                     table: foreign_table_4

@@ -12,7 +12,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
-use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformName;
 use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver;
 use PHPUnit\Framework\TestCase;
@@ -30,7 +30,7 @@ final class DatabasePlatformResolverTest extends TestCase
         yield 'MySQL' => [new MySQLPlatform(), DatabasePlatformName::MySQL];
         yield 'MariaDB' => [new MariaDBPlatform(), DatabasePlatformName::MySQL];
         yield 'PostgreSQL' => [new PostgreSQLPlatform(), DatabasePlatformName::PostgreSQL];
-        yield 'SQLite' => [new SqlitePlatform(), DatabasePlatformName::SQLite];
+        yield 'SQLite' => [new SQLitePlatform(), DatabasePlatformName::SQLite];
     }
 
     /**

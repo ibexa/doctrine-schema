@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Ibexa\Tests\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
 use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
 use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface;
@@ -46,8 +45,11 @@ class SchemaBuilderTest extends TestCase
             }
         );
 
+        $expectedSchema = new Schema();
+        $expectedSchema->createTable('my_table');
+
         self::assertEquals(
-            new Schema([new Table('my_table')]),
+            $expectedSchema,
             $builder->buildSchema()
         );
     }

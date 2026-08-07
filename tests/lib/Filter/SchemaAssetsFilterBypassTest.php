@@ -54,23 +54,6 @@ final class SchemaAssetsFilterBypassTest extends TestCase
         self::assertSame($originalFilter, $appliedFilters[1]);
     }
 
-    public function testRestoresAPermissiveFilterWhenNoneWasConfiguredBefore(): void
-    {
-        $this->configuration->expects(self::once())
-            ->method('getSchemaAssetsFilter')
-            ->willReturn(null);
-
-        $appliedFilters = [];
-        $this->configuration->method('setSchemaAssetsFilter')
-            ->willReturnCallback(static function (callable $filter) use (&$appliedFilters): void {
-                $appliedFilters[] = $filter;
-            });
-
-        $this->bypass->call($this->connection, static fn (): null => null);
-
-        self::assertTrue($appliedFilters[1]('any_table'));
-    }
-
     public function testRestoresThePreviousFilterEvenWhenTheCallbackThrows(): void
     {
         $originalFilter = static fn (): bool => false;

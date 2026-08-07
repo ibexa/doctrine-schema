@@ -10,10 +10,11 @@ namespace Ibexa\Tests\DoctrineSchema\Database;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver;
 
 class TestDatabaseFactory
 {
-    /** @var \Ibexa\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder[] */
+    /** @var array<string, \Ibexa\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder> */
     private array $databaseBuildersForPlatforms = [];
 
     public function __construct()
@@ -30,9 +31,9 @@ class TestDatabaseFactory
      */
     public function prepareAndConnect(AbstractPlatform $databasePlatform): Connection
     {
-        $name = $databasePlatform->getName();
-        if (!isset($this->databaseBuildersForPlatforms[$name])) {
-            throw new TestDatabaseConfigurationException("Unsupported DBMS '{$name}'");
+        $name = DatabasePlatformResolver::resolveName($databasePlatform)?->value;
+        if ($name === null || !isset($this->databaseBuildersForPlatforms[$name])) {
+            throw new TestDatabaseConfigurationException(sprintf('Unsupported DBMS \'%s\'', $name ?? $databasePlatform::class));
         }
 
         return $this->databaseBuildersForPlatforms[$name]->buildDatabase();

@@ -22,7 +22,7 @@ final readonly class SchemaAssetsFilterBypass implements SchemaAssetsFilterBypas
         try {
             return $callback();
         } finally {
-            $configuration->setSchemaAssetsFilter($previousFilter ?? static fn (): bool => true);
+            $configuration->setSchemaAssetsFilter($previousFilter);
         }
     }
 }
