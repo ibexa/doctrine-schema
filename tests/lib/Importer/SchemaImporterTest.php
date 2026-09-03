@@ -8,12 +8,8 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Importer;
 
-use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\ForeignKeyConstraint;
-use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\Table;
-use Doctrine\DBAL\Types\Type;
 use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\DoctrineSchema\Importer\SchemaImporter;
 use PHPUnit\Framework\TestCase;
@@ -31,250 +27,137 @@ class SchemaImporterTest extends TestCase
      */
     public function providerForTestImportFromFile(): iterable
     {
-        yield from [
-            0 => [
-                '00-simple_pk.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('id', Type::getType('integer')))->setAutoincrement(
-                                    true
-                                ),
-                            ],
-                            [
-                                new Index('primary', ['id'], false, true),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            1 => [
-                '01-composite_pk.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('id', Type::getType('integer')))->setDefault(0),
-                                (new Column('version', Type::getType('integer')))->setDefault(0),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('primary', ['id', 'version'], false, true),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            2 => [
-                '02-composite_pk_with_ai.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('id', Type::getType('integer')))
-                                    ->setAutoincrement(true),
-                                (new Column('version', Type::getType('integer')))->setDefault(0),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('primary', ['id', 'version'], false, true),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            3 => [
-                '03-foreign_key.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_main_table',
-                            [
-                                (new Column('id', Type::getType('integer')))
-                                    ->setAutoincrement(true),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('primary', ['id'], false, true),
-                            ]
-                        ),
-                        new Table(
-                            'my_secondary_table',
-                            [
-                                (new Column('id', Type::getType('integer')))
-                                    ->setAutoincrement(true),
-                                new Column('main_id', Type::getType('integer')),
-                            ],
-                            [
-                                new Index('primary', ['id'], false, true),
-                            ],
-                            [],
-                            [
-                                new ForeignKeyConstraint(
-                                    ['main_id'],
-                                    'my_main_table',
-                                    ['id'],
-                                    'fk_my_secondary_table_id_main',
-                                    ['onDelete' => 'CASCADE', 'onUpdate' => 'CASCADE']
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            4 => [
-                '04-nullable_field.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('data', Type::getType('integer')))->setNotnull(false),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            5 => [
-                '05-varchar_length.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column('name', Type::getType('string')))->setLength(64),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            6 => [
-                '06-index.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                new Column('data1', Type::getType('integer')),
-                                new Column('data2', Type::getType('integer')),
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [
-                                new Index('ix_simple', ['data1'], false, false),
-                                new Index('ix_composite', ['data1', 'data2'], false, false),
-                                new Index('ux_name', ['name'], true, false),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            7 => [
-                '07-numeric-options.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                (new Column(
-                                    'data',
-                                    Type::getType('decimal')
-                                )
-                                )->setPrecision(19)->setScale(4),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-        ];
-
-        yield [
-            'simple-field-index.yaml',
-            new Schema(
-                [
-                    new Table(
-                        'my_table',
-                        [
-                            new Column('data1', Type::getType('integer')),
-                            new Column('data2', Type::getType('integer')),
-                            new Column('data3', Type::getType('string')),
-                        ],
-                        [
-                            new Index('data1_idx', ['data1'], false, false),
-                            new Index('data2_idx', ['data2'], false, false),
-                            new Index('data3_uidx', ['data3'], true, false),
-                        ],
-                    ),
-                ]
-            ),
-        ];
-
-        $table = new Table(
-            'my_table',
-            [
-                new Column('id', Type::getType('integer')),
-                new Column('data1', Type::getType('integer')),
-                new Column('data2', Type::getType('integer')),
-                new Column('data3', Type::getType('string')),
-                new Column('data4', Type::getType('string')),
-            ],
-            [
-                // Index for data1 is intentionally omitted
-                new Index('data2_idx', ['data2'], false, false),
-                new Index('data3_idx', ['data3'], false, false),
-                new Index('data4_uidx', ['data4'], true, false),
-            ],
-            [],
-            [
-                new ForeignKeyConstraint(
-                    ['id'],
-                    'foreign_table_id',
-                    ['foreign_id'],
-                    'id_fk',
-                ),
-                new ForeignKeyConstraint(
-                    ['data1'],
-                    'foreign_table_1',
-                    ['foreign_data1'],
-                    'FK_9AEF3D8257CA2CA6', // Autogenerated
-                ),
-                new ForeignKeyConstraint(
-                    ['data2'],
-                    'foreign_table_2',
-                    ['foreign_data2'],
-                    'foreign_data2_fk_name',
-                ),
-                new ForeignKeyConstraint(
-                    ['data3'],
-                    'foreign_table_3',
-                    ['foreign_data3'],
-                    'foreign_data3_fk_name',
-                ),
-                new ForeignKeyConstraint(
-                    ['data4'],
-                    'foreign_table_4',
-                    ['foreign_data4'],
-                    'foreign_data4_fk_name',
-                    [
-                        'onDelete' => 'CASCADE',
-                        'onUpdate' => 'RESTRICT',
-                    ],
-                ),
-            ]
-        );
+        $simplePk = new Schema();
+        $table = $simplePk->createTable('my_table');
+        $table->addColumn('id', 'integer', ['autoincrement' => true]);
         $table->setPrimaryKey(['id']);
 
-        yield [
-            'simple-foreign-key.yaml',
-            new Schema(
-                [
-                    $table,
-                ]
-            ),
-        ];
+        yield ['00-simple_pk.yaml', $simplePk];
+
+        $compositePk = new Schema();
+        $table = $compositePk->createTable('my_table');
+        $table->addColumn('id', 'integer', ['default' => '0']);
+        $table->addColumn('version', 'integer', ['default' => '0']);
+        $table->setPrimaryKey(['id', 'version']);
+        $table->addColumn('name', 'string', ['length' => 255]);
+
+        yield ['01-composite_pk.yaml', $compositePk];
+
+        $compositePkWithAi = new Schema();
+        $table = $compositePkWithAi->createTable('my_table');
+        $table->addColumn('id', 'integer', ['autoincrement' => true]);
+        $table->addColumn('version', 'integer', ['default' => '0']);
+        $table->setPrimaryKey(['id', 'version']);
+        $table->addColumn('name', 'string', ['length' => 255]);
+
+        yield ['02-composite_pk_with_ai.yaml', $compositePkWithAi];
+
+        $foreignKey = new Schema();
+        $mainTable = $foreignKey->createTable('my_main_table');
+        $mainTable->addColumn('id', 'integer', ['autoincrement' => true]);
+        $mainTable->setPrimaryKey(['id']);
+        $mainTable->addColumn('name', 'string', ['length' => 255]);
+        $secondaryTable = $foreignKey->createTable('my_secondary_table');
+        $secondaryTable->addColumn('id', 'integer', ['autoincrement' => true]);
+        $secondaryTable->setPrimaryKey(['id']);
+        $secondaryTable->addColumn('main_id', 'integer');
+        $secondaryTable->addForeignKeyConstraint(
+            'my_main_table',
+            ['main_id'],
+            ['id'],
+            ['onDelete' => 'CASCADE', 'onUpdate' => 'CASCADE'],
+            'fk_my_secondary_table_id_main'
+        );
+
+        yield ['03-foreign_key.yaml', $foreignKey];
+
+        $nullableField = new Schema();
+        $table = $nullableField->createTable('my_table');
+        $table->addColumn('data', 'integer')->setNotnull(false);
+
+        yield ['04-nullable_field.yaml', $nullableField];
+
+        $varcharLength = new Schema();
+        $table = $varcharLength->createTable('my_table');
+        $table->addColumn('name', 'string', ['length' => 64]);
+
+        yield ['05-varchar_length.yaml', $varcharLength];
+
+        $index = new Schema();
+        $table = $index->createTable('my_table');
+        $table->addColumn('data1', 'integer');
+        $table->addColumn('data2', 'integer');
+        $table->addColumn('name', 'string', ['length' => 255]);
+        $table->addIndex(['data1'], 'ix_simple', [], []);
+        $table->addIndex(['data1', 'data2'], 'ix_composite', [], []);
+        $table->addUniqueIndex(['name'], 'ux_name', []);
+
+        yield ['06-index.yaml', $index];
+
+        $numericOptions = new Schema();
+        $table = $numericOptions->createTable('my_table');
+        $table->addColumn('data', 'decimal', ['precision' => 19, 'scale' => 4]);
+
+        yield ['07-numeric-options.yaml', $numericOptions];
+
+        $fieldIndex = new Schema();
+        $table = $fieldIndex->createTable('my_table');
+        $table->addColumn('data1', 'integer');
+        $table->addIndex(['data1'], 'data1_idx');
+        $table->addColumn('data2', 'integer');
+        $table->addIndex(['data2'], 'data2_idx');
+        $table->addColumn('data3', 'string', ['length' => 255]);
+        $table->addUniqueIndex(['data3'], 'data3_uidx');
+
+        yield ['simple-field-index.yaml', $fieldIndex];
+
+        $simpleForeignKey = new Schema();
+        $table = $simpleForeignKey->createTable('my_table');
+        $table->addColumn('id', 'integer');
+        $table->addForeignKeyConstraint('foreign_table_id', ['id'], ['foreign_id'], [], 'id_fk');
+        $table->setPrimaryKey(['id']);
+        $table->addColumn('data1', 'integer');
+        $table->addForeignKeyConstraint('foreign_table_1', ['data1'], ['foreign_data1'], []);
+        $table->addColumn('data2', 'integer');
+        $table->addForeignKeyConstraint(
+            'foreign_table_2',
+            ['data2'],
+            ['foreign_data2'],
+            [],
+            'foreign_data2_fk_name'
+        );
+        $table->addIndex(['data2'], 'data2_idx');
+        $table->addColumn('data3', 'string', ['length' => 255]);
+        $table->addForeignKeyConstraint(
+            'foreign_table_3',
+            ['data3'],
+            ['foreign_data3'],
+            [],
+            'foreign_data3_fk_name'
+        );
+        $table->addIndex(['data3'], 'data3_idx');
+        $table->addColumn('data4', 'string', ['length' => 255]);
+        $table->addForeignKeyConstraint(
+            'foreign_table_4',
+            ['data4'],
+            ['foreign_data4'],
+            ['onDelete' => 'CASCADE', 'onUpdate' => 'RESTRICT'],
+            'foreign_data4_fk_name'
+        );
+        $table->addUniqueIndex(['data4'], 'data4_uidx');
+
+        yield ['simple-foreign-key.yaml', $simpleForeignKey];
+    }
+
+    public function testStringColumnWithoutLengthGetsTheDefaultLength(): void
+    {
+        $schema = (new SchemaImporter())->importFromFile(__DIR__ . '/_fixtures/01-composite_pk.yaml');
+
+        self::assertSame(255, $schema->getTable('my_table')->getColumn('name')->getLength());
+        self::assertStringContainsString(
+            'name VARCHAR(255)',
+            implode("\n", $schema->toSql(new MySQL80Platform()))
+        );
     }
 
     /**
@@ -332,5 +215,22 @@ class SchemaImporterTest extends TestCase
             . ' "length", "scale", "precision", "type", "nullable", "options", "index", "foreignKey".'
         );
         $importer->importFromFile(__DIR__ . '/_fixtures/failing-import-column.yaml');
+    }
+
+    /**
+     * DBAL 4 refuses to generate a VARCHAR without a length. 6.0 still fills in a default so that
+     * schemas written before it keep working, and deprecates relying on that.
+     *
+     * @group legacy
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function testStringColumnWithoutLengthDefaultsTo255(): void
+    {
+        $importer = new SchemaImporter();
+
+        $schema = $importer->importFromFile(__DIR__ . '/_fixtures/string-without-length.yaml');
+
+        self::assertSame(255, $schema->getTable('my_table')->getColumn('name')->getLength());
     }
 }

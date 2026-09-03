@@ -4,4 +4,4 @@ tables:
             id: { type: integer, nullable: false, options: { default: '0' } }
             version: { type: integer, nullable: false, options: { default: '0' } }
         fields:
-            name: { type: string, nullable: false }
+            name: { type: string, length: 255, nullable: false }

@@ -29,6 +29,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class SchemaImporter implements APISchemaImporter
 {
+    private const int DEFAULT_STRING_LENGTH = 255;
+
     public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema
     {
         return $this->importFromArray(
@@ -91,7 +93,10 @@ class SchemaImporter implements APISchemaImporter
 
         if (isset($tableConfiguration['id'])) {
             $this->addSchemaTableColumns($table, $tableConfiguration['id']);
-            $table->setPrimaryKey(array_keys($tableConfiguration['id']));
+            $primaryKeyColumns = array_keys($tableConfiguration['id']);
+            if ($primaryKeyColumns !== []) {
+                $table->setPrimaryKey($primaryKeyColumns);
+            }
         }
 
         if (isset($tableConfiguration['fields'])) {
@@ -157,6 +162,18 @@ class SchemaImporter implements APISchemaImporter
 
             if (isset($columnConfiguration['length'])) {
                 $columnConfiguration['options']['length'] = $columnConfiguration['length'];
+            } elseif ('string' === $columnConfiguration['type']) {
+                trigger_deprecation(
+                    'ibexa/doctrine-schema',
+                    '6.0.0',
+                    'Not stating "length" for the string column "%s" is deprecated and will throw in 7.0. '
+                    . 'DBAL 4 no longer assumes a length for a string column, so it has to be stated. '
+                    . 'It currently defaults to %d.',
+                    $location,
+                    self::DEFAULT_STRING_LENGTH,
+                );
+
+                $columnConfiguration['options']['length'] = self::DEFAULT_STRING_LENGTH;
             }
 
             if (isset($columnConfiguration['scale'])) {

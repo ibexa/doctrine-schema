@@ -11,6 +11,7 @@ namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Tools\DsnParser;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 
 class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
@@ -26,13 +27,15 @@ class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
         }
 
         $connection = DriverManager::getConnection(
-            [
-                'url' => $url,
-            ],
+            (new DsnParser([
+                'mysql' => 'pdo_mysql',
+                'mysql2' => 'pdo_mysql',
+                'mysqli' => 'mysqli',
+            ]))->parse($url),
             new Configuration()
         );
         // cleanup database
-        $statements = $connection->getSchemaManager()->createSchema()->toDropSql(
+        $statements = $connection->createSchemaManager()->introspectSchema()->toDropSql(
             $connection->getDatabasePlatform()
         );
         foreach ($statements as $statement) {

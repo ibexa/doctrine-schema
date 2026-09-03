@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 
 /**
@@ -25,11 +24,6 @@ interface DbPlatformInterface
      * @see \Doctrine\DBAL\Platforms\AbstractPlatform
      */
     public function getDriverName(): string;
-
-    /**
-     * Add event subscribers predefined and required by an implementation.
-     */
-    public function addEventSubscribers(EventManager $eventManager): void;
 
     /**
      * Add platform-based configuration to DBAL.

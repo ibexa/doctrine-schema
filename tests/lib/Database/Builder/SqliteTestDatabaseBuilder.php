@@ -8,10 +8,8 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\AbstractSQLiteDriver\Middleware\EnableForeignKeys;
 use Doctrine\DBAL\DriverManager;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 
@@ -22,19 +20,15 @@ class SqliteTestDatabaseBuilder implements TestDatabaseBuilder
      */
     public function buildDatabase(): Connection
     {
-        $dbPlatform = new SqliteDbPlatform();
-        $eventManager = new EventManager();
-        $dbPlatform->addEventSubscribers($eventManager);
         $configuration = new Configuration();
-        $configuration->setMiddlewares([new EnableForeignKeys()]);
+        (new SqliteDbPlatform())->configure($configuration);
 
         return DriverManager::getConnection(
             [
-                'url' => 'sqlite:///:memory:',
-                'platform' => $dbPlatform,
+                'driver' => 'pdo_sqlite',
+                'memory' => true,
             ],
-            $configuration,
-            $eventManager
+            $configuration
         );
     }
 }

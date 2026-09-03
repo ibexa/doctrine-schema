@@ -12,6 +12,7 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +49,7 @@ final class SqliteDbPlatformTest extends TestCase
         $secondaryTable = $schema->createTable('my_secondary_table');
         $secondaryTable->addColumn('id', 'integer');
         $secondaryTable->setPrimaryKey(['id']);
-        $secondaryTable->addForeignKeyConstraint($primaryTable, ['id'], ['id']);
+        $secondaryTable->addForeignKeyConstraint($primaryTable->getName(), ['id'], ['id']);
 
         // persist table structure
         foreach ($schema->toSql($connection->getDatabasePlatform()) as $query) {
@@ -76,8 +77,8 @@ final class SqliteDbPlatformTest extends TestCase
 
         $connection = DriverManager::getConnection(
             [
-                'url' => 'sqlite:///:memory:',
-                'platform' => $this->sqliteDbPlatform,
+                'driver' => 'pdo_sqlite',
+                'memory' => true,
             ],
             $configuration
         );
@@ -85,5 +86,29 @@ final class SqliteDbPlatformTest extends TestCase
             (bool)$connection->executeQuery('PRAGMA foreign_keys')->fetchOne(),
             'Foreign keys are not enabled'
         );
+    }
+
+    /**
+     * SQLite cannot express AUTOINCREMENT on a composite primary key, so the platform drops the
+     * autoincrement rather than the key.
+     */
+    public function testCompositePrimaryKeyIsKeptByDroppingAutoincrement(): void
+    {
+        $schema = new Schema();
+        $table = $schema->createTable('versioned_table');
+        $table->addColumn('id', 'integer', ['autoincrement' => true]);
+        $table->addColumn('version', 'integer');
+        $table->setPrimaryKey(['id', 'version']);
+
+        $createTableSql = '';
+        foreach ($schema->toSql($this->sqliteDbPlatform) as $sql) {
+            if (str_starts_with($sql, 'CREATE TABLE versioned_table')) {
+                $createTableSql = $sql;
+                break;
+            }
+        }
+
+        self::assertStringContainsString('PRIMARY KEY (id, version)', $createTableSql);
+        self::assertStringNotContainsString('AUTOINCREMENT', $createTableSql);
     }
 }

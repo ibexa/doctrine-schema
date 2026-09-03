@@ -1,0 +1,6 @@
+tables:
+    my_table:
+        id:
+            id: { type: integer, nullable: false }
+        fields:
+            name: { type: string, nullable: false }

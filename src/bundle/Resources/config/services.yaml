@@ -1,5 +1,8 @@
 parameters:
-    ibexa.schema.default_table_options: []
+    # MySQL applies these; PostgreSQL and SQLite ignore them. Stating them keeps the generated
+    # DDL identical across servers, and matches the character set and collation that
+    # ibexa/installer's upgrade scripts converge every table on.
+    ibexa.schema.default_table_options: !php/const Ibexa\Contracts\DoctrineSchema\Database\DefaultTableOptions::AS_ARRAY
 
 services:
     _defaults:

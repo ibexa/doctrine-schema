@@ -3,7 +3,7 @@ tables:
         id:
             id: { type: integer, nullable: false, options: { autoincrement: true } }
         fields:
-            name: { type: string, nullable: false }
+            name: { type: string, length: 255, nullable: false }
     my_secondary_table:
         id:
             id: { type: integer, nullable: false, options: { autoincrement: true } }
