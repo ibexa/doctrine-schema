@@ -11,3 +11,5 @@ services:
     Ibexa\Contracts\DoctrineSchema\DbPlatformFactoryInterface: '@Ibexa\DoctrineSchema\Database\DbPlatformFactory'
 
     Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface: '@Ibexa\DoctrineSchema\Builder\SchemaBuilder'
+
+    Ibexa\Contracts\DoctrineSchema\Builder\SchemaApplierInterface: '@Ibexa\DoctrineSchema\Builder\SchemaApplier'
