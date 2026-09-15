@@ -15,12 +15,11 @@ use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform
- * @covers \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory
- */
+#[CoversClass(SqliteDbPlatform::class)]
+#[CoversClass(TestDatabaseFactory::class)]
 final class SqliteDbPlatformTest extends TestCase
 {
     private TestDatabaseFactory $testDatabaseFactory;

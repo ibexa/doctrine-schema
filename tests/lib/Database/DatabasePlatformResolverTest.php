@@ -15,17 +15,17 @@ use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformName;
 use Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformResolver
- */
+#[CoversClass(DatabasePlatformResolver::class)]
 final class DatabasePlatformResolverTest extends TestCase
 {
     /**
      * @return iterable<string, array{\Doctrine\DBAL\Platforms\AbstractPlatform, \Ibexa\Contracts\DoctrineSchema\Database\DatabasePlatformName}>
      */
-    public function providePlatforms(): iterable
+    public static function providePlatforms(): iterable
     {
         yield 'MySQL' => [new MySQLPlatform(), DatabasePlatformName::MySQL];
         yield 'MariaDB' => [new MariaDBPlatform(), DatabasePlatformName::MySQL];
@@ -33,9 +33,7 @@ final class DatabasePlatformResolverTest extends TestCase
         yield 'SQLite' => [new SQLitePlatform(), DatabasePlatformName::SQLite];
     }
 
-    /**
-     * @dataProvider providePlatforms
-     */
+    #[DataProvider('providePlatforms')]
     public function testResolveName(AbstractPlatform $platform, DatabasePlatformName $expectedName): void
     {
         self::assertSame($expectedName, DatabasePlatformResolver::resolveName($platform));
@@ -44,7 +42,7 @@ final class DatabasePlatformResolverTest extends TestCase
     public function testResolveNameReturnsNullForUnrecognizedPlatform(): void
     {
         self::assertNull(
-            DatabasePlatformResolver::resolveName($this->createMock(AbstractPlatform::class))
+            DatabasePlatformResolver::resolveName($this->createStub(AbstractPlatform::class))
         );
     }
 
@@ -54,7 +52,7 @@ final class DatabasePlatformResolverTest extends TestCase
     public function testEveryCaseIsResolvable(): void
     {
         $resolved = [];
-        foreach ($this->providePlatforms() as [$platform]) {
+        foreach (self::providePlatforms() as [$platform]) {
             $resolved[] = DatabasePlatformResolver::resolveName($platform);
         }
 

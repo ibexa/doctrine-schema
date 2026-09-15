@@ -12,6 +12,8 @@ use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Schema\Schema;
 use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\DoctrineSchema\Importer\SchemaImporter;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
 class SchemaImporterTest extends TestCase
@@ -25,7 +27,7 @@ class SchemaImporterTest extends TestCase
      *
      * @throws \Doctrine\DBAL\Exception
      */
-    public function providerForTestImportFromFile(): iterable
+    public static function providerForTestImportFromFile(): iterable
     {
         $simplePk = new Schema();
         $table = $simplePk->createTable('my_table');
@@ -161,13 +163,12 @@ class SchemaImporterTest extends TestCase
     }
 
     /**
-     * @dataProvider providerForTestImportFromFile
-     *
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      * @throws \Doctrine\DBAL\Exception
      */
+    #[DataProvider('providerForTestImportFromFile')]
     public function testImportFromFile(
         string $yamlSchemaDefinitionFile,
         Schema $expectedSchema
@@ -221,10 +222,10 @@ class SchemaImporterTest extends TestCase
      * DBAL 4 refuses to generate a VARCHAR without a length. 6.0 still fills in a default so that
      * schemas written before it keep working, and deprecates relying on that.
      *
-     * @group legacy
      *
      * @throws \Doctrine\DBAL\Exception
      */
+    #[Group('legacy')]
     public function testStringColumnWithoutLengthDefaultsTo255(): void
     {
         $importer = new SchemaImporter();
