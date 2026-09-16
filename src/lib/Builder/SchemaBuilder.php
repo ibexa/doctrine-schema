@@ -70,6 +70,15 @@ class SchemaBuilder implements APISchemaBuilder
      */
     public function importSchemaFromFile(string $schemaFilePath): Schema
     {
-        return $this->schemaImporter->importFromFile($schemaFilePath, $this->schema);
+        $schema = $this->schemaImporter->importFromFile($schemaFilePath, $this->schema);
+        foreach ($schema->getTables() as $table) {
+            foreach ($this->defaultTableOptions as $option => $value) {
+                if (!$table->hasOption($option)) {
+                    $table->addOption($option, $value);
+                }
+            }
+        }
+
+        return $schema;
     }
 }
