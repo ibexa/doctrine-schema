@@ -17,6 +17,7 @@ use Ibexa\DoctrineSchema\Exporter\SchemaExporter;
 use Ibexa\DoctrineSchema\Exporter\Table\SchemaTableExporter;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SchemaExporterTest extends TestCase
@@ -38,7 +39,7 @@ class SchemaExporterTest extends TestCase
      *
      * @see testExport
      */
-    public function providerForTestExport(): array
+    public static function providerForTestExport(): array
     {
         $data = [];
 
@@ -79,10 +80,9 @@ class SchemaExporterTest extends TestCase
     }
 
     /**
-     * @dataProvider providerForTestExport
-     *
      * @throws \Doctrine\DBAL\Exception
      */
+    #[DataProvider('providerForTestExport')]
     public function testExport(
         AbstractPlatform $databasePlatform,
         ?string $inputSchemaSQL,
