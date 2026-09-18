@@ -15,6 +15,7 @@ use Doctrine\DBAL\Platforms\MySQL57Platform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQL100Platform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Schema;
@@ -43,6 +44,7 @@ final class DumpSqlCommand extends Command
         'mysql' => MySqlPlatform::class,
         'mariadb' => MariaDb1027Platform::class,
         'postgres' => PostgreSQL100Platform::class,
+        'sqlite' => SqlitePlatform::class,
     ];
 
     public function __construct(Connection $db, SchemaBuilder $schemaBuilder)
