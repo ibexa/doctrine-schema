@@ -6,6 +6,8 @@
   colors="true"
   displayDetailsOnTestsThatTriggerDeprecations="true"
   failOnDeprecation="true"
+  failOnWarning="true"
+  failOnNotice="true"
 >
   <testsuites>
     <testsuite name="lib">
