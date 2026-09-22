@@ -14,6 +14,8 @@ jobs:
         steps:
             -   uses: actions/checkout@v7
 
+            -   uses: ibexa/gh-workflows/actions/setup-composer-root-version@main
+
             -   uses: ibexa/gh-workflows/actions/composer-install@main
                 with:
                     php-version: '8.3'
@@ -42,6 +44,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v7
+
+            - uses: ibexa/gh-workflows/actions/setup-composer-root-version@main
 
             - uses: ibexa/gh-workflows/actions/composer-install@main
               with:
@@ -89,6 +93,8 @@ jobs:
 
         steps:
             -   uses: actions/checkout@v7
+
+            -   uses: ibexa/gh-workflows/actions/setup-composer-root-version@main
 
             -   uses: ibexa/gh-workflows/actions/composer-install@main
                 with:
