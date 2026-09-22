@@ -25,7 +25,7 @@ class SchemaBuilderTest extends TestCase
 
         $builder = new SchemaBuilder(
             $eventDispatcher,
-            $this->createStub(SchemaImporterInterface::class)
+            self::createStub(SchemaImporterInterface::class)
         );
 
         $eventDispatcher->addSubscriber(
