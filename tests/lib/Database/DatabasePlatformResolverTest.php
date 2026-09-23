@@ -42,7 +42,7 @@ final class DatabasePlatformResolverTest extends TestCase
     public function testResolveNameReturnsNullForUnrecognizedPlatform(): void
     {
         self::assertNull(
-            DatabasePlatformResolver::resolveName($this->createStub(AbstractPlatform::class))
+            DatabasePlatformResolver::resolveName(self::createStub(AbstractPlatform::class))
         );
     }
 
