@@ -3,8 +3,6 @@
     "description": "Abstraction layer, on top of Doctrine, for cross-DBMS schema import",
     "type": "ibexa-bundle",
     "license": "(GPL-2.0-only or proprietary)",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "replace": {
         "ezsystems/doctrine-dbal-schema": "*"
     },
@@ -20,6 +18,7 @@
     },
     "require-dev": {
         "ibexa/code-style": "~2.0.0",
+        "ibexa/core": "~6.0.x-dev",
         "ibexa/phpstan": "~6.0.x-dev",
         "ibexa/rector": "~6.0.x-dev",
         "phpstan/phpstan": "^2.0",
