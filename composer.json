@@ -7,7 +7,7 @@
         "ezsystems/doctrine-dbal-schema": "*"
     },
     "require": {
-        "php": " >=8.3",
+        "php": ">=8.5",
         "doctrine/dbal": "^4.4",
         "symfony/config": "^8.1",
         "symfony/deprecation-contracts": "^2.5 || ^3.0",
