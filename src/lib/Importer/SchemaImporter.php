@@ -17,15 +17,17 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Import database schema from custom Yaml Doctrine Schema format into Schema object.
  *
- * @see \Doctrine\DBAL\Schema\Schema
+ * @see Schema
  */
 class SchemaImporter implements APISchemaImporter
 {
     /**
      * {@inheritdoc}
      */
-    public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema
-    {
+    public function importFromFile(
+        string $schemaFilePath,
+        ?Schema $targetSchema = null
+    ): Schema {
         return $this->importFromArray(
             Yaml::parseFile($schemaFilePath),
             $targetSchema
@@ -35,8 +37,10 @@ class SchemaImporter implements APISchemaImporter
     /**
      * {@inheritdoc}
      */
-    public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema
-    {
+    public function importFromSource(
+        string $schemaDefinition,
+        ?Schema $targetSchema = null
+    ): Schema {
         return $this->importFromArray(
             Yaml::parse($schemaDefinition),
             $targetSchema
@@ -46,8 +50,10 @@ class SchemaImporter implements APISchemaImporter
     /**
      * Import schema described by array loaded from Yaml custom format to the currently configured database.
      */
-    private function importFromArray(array $schemaDefinition, ?Schema $targetSchema = null): Schema
-    {
+    private function importFromArray(
+        array $schemaDefinition,
+        ?Schema $targetSchema = null
+    ): Schema {
         if (null === $targetSchema) {
             $targetSchema = new Schema();
         }
@@ -62,7 +68,7 @@ class SchemaImporter implements APISchemaImporter
     /**
      * Import table from the given configuration to the given schema.
      *
-     * @param \Doctrine\DBAL\Schema\Schema target schema
+     * @param Schema target schema
      */
     private function importSchemaTable(
         Schema $schema,
@@ -127,10 +133,12 @@ class SchemaImporter implements APISchemaImporter
      *
      * @param array $columnList list of columns with their configuration
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      */
-    private function addSchemaTableColumns(Table $table, array $columnList): void
-    {
+    private function addSchemaTableColumns(
+        Table $table,
+        array $columnList
+    ): void {
         foreach ($columnList as $columnName => $columnConfiguration) {
             $location = sprintf('%s.fields.%s', $table->getName(), $columnName);
             $this->ensureNoExtraKeys($columnConfiguration, $location, [
@@ -192,8 +200,11 @@ class SchemaImporter implements APISchemaImporter
         }
     }
 
-    private function ensureNoExtraKeys(array $tableConfiguration, string $location, array $allowedKeys): void
-    {
+    private function ensureNoExtraKeys(
+        array $tableConfiguration,
+        string $location,
+        array $allowedKeys
+    ): void {
         $diff = array_diff(array_keys($tableConfiguration), $allowedKeys);
         if (!empty($diff)) {
             throw new InvalidConfigurationException(sprintf(
@@ -212,10 +223,14 @@ class SchemaImporter implements APISchemaImporter
      *     options?: array<mixed>,
      * } $indexConfig
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      */
-    private function addIndexToColumn(array $indexConfig, string $location, Table $table, string $columnName): void
-    {
+    private function addIndexToColumn(
+        array $indexConfig,
+        string $location,
+        Table $table,
+        string $columnName
+    ): void {
         if (!isset($indexConfig['name']) || !is_string($indexConfig['name'])) {
             throw new InvalidConfigurationException(sprintf(
                 'Unhandled property in schema configuration for "%s". Expected "name" to be a string, found %s.',
@@ -250,10 +265,12 @@ class SchemaImporter implements APISchemaImporter
      *     options?: array<mixed>,
      * }
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      */
-    private function normalizeIndexConfig($indexConfig, string $location): array
-    {
+    private function normalizeIndexConfig(
+        $indexConfig,
+        string $location
+    ): array {
         if (!is_string($indexConfig) && !is_array($indexConfig)) {
             throw new InvalidConfigurationException(sprintf(
                 'Unhandled property in schema configuration for "%s". Expected a string or an array, found %s.',

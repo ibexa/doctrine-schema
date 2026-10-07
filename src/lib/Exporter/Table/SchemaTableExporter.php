@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Ibexa\DoctrineSchema\Exporter\Table;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Table;
 
 /**
@@ -18,7 +19,7 @@ class SchemaTableExporter
     /**
      * Export \Doctrine\DBAL\Schema\Table to array representation.
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function export(Table $table): array
     {
@@ -55,8 +56,10 @@ class SchemaTableExporter
      *
      * @return array modified $tableMetadata
      */
-    private function exportIndices(array $tableMetadata, Table $table): array
-    {
+    private function exportIndices(
+        array $tableMetadata,
+        Table $table
+    ): array {
         foreach ($table->getIndexes() as $index) {
             if ($index->isPrimary()) {
                 // covered when processing columns
@@ -90,10 +93,12 @@ class SchemaTableExporter
      *
      * @return array modified $tableMetadata
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
-    private function exportColumns(array $tableMetadata, Table $table): array
-    {
+    private function exportColumns(
+        array $tableMetadata,
+        Table $table
+    ): array {
         $primaryKeyColumns = $table->hasPrimaryKey() ? $table->getPrimaryKeyColumns() : [];
         foreach ($table->getColumns() as $column) {
             $fieldName = $column->getName();
@@ -127,8 +132,10 @@ class SchemaTableExporter
      *
      * @return array modified $tableMetadata
      */
-    private function exportForeignKeys(array $tableMetadata, Table $table): array
-    {
+    private function exportForeignKeys(
+        array $tableMetadata,
+        Table $table
+    ): array {
         $foreignKeys = $table->getForeignKeys();
         if (!empty($foreignKeys)) {
             foreach ($foreignKeys as $foreignKeyName => $foreignKey) {

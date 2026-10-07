@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 interface DbPlatformInterface
 {
@@ -18,7 +19,7 @@ interface DbPlatformInterface
      * Every Database Platform implementation should extend Doctrine AbstractPlatform
      * (or its implementation).
      *
-     * @see \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @see AbstractPlatform
      */
     public function getDriverName(): string;
 

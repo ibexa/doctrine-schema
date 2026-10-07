@@ -11,13 +11,14 @@ namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 
 class SqliteTestDatabaseBuilder implements TestDatabaseBuilder
 {
     /**
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function buildDatabase(): Connection
     {
