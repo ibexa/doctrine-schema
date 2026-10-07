@@ -14,6 +14,7 @@ use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -39,6 +40,7 @@ final class DumpSqlCommand extends Command
         'mysql' => MySQLPlatform::class,
         'mariadb' => MariaDBPlatform::class,
         'postgres' => PostgreSQLPlatform::class,
+        'sqlite' => SQLitePlatform::class,
     ];
 
     public function __construct(Connection $db, SchemaBuilder $schemaBuilder)
