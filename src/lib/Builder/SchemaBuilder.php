@@ -10,7 +10,6 @@ namespace Ibexa\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
-use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface as APISchemaBuilder;
 use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
 use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
@@ -20,9 +19,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * SchemaBuilder implementation.
  *
- * @see SchemaBuilderInterface
+ * @see APISchemaBuilder
  *
- * @internal type-hint against the \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface
+ * @internal type-hint against the APISchemaBuilder
  */
 class SchemaBuilder implements APISchemaBuilder
 {

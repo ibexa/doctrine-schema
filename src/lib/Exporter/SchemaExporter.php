@@ -17,7 +17,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Export the given database Schema object to the custom Yaml format.
  *
- * @internal Type-hint API interface \Ibexa\Contracts\DoctrineSchema\SchemaExporterInterface
+ * @internal Type-hint API interface APISchemaExporter
  */
 class SchemaExporter implements APISchemaExporter
 {
