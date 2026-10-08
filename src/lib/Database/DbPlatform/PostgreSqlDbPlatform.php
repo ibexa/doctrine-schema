@@ -20,9 +20,7 @@ class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatformIn
     /**
      * {@inheritdoc}
      */
-    public function addEventSubscribers(EventManager $eventManager): void
-    {
-    }
+    public function addEventSubscribers(EventManager $eventManager): void {}
 
     /**
      * {@inheritdoc}
@@ -43,9 +41,9 @@ class PostgreSqlDbPlatform extends PostgreSQL100Platform implements DbPlatformIn
     /**
      * Returns the SQL snippet to drop an existing table.
      *
-     * @param \Doctrine\DBAL\Schema\Table|string $table
+     * @param Table|string $table
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getDropTableSQL($table): string
     {

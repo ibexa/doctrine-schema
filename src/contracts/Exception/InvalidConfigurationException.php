@@ -13,8 +13,11 @@ use Throwable;
 
 class InvalidConfigurationException extends Exception
 {
-    public function __construct(string $message = '', int $code = 1, ?Throwable $previous = null)
-    {
+    public function __construct(
+        string $message = '',
+        int $code = 1,
+        ?Throwable $previous = null
+    ) {
         parent::__construct("Invalid schema configuration: {$message}", $code, $previous);
     }
 }

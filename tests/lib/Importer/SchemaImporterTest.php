@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Importer;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\Index;
@@ -25,9 +26,9 @@ class SchemaImporterTest extends TestCase
      *
      * @see testImportFromFile
      *
-     * @phpstan-return iterable<array{non-empty-string, \Doctrine\DBAL\Schema\Schema}>
+     * @phpstan-return iterable<array{non-empty-string, Schema}>
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function providerForTestImportFromFile(): iterable
     {
@@ -280,8 +281,8 @@ class SchemaImporterTest extends TestCase
      *
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws InvalidConfigurationException
+     * @throws DBALException
      */
     public function testImportFromFile(
         string $yamlSchemaDefinitionFile,

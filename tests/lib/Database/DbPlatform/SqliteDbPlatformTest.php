@@ -11,15 +11,16 @@ namespace Ibexa\Tests\DoctrineSchema\Database\DbPlatform;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\ParameterType;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
 use PHPUnit\Framework\TestCase;
 
 class SqliteDbPlatformTest extends TestCase
 {
-    /** @var \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory */
+    /** @var TestDatabaseFactory */
     private $testDatabaseFactory;
 
-    /** @var \Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform */
+    /** @var SqliteDbPlatform */
     private $sqliteDbPlatform;
 
     public function setUp(): void
@@ -29,8 +30,8 @@ class SqliteDbPlatformTest extends TestCase
     }
 
     /**
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws DBALException
+     * @throws TestDatabaseConfigurationException
      */
     public function testForeignKeys(): void
     {

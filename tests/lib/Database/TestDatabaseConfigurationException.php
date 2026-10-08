@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Database;
 
-class TestDatabaseConfigurationException extends \Exception
-{
-}
+class TestDatabaseConfigurationException extends \Exception {}
 
 class_alias(TestDatabaseConfigurationException::class, 'EzSystems\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException');
