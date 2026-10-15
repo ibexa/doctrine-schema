@@ -467,6 +467,26 @@ class SchemaImporterTest extends TestCase
             YAML);
     }
 
+    public function testForeignKeyImportFailsIfNameIsNotString(): void
+    {
+        $importer = new SchemaImporter();
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Invalid schema configuration for "my_table.foreignKeys". Expected the foreign key name to be a string,'
+            . ' found int.'
+        );
+
+        $importer->importFromSource(<<<YAML
+            tables:
+                my_table:
+                    fields:
+                        main_id: { type: integer, nullable: false }
+                    foreignKeys:
+                        123: { fields: [main_id], foreignTable: my_main_table, foreignFields: [id] }
+            YAML);
+    }
+
     public function testForeignKeyIndexNameImportFailsIfItCannotBeDerived(): void
     {
         $importer = new SchemaImporter();
