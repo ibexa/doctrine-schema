@@ -248,7 +248,7 @@ class SchemaImporter implements APISchemaImporter
      * @phpstan-param non-empty-list<string> $columns the columns of the foreign key
      * @phpstan-param TForeignKeyIndexNameConfigurationData $indexNameConfig
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      */
     private function addForeignKeyIndex(
         Table $table,
@@ -289,10 +289,13 @@ class SchemaImporter implements APISchemaImporter
      *
      * @phpstan-return non-empty-string
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      */
-    private function resolveForeignKeyIndexName($indexNameConfig, string $foreignKeyName, string $location): string
-    {
+    private function resolveForeignKeyIndexName(
+        $indexNameConfig,
+        string $foreignKeyName,
+        string $location
+    ): string {
         if (is_string($indexNameConfig)) {
             $indexNameConfig = ['name' => $indexNameConfig];
         }

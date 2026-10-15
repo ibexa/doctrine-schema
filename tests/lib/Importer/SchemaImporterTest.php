@@ -408,8 +408,10 @@ class SchemaImporterTest extends TestCase
     /**
      * @dataProvider providerForTestForeignKeyIndexNameImportFails
      */
-    public function testForeignKeyIndexNameImportFails(string $indexNameDefinition, string $expectedMessage): void
-    {
+    public function testForeignKeyIndexNameImportFails(
+        string $indexNameDefinition,
+        string $expectedMessage
+    ): void {
         $importer = new SchemaImporter();
 
         $this->expectException(InvalidConfigurationException::class);
