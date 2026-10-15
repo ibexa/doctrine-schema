@@ -121,11 +121,21 @@ class SchemaImporter implements APISchemaImporter
 
         if (isset($tableConfiguration['foreignKeys'])) {
             foreach ($tableConfiguration['foreignKeys'] as $foreignKeyName => $foreignKey) {
+                if (!is_string($foreignKeyName)) {
+                    throw new InvalidConfigurationException(
+                        sprintf(
+                            'Invalid schema configuration for "%s.foreignKeys". Expected the foreign key name to be a string, found %s.',
+                            $tableName,
+                            get_debug_type($foreignKeyName),
+                        )
+                    );
+                }
+
                 if (isset($foreignKey['indexName'])) {
                     $this->addForeignKeyIndex(
                         $table,
                         $tableConfiguration,
-                        (string)$foreignKeyName,
+                        $foreignKeyName,
                         $foreignKey['fields'],
                         $foreignKey['indexName']
                     );
