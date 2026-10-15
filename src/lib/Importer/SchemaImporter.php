@@ -17,6 +17,15 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Import database schema from custom Yaml Doctrine Schema format into Schema object.
  *
+ * @phpstan-type TColumnIndexConfigurationData string|array{name: string, unique?: bool, options?: array<string, mixed>}
+ * @phpstan-type TIndexConfigurationData array{fields: non-empty-list<string>, options?: array<string, mixed>}
+ * @phpstan-type TForeignKeyIndexNameConfigurationData non-empty-string|array{
+ *     name: non-empty-string,
+ *     auto_derived?: false,
+ * }|array{
+ *     auto_derived: true,
+ * }
+ *
  * @see Schema
  */
 class SchemaImporter implements APISchemaImporter
@@ -105,7 +114,13 @@ class SchemaImporter implements APISchemaImporter
         if (isset($tableConfiguration['foreignKeys'])) {
             foreach ($tableConfiguration['foreignKeys'] as $foreignKeyName => $foreignKey) {
                 if (isset($foreignKey['indexName'])) {
-                    $this->addForeignKeyIndex($table, $tableConfiguration, (string)$foreignKeyName, $foreignKey);
+                    $this->addForeignKeyIndex(
+                        $table,
+                        $tableConfiguration,
+                        (string)$foreignKeyName,
+                        $foreignKey['fields'],
+                        $foreignKey['indexName']
+                    );
                 }
 
                 $table->addForeignKeyConstraint(
@@ -216,8 +231,14 @@ class SchemaImporter implements APISchemaImporter
      * Adds the index backing a foreign key under the name its "indexName" gives, before the foreign key itself,
      * so that Doctrine DBAL doesn't generate one named after a hash.
      *
-     * @param array<string, mixed> $tableConfiguration
-     * @param array<string, mixed> $foreignKey
+     * @phpstan-param array{
+     *     id?: array<string, array{index?: TColumnIndexConfigurationData}>,
+     *     fields?: array<string, array{index?: TColumnIndexConfigurationData}>,
+     *     indexes?: array<string, TIndexConfigurationData>,
+     *     uniqueConstraints?: array<string, TIndexConfigurationData>,
+     * } $tableConfiguration
+     * @phpstan-param non-empty-list<string> $columns the columns of the foreign key
+     * @phpstan-param TForeignKeyIndexNameConfigurationData $indexNameConfig
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
@@ -225,10 +246,11 @@ class SchemaImporter implements APISchemaImporter
         Table $table,
         array $tableConfiguration,
         string $foreignKeyName,
-        array $foreignKey
+        array $columns,
+        $indexNameConfig
     ): void {
         $location = sprintf('%s.foreignKeys.%s.indexName', $table->getName(), $foreignKeyName);
-        $indexName = $this->resolveForeignKeyIndexName($foreignKey['indexName'], $foreignKeyName, $location);
+        $indexName = $this->resolveForeignKeyIndexName($indexNameConfig, $foreignKeyName, $location);
 
         // Only declared indexes count: Doctrine DBAL drops the one it generated for another foreign key on the same
         // columns when this one is added.
@@ -241,21 +263,23 @@ class SchemaImporter implements APISchemaImporter
                 $indexedColumns[] = [$columnName];
             }
         }
-        if (in_array($foreignKey['fields'], $indexedColumns, true)) {
+        if (in_array($columns, $indexedColumns, true)) {
             throw new InvalidConfigurationException(sprintf(
                 'Invalid schema configuration for "%s". Another index already covers the "%s" columns of the foreign key.',
                 $location,
-                implode('", "', $foreignKey['fields']),
+                implode('", "', $columns),
             ));
         }
 
-        $table->addIndex($foreignKey['fields'], $indexName);
+        $table->addIndex($columns, $indexName);
     }
 
     /**
-     * @param mixed $indexNameConfig a name, or an array with either "name" or "auto_derived: true". A derived name
-     *                              turns the "fk_" prefix of the foreign key name into "idx_", or else its "_fk"
-     *                              suffix into "_idx".
+     * A derived name turns the "fk_" prefix of the foreign key name into "idx_", or else its "_fk" suffix into "_idx".
+     *
+     * @phpstan-param TForeignKeyIndexNameConfigurationData $indexNameConfig
+     *
+     * @phpstan-return non-empty-string
      *
      * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
      */
