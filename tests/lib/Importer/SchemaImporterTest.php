@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Ibexa\Tests\DoctrineSchema\Importer;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Schema\Schema;
 use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
@@ -23,9 +24,9 @@ class SchemaImporterTest extends TestCase
      *
      * @see testImportFromFile
      *
-     * @phpstan-return iterable<array{non-empty-string, \Doctrine\DBAL\Schema\Schema}>
+     * @phpstan-return iterable<array{non-empty-string, Schema}>
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public static function providerForTestImportFromFile(): iterable
     {
@@ -165,8 +166,8 @@ class SchemaImporterTest extends TestCase
     /**
      * @param string $yamlSchemaDefinitionFile custom Yaml schema definition fixture file name
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\Exception
+     * @throws InvalidConfigurationException
+     * @throws Exception
      */
     #[DataProvider('providerForTestImportFromFile')]
     public function testImportFromFile(
@@ -189,7 +190,7 @@ class SchemaImporterTest extends TestCase
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function testTableImportFailsIfUnhandledKeys(): void
     {
@@ -204,7 +205,7 @@ class SchemaImporterTest extends TestCase
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function testColumnImportFailsIfUnhandledKeys(): void
     {
@@ -223,7 +224,7 @@ class SchemaImporterTest extends TestCase
      * schemas written before it keep working, and deprecates relying on that.
      *
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     #[Group('legacy')]
     public function testStringColumnWithoutLengthDefaultsTo255(): void

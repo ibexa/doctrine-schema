@@ -30,7 +30,5 @@ final class DefaultTableOptions
         'engine' => self::ENGINE,
     ];
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }

@@ -31,5 +31,8 @@ interface SchemaAssetsFilterBypassInterface
      *
      * @phpstan-return T
      */
-    public function call(Connection $connection, callable $callback): mixed;
+    public function call(
+        Connection $connection,
+        callable $callback
+    ): mixed;
 }

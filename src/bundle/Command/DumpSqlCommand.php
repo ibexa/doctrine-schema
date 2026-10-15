@@ -9,12 +9,15 @@ declare(strict_types=1);
 namespace Ibexa\Bundle\DoctrineSchema\Command;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MariaDBPlatform;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Schema\SchemaException;
+use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -33,7 +36,7 @@ final class DumpSqlCommand extends Command
     private SchemaBuilder $schemaBuilder;
 
     /**
-     * @phpstan-var array<non-empty-string, class-string<\Doctrine\DBAL\Platforms\AbstractPlatform>>
+     * @phpstan-var array<non-empty-string, class-string<AbstractPlatform>>
      */
     private const array PLATFORM_MAP = [
         'mysql8' => MySQL80Platform::class,
@@ -43,8 +46,10 @@ final class DumpSqlCommand extends Command
         'sqlite' => SQLitePlatform::class,
     ];
 
-    public function __construct(Connection $db, SchemaBuilder $schemaBuilder)
-    {
+    public function __construct(
+        Connection $db,
+        SchemaBuilder $schemaBuilder
+    ) {
         $this->db = $db;
         $this->schemaBuilder = $schemaBuilder;
 
@@ -77,12 +82,14 @@ final class DumpSqlCommand extends Command
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Doctrine\DBAL\Schema\SchemaException
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws Exception
+     * @throws SchemaException
+     * @throws InvalidConfigurationException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    protected function execute(
+        InputInterface $input,
+        OutputInterface $output
+    ): int {
         $file = $input->getArgument('file');
         if ($file !== null) {
             $toSchema = $this->schemaBuilder->importSchemaFromFile($file);
@@ -122,7 +129,7 @@ final class DumpSqlCommand extends Command
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     private function getPlatformForInput(InputInterface $input): AbstractPlatform
     {

@@ -16,9 +16,9 @@ use PHPUnit\Framework\TestCase;
 
 final class SchemaAssetsFilterBypassTest extends TestCase
 {
-    private Connection&MockObject $connection;
+    private Connection & MockObject $connection;
 
-    private Configuration&MockObject $configuration;
+    private Configuration & MockObject $configuration;
 
     private SchemaAssetsFilterBypass $bypass;
 
@@ -35,12 +35,12 @@ final class SchemaAssetsFilterBypassTest extends TestCase
     public function testTemporarilyLiftsAndRestoresTheConfiguredFilter(): void
     {
         $originalFilter = static fn (): bool => false;
-        $this->configuration->expects(self::once())
+        $this->configuration->expects($this->once())
             ->method('getSchemaAssetsFilter')
             ->willReturn($originalFilter);
 
         $appliedFilters = [];
-        $this->configuration->expects(self::exactly(2))
+        $this->configuration->expects($this->exactly(2))
             ->method('setSchemaAssetsFilter')
             ->willReturnCallback(static function (callable $filter) use (&$appliedFilters): void {
                 $appliedFilters[] = $filter;
@@ -57,7 +57,7 @@ final class SchemaAssetsFilterBypassTest extends TestCase
     public function testRestoresThePreviousFilterEvenWhenTheCallbackThrows(): void
     {
         $originalFilter = static fn (): bool => false;
-        $this->configuration->expects(self::once())
+        $this->configuration->expects($this->once())
             ->method('getSchemaAssetsFilter')
             ->willReturn($originalFilter);
 

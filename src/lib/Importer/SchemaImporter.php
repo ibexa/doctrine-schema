@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Ibexa\DoctrineSchema\Importer;
 
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface as APISchemaImporter;
@@ -25,22 +26,26 @@ use Symfony\Component\Yaml\Yaml;
  *     uniqueConstraints?: array<string, mixed>
  * }
  *
- * @see \Doctrine\DBAL\Schema\Schema
+ * @see Schema
  */
 class SchemaImporter implements APISchemaImporter
 {
     private const int DEFAULT_STRING_LENGTH = 255;
 
-    public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema
-    {
+    public function importFromFile(
+        string $schemaFilePath,
+        ?Schema $targetSchema = null
+    ): Schema {
         return $this->importFromArray(
             Yaml::parseFile($schemaFilePath),
             $targetSchema
         );
     }
 
-    public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema
-    {
+    public function importFromSource(
+        string $schemaDefinition,
+        ?Schema $targetSchema = null
+    ): Schema {
         return $this->importFromArray(
             Yaml::parse($schemaDefinition),
             $targetSchema
@@ -52,11 +57,13 @@ class SchemaImporter implements APISchemaImporter
      *
      * @phpstan-param array{tables: array<TTableConfigurationData>} $schemaDefinition
      *
-     * @throws \Doctrine\DBAL\Schema\SchemaException
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws SchemaException
+     * @throws InvalidConfigurationException
      */
-    private function importFromArray(array $schemaDefinition, ?Schema $targetSchema = null): Schema
-    {
+    private function importFromArray(
+        array $schemaDefinition,
+        ?Schema $targetSchema = null
+    ): Schema {
         if (null === $targetSchema) {
             $targetSchema = new Schema();
         }
@@ -73,8 +80,8 @@ class SchemaImporter implements APISchemaImporter
      *
      * @phpstan-param TTableConfigurationData $tableConfiguration
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\Schema\SchemaException
+     * @throws InvalidConfigurationException
+     * @throws SchemaException
      */
     private function importSchemaTable(
         Schema $schema,
@@ -142,11 +149,13 @@ class SchemaImporter implements APISchemaImporter
      *
      * @phpstan-param array<string, array<string, mixed>> $columnList list of columns with their configuration
      *
-     * @throws \Doctrine\DBAL\Schema\SchemaException
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws SchemaException
+     * @throws InvalidConfigurationException
      */
-    private function addSchemaTableColumns(Table $table, array $columnList): void
-    {
+    private function addSchemaTableColumns(
+        Table $table,
+        array $columnList
+    ): void {
         foreach ($columnList as $columnName => $columnConfiguration) {
             $location = sprintf('%s.fields.%s', $table->getName(), $columnName);
             $this->ensureNoExtraKeys($columnConfiguration, $location, [
@@ -225,10 +234,13 @@ class SchemaImporter implements APISchemaImporter
      *
      * @param array<string> $allowedKeys
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      */
-    private function ensureNoExtraKeys(array $tableConfiguration, string $location, array $allowedKeys): void
-    {
+    private function ensureNoExtraKeys(
+        array $tableConfiguration,
+        string $location,
+        array $allowedKeys
+    ): void {
         $diff = array_diff(array_keys($tableConfiguration), $allowedKeys);
         if (!empty($diff)) {
             throw new InvalidConfigurationException(
@@ -249,11 +261,15 @@ class SchemaImporter implements APISchemaImporter
      *     options?: array<mixed>,
      * } $indexConfig
      *
-     * @throws \Doctrine\DBAL\Schema\SchemaException
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws SchemaException
+     * @throws InvalidConfigurationException
      */
-    private function addIndexToColumn(array $indexConfig, string $location, Table $table, string $columnName): void
-    {
+    private function addIndexToColumn(
+        array $indexConfig,
+        string $location,
+        Table $table,
+        string $columnName
+    ): void {
         if (!isset($indexConfig['name']) || !is_string($indexConfig['name'])) {
             throw new InvalidConfigurationException(
                 sprintf(
@@ -290,10 +306,12 @@ class SchemaImporter implements APISchemaImporter
      *     options?: array<mixed>,
      * }
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
+     * @throws InvalidConfigurationException
      */
-    private function normalizeIndexConfig($indexConfig, string $location): array
-    {
+    private function normalizeIndexConfig(
+        $indexConfig,
+        string $location
+    ): array {
         if (!is_string($indexConfig) && !is_array($indexConfig)) {
             throw new InvalidConfigurationException(
                 sprintf(

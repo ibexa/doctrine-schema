@@ -13,8 +13,10 @@ use Ibexa\Contracts\DoctrineSchema\SchemaAssetsFilterBypassInterface;
 
 final readonly class SchemaAssetsFilterBypass implements SchemaAssetsFilterBypassInterface
 {
-    public function call(Connection $connection, callable $callback): mixed
-    {
+    public function call(
+        Connection $connection,
+        callable $callback
+    ): mixed {
         $configuration = $connection->getConfiguration();
         $previousFilter = $configuration->getSchemaAssetsFilter();
         $configuration->setSchemaAssetsFilter(static fn (): bool => true);
