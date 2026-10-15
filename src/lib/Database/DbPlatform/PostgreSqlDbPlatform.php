@@ -37,9 +37,9 @@ final class PostgreSqlDbPlatform extends PostgreSQLPlatform implements DbPlatfor
     /**
      * Returns the SQL snippet to drop an existing table.
      *
-     * @param \Doctrine\DBAL\Schema\Table|string $table
+     * @param Table|string $table
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getDropTableSQL($table): string
     {

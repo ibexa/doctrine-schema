@@ -18,8 +18,10 @@ class SchemaBuilderEvent extends Event
 
     private Schema $schema;
 
-    public function __construct(SchemaBuilderInterface $schemaBuilder, Schema $schema)
-    {
+    public function __construct(
+        SchemaBuilderInterface $schemaBuilder,
+        Schema $schema
+    ) {
         $this->schemaBuilder = $schemaBuilder;
         $this->schema = $schema;
     }

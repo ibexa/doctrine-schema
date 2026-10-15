@@ -13,12 +13,13 @@ use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\AbstractSQLiteDriver\Middleware\EnableForeignKeys;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
 
 class SqliteTestDatabaseBuilder implements TestDatabaseBuilder
 {
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function buildDatabase(): Connection
     {

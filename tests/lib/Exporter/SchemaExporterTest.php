@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Ibexa\Tests\DoctrineSchema\Exporter;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
@@ -80,7 +81,7 @@ class SchemaExporterTest extends TestCase
     /**
      * @dataProvider providerForTestExport
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function testExport(
         AbstractPlatform $databasePlatform,
@@ -123,8 +124,8 @@ class SchemaExporterTest extends TestCase
     }
 
     /**
-     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
-     * @throws \Doctrine\DBAL\Exception
+     * @throws TestDatabaseConfigurationException
+     * @throws Exception
      */
     private function getDatabaseConnection(AbstractPlatform $databasePlatform): Connection
     {

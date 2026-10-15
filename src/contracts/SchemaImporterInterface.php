@@ -8,36 +8,44 @@ declare(strict_types=1);
 
 namespace Ibexa\Contracts\DoctrineSchema;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Schema;
+use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 
 /**
  * Import database schema from custom Yaml Doctrine Schema format into Schema object.
  *
- * @see \Doctrine\DBAL\Schema\Schema
+ * @see Schema
  */
 interface SchemaImporterInterface
 {
     /**
      * Import database schema into \Doctrine\DBAL\Schema from file containing custom Yaml format.
      *
-     * @param \Doctrine\DBAL\Schema\Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
+     * @param Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
      *
-     * @return \Doctrine\DBAL\Schema\Schema imported schema
+     * @return Schema imported schema
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\Exception
+     * @throws InvalidConfigurationException
+     * @throws Exception
      */
-    public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema;
+    public function importFromFile(
+        string $schemaFilePath,
+        ?Schema $targetSchema = null
+    ): Schema;
 
     /**
      * Import database schema into \Doctrine\DBAL\Schema from string containing custom Yaml format.
      *
-     * @param \Doctrine\DBAL\Schema\Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
+     * @param Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
      *
-     * @return \Doctrine\DBAL\Schema\Schema imported schema
+     * @return Schema imported schema
      *
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\Exception
+     * @throws InvalidConfigurationException
+     * @throws Exception
      */
-    public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema;
+    public function importFromSource(
+        string $schemaDefinition,
+        ?Schema $targetSchema = null
+    ): Schema;
 }

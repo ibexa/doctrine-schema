@@ -59,8 +59,10 @@ class SchemaTableExporter
      *
      * @phpstan-return TTableMetadata modified $tableMetadata
      */
-    private function exportIndices(array $tableMetadata, Table $table): array
-    {
+    private function exportIndices(
+        array $tableMetadata,
+        Table $table
+    ): array {
         foreach ($table->getIndexes() as $index) {
             if ($index->isPrimary()) {
                 // covered when processing columns
@@ -96,8 +98,10 @@ class SchemaTableExporter
      *
      * @phpstan-return TTableMetadata modified $tableMetadata
      */
-    private function exportColumns(array $tableMetadata, Table $table): array
-    {
+    private function exportColumns(
+        array $tableMetadata,
+        Table $table
+    ): array {
         $primaryKeyColumns = $table->getPrimaryKey()?->getColumns() ?? [];
         foreach ($table->getColumns() as $column) {
             $fieldName = $column->getName();
@@ -133,8 +137,10 @@ class SchemaTableExporter
      *
      * @phpstan-return TTableMetadata modified $tableMetadata
      */
-    private function exportForeignKeys(array $tableMetadata, Table $table): array
-    {
+    private function exportForeignKeys(
+        array $tableMetadata,
+        Table $table
+    ): array {
         $foreignKeys = $table->getForeignKeys();
         if (!empty($foreignKeys)) {
             foreach ($foreignKeys as $foreignKeyName => $foreignKey) {

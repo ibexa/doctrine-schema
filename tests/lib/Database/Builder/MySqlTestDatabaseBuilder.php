@@ -11,13 +11,14 @@ namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 
 class MySqlTestDatabaseBuilder implements TestDatabaseBuilder
 {
     /**
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws Exception
+     * @throws TestDatabaseConfigurationException
      */
     public function buildDatabase(): Connection
     {

@@ -10,6 +10,7 @@ namespace Ibexa\DoctrineSchema\Database\DbPlatform;
 
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Configuration;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * @internal
@@ -22,7 +23,7 @@ interface DbPlatformInterface
      * Every Database Platform implementation should extend Doctrine AbstractPlatform
      * (or its implementation).
      *
-     * @see \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @see AbstractPlatform
      */
     public function getDriverName(): string;
 
