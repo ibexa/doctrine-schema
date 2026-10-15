@@ -19,24 +19,24 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * SchemaBuilder implementation.
  *
- * @see \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface
+ * @see APISchemaBuilder
  *
- * @internal type-hint against the \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface
+ * @internal type-hint against the APISchemaBuilder
  */
 class SchemaBuilder implements APISchemaBuilder
 {
     /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+     * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
     /**
-     * @var \Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface
+     * @var SchemaImporterInterface
      */
     private $schemaImporter;
 
     /**
-     * @var \Doctrine\DBAL\Schema\Schema
+     * @var Schema
      */
     private $schema;
 

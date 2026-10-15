@@ -27,8 +27,10 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
     /**
      * {@inheritdoc}
      */
-    public function getCreateTableSQL(Table $table, $createFlags = null)
-    {
+    public function getCreateTableSQL(
+        Table $table,
+        $createFlags = null
+    ) {
         $createFlags = $createFlags ?? self::CREATE_INDEXES | self::CREATE_FOREIGNKEYS;
 
         $hasCompositePK = $table->hasPrimaryKey() && count($table->getPrimaryKeyColumns()) > 1;
@@ -64,8 +66,10 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
      *
      * {@inheritdoc}
      */
-    public function getDropForeignKeySQL($foreignKey, $table): string
-    {
+    public function getDropForeignKeySQL(
+        $foreignKey,
+        $table
+    ): string {
         // dropping FKs is not supported by Sqlite
 
         return '-- ';
@@ -76,8 +80,10 @@ class SqliteDbPlatform extends SqlitePlatform implements DbPlatformInterface
      *
      * {@inheritdoc}
      */
-    public function getCreateForeignKeySQL(ForeignKeyConstraint $foreignKey, $table): string
-    {
+    public function getCreateForeignKeySQL(
+        ForeignKeyConstraint $foreignKey,
+        $table
+    ): string {
         return '-- ';
     }
 }

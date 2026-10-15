@@ -14,16 +14,18 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class SchemaBuilderEvent extends Event
 {
-    /** @var \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface */
+    /** @var SchemaBuilderInterface */
     private $schemaBuilder;
 
     /**
-     * @var \Doctrine\DBAL\Schema\Schema
+     * @var Schema
      */
     private $schema;
 
-    public function __construct(SchemaBuilderInterface $schemaBuilder, Schema $schema)
-    {
+    public function __construct(
+        SchemaBuilderInterface $schemaBuilder,
+        Schema $schema
+    ) {
         $this->schemaBuilder = $schemaBuilder;
         $this->schema = $schema;
     }

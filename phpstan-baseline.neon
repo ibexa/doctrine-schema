@@ -121,7 +121,7 @@ parameters:
 			path: src/lib/Importer/SchemaImporter.php
 
 		-
-			message: '#^PHPDoc tag @param has invalid value \(\\Doctrine\\DBAL\\Schema\\Schema target schema\)\: Unexpected token "target", expected variable at offset 124 on line 4$#'
+			message: '#^PHPDoc tag @param has invalid value \(Schema target schema\)\: Unexpected token "target", expected variable at offset 102 on line 4$#'
 			identifier: phpDoc.parseError
 			count: 1
 			path: src/lib/Importer/SchemaImporter.php

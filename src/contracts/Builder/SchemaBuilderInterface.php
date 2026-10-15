@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace Ibexa\Contracts\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
+use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
+use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
 
 /**
  * Doctrine\DBAL\Schema event-driven builder.
@@ -21,8 +23,8 @@ interface SchemaBuilderInterface
      * To build schema you should implement EventSubscriber subscribing to SchemaBuilderEvents::BUILD_SCHEMA.
      * The method handling this event accepts single argument of SchemaBuilderEvent type
      *
-     * @see \Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent
-     * @see \Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents::BUILD_SCHEMA
+     * @see SchemaBuilderEvent
+     * @see SchemaBuilderEvents::BUILD_SCHEMA
      */
     public function buildSchema(): Schema;
 

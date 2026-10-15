@@ -36,7 +36,7 @@ final class DumpSqlCommand extends Command
     private SchemaBuilder $schemaBuilder;
 
     /**
-     * @phpstan-var array<non-empty-string, class-string<\Doctrine\DBAL\Platforms\AbstractPlatform>>
+     * @phpstan-var array<non-empty-string, class-string<AbstractPlatform>>
      */
     private const PLATFORM_MAP = [
         'mysql8' => MySQL80Platform::class,
@@ -47,8 +47,10 @@ final class DumpSqlCommand extends Command
         'sqlite' => SqlitePlatform::class,
     ];
 
-    public function __construct(Connection $db, SchemaBuilder $schemaBuilder)
-    {
+    public function __construct(
+        Connection $db,
+        SchemaBuilder $schemaBuilder
+    ) {
         $this->db = $db;
         $this->schemaBuilder = $schemaBuilder;
 
@@ -80,8 +82,10 @@ final class DumpSqlCommand extends Command
         );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    protected function execute(
+        InputInterface $input,
+        OutputInterface $output
+    ): int {
         $file = $input->getArgument('file');
         if ($file !== null) {
             $toSchema = $this->schemaBuilder->importSchemaFromFile($file);

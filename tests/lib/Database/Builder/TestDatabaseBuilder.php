@@ -9,12 +9,14 @@ declare(strict_types=1);
 namespace Ibexa\Tests\DoctrineSchema\Database\Builder;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 
 interface TestDatabaseBuilder
 {
     /**
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws DBALException
+     * @throws TestDatabaseConfigurationException
      */
     public function buildDatabase(): Connection;
 }

@@ -9,11 +9,13 @@ declare(strict_types=1);
 namespace Ibexa\Tests\DoctrineSchema\Database;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Ibexa\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder;
 
 class TestDatabaseFactory
 {
-    /** @var \Ibexa\Tests\DoctrineSchema\Database\Builder\TestDatabaseBuilder[] */
+    /** @var TestDatabaseBuilder[] */
     private $databaseBuildersForPlatforms = [];
 
     public function __construct()
@@ -25,8 +27,8 @@ class TestDatabaseFactory
     }
 
     /**
-     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws TestDatabaseConfigurationException
+     * @throws DBALException
      */
     public function prepareAndConnect(AbstractPlatform $databasePlatform): Connection
     {

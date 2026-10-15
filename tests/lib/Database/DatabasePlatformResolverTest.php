@@ -23,7 +23,7 @@ use PHPUnit\Framework\TestCase;
 class DatabasePlatformResolverTest extends TestCase
 {
     /**
-     * @return iterable<string, array{\Doctrine\DBAL\Platforms\AbstractPlatform, string|null}>
+     * @return iterable<string, array{AbstractPlatform, string|null}>
      */
     public function providePlatforms(): iterable
     {
@@ -36,8 +36,10 @@ class DatabasePlatformResolverTest extends TestCase
     /**
      * @dataProvider providePlatforms
      */
-    public function testResolveName(AbstractPlatform $platform, ?string $expectedName): void
-    {
+    public function testResolveName(
+        AbstractPlatform $platform,
+        ?string $expectedName
+    ): void {
         self::assertSame($expectedName, DatabasePlatformResolver::resolveName($platform));
     }
 
