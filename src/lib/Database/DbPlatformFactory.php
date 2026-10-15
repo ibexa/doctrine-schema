@@ -10,6 +10,7 @@ namespace Ibexa\DoctrineSchema\Database;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Ibexa\Contracts\DoctrineSchema\DbPlatformFactoryInterface as APIDbPlatformFactory;
+use Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface;
 
 /**
  * @internal
@@ -17,12 +18,12 @@ use Ibexa\Contracts\DoctrineSchema\DbPlatformFactoryInterface as APIDbPlatformFa
 final class DbPlatformFactory implements APIDbPlatformFactory
 {
     /**
-     * @var array<\Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface&\Doctrine\DBAL\Platforms\AbstractPlatform>
+     * @var array<DbPlatformInterface&AbstractPlatform>
      */
     private array $dbPlatforms = [];
 
     /**
-     * @param iterable<\Ibexa\DoctrineSchema\Database\DbPlatform\DbPlatformInterface&\Doctrine\DBAL\Platforms\AbstractPlatform> $dbPlatforms
+     * @param iterable<DbPlatformInterface&AbstractPlatform> $dbPlatforms
      */
     public function __construct(iterable $dbPlatforms)
     {

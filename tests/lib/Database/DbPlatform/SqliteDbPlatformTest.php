@@ -14,6 +14,7 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Schema\Schema;
 use Ibexa\DoctrineSchema\Database\DbPlatform\SqliteDbPlatform;
+use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException;
 use Ibexa\Tests\DoctrineSchema\Database\TestDatabaseFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -33,8 +34,8 @@ final class SqliteDbPlatformTest extends TestCase
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
-     * @throws \Ibexa\Tests\DoctrineSchema\Database\TestDatabaseConfigurationException
+     * @throws Exception
+     * @throws TestDatabaseConfigurationException
      */
     public function testDatabaseFactoryEnablesForeignKeys(): void
     {
@@ -67,7 +68,7 @@ final class SqliteDbPlatformTest extends TestCase
     /**
      * For external usage (e.g.: by ibexa/core, a configure method needs to be called to enable foreign keys).
      *
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     public function testConfigureEnablesForeignKeys(): void
     {

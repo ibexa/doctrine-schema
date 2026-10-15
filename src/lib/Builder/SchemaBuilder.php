@@ -8,10 +8,13 @@ declare(strict_types=1);
 
 namespace Ibexa\DoctrineSchema\Builder;
 
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
+use Doctrine\DBAL\Schema\SchemaException;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface as APISchemaBuilder;
 use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
+use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
 use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -19,9 +22,9 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * SchemaBuilder implementation.
  *
- * @see \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface
+ * @see APISchemaBuilder
  *
- * @internal type-hint against the \Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface
+ * @internal type-hint against the APISchemaBuilder
  */
 class SchemaBuilder implements APISchemaBuilder
 {
@@ -48,7 +51,7 @@ class SchemaBuilder implements APISchemaBuilder
     }
 
     /**
-     * @throws \Doctrine\DBAL\Schema\SchemaException
+     * @throws SchemaException
      */
     public function buildSchema(): Schema
     {
@@ -65,8 +68,8 @@ class SchemaBuilder implements APISchemaBuilder
     }
 
     /**
-     * @throws \Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException
-     * @throws \Doctrine\DBAL\Exception
+     * @throws InvalidConfigurationException
+     * @throws Exception
      */
     public function importSchemaFromFile(string $schemaFilePath): Schema
     {
