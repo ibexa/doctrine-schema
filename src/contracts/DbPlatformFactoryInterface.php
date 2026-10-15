@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Ibexa\Contracts\DoctrineSchema;
 
+use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 interface DbPlatformFactoryInterface
@@ -17,12 +18,12 @@ interface DbPlatformFactoryInterface
      *
      * Factory can return null, which means that the Driver should decide.
      *
-     * @see \Doctrine\DBAL\Platforms\AbstractPlatform
-     * @see \Doctrine\DBAL\Driver
+     * @see AbstractPlatform
+     * @see Driver
      *
      * @param string $driverName (e.g. 'pdo_mysql', 'pdo_pgsql', 'pdo_sqlite').
      *
-     * @return \Doctrine\DBAL\Platforms\AbstractPlatform|null if null - let the Driver decide
+     * @return AbstractPlatform|null if null - let the Driver decide
      */
     public function createDatabasePlatformFromDriverName(string $driverName): ?AbstractPlatform;
 }
