@@ -39,8 +39,8 @@ class SchemaBuilderEvent extends Event
 
     /**
      * The schema built so far, from the tables and sequences added with {@see addTable()} and {@see addSequence()}.
-     * It's a new schema once something was added, so tables created in it aren't part of the built schema: add them
-     * with {@see addTable()} instead.
+     * It's created from the schema editor, so tables created in it aren't part of the built schema: add them with
+     * {@see addTable()} instead.
      */
     public function getSchema(): Schema
     {
