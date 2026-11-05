@@ -19,44 +19,18 @@ use Ibexa\DoctrineSchema\Builder\SchemaBuilder;
 use Ibexa\DoctrineSchema\Importer\SchemaImporter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SchemaBuilderTest extends TestCase
 {
     public function testBuildSchema(): void
     {
-        $eventDispatcher = new EventDispatcher();
-
-        $builder = new SchemaBuilder(
-            $eventDispatcher,
-            self::createStub(SchemaImporterInterface::class)
-        );
-
-        $eventDispatcher->addSubscriber(
-            new class() implements EventSubscriberInterface {
-                public static function getSubscribedEvents(): array
-                {
-                    return [
-                        SchemaBuilderEvents::BUILD_SCHEMA => ['onBuildSchema', 200],
-                    ];
-                }
-
-                public function onBuildSchema(SchemaBuilderEvent $event): void
-                {
-                    $event
-                        ->getSchema()->createTable('my_table');
-                }
+        $schema = $this->buildSchema(
+            static function (SchemaBuilderEvent $event): void {
+                $event->addTable(self::createTable('my_table'));
             }
         );
 
-        $expectedSchema = new Schema();
-        $expectedSchema->createTable('my_table');
-
-        // A schema created from tables gives them its configuration, which Schema::createTable() didn't
-        self::assertEquals(
-            $expectedSchema->edit()->create(),
-            $builder->buildSchema()
-        );
+        self::assertEquals(new Schema([self::createTable('my_table')]), $schema);
     }
 
     public function testBuildsTheAddedTablesAndSequencesWithTheDefaultTableOptions(): void

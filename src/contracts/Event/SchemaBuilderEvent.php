@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace Ibexa\Contracts\DoctrineSchema\Event;
 
-use Doctrine\DBAL\Schema\Exception\SequenceAlreadyExists;
-use Doctrine\DBAL\Schema\Exception\TableAlreadyExists;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaEditor;
 use Doctrine\DBAL\Schema\SchemaException;
@@ -20,38 +18,33 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Collects the tables and sequences subscribers add to the schema being built. DBAL 4.5 deprecated changing a
- * schema or a table in place, so the schema builder creates the schema from them once the event has been dispatched.
+ * schema or a table in place, so they're added to a schema editor, which the schema builder creates the schema from
+ * once the event has been dispatched.
  */
 class SchemaBuilderEvent extends Event
 {
     private SchemaBuilderInterface $schemaBuilder;
 
-    private Schema $schema;
+    private SchemaEditor $schemaEditor;
 
-    private SchemaEditor $addedAssets;
-
-    /** The added tables and sequences, to look them up, as a schema editor can't. */
-    private ?Schema $addedSchema = null;
+    private ?Schema $schema = null;
 
     public function __construct(
         SchemaBuilderInterface $schemaBuilder,
-        Schema $schema
+        SchemaEditor $schemaEditor
     ) {
         $this->schemaBuilder = $schemaBuilder;
-        $this->schema = $schema;
-        $this->addedAssets = Schema::editor();
+        $this->schemaEditor = $schemaEditor;
     }
 
     /**
-     * The schema subscribers used to change in place. It holds only the tables and sequences created in it, not the
-     * ones added with {@see addTable()} and {@see addSequence()}.
-     *
-     * @deprecated 6.0.0 DBAL 4.5 deprecated changing a schema in place. Use {@see addTable()} and
-     *             {@see addSequence()}, and {@see hasTable()} and {@see hasSequence()} to look them up.
+     * The schema built so far, from the tables and sequences added with {@see addTable()} and {@see addSequence()}.
+     * It's a new schema once something was added, so tables created in it aren't part of the built schema: add them
+     * with {@see addTable()} instead.
      */
     public function getSchema(): Schema
     {
-        return $this->schema;
+        return $this->schema ??= $this->schemaEditor->create();
     }
 
     public function getSchemaBuilder(): SchemaBuilderInterface
@@ -67,13 +60,8 @@ class SchemaBuilderEvent extends Event
      */
     public function addTable(Table $table): void
     {
-        $name = $table->getObjectName()->toString();
-        if ($this->schema->hasTable($name)) {
-            throw TableAlreadyExists::new($name);
-        }
-
-        $this->addedAssets->addTable($table);
-        $this->addedSchema = null;
+        $this->schemaEditor->addTable($table);
+        $this->schema = null;
     }
 
     /**
@@ -83,32 +71,17 @@ class SchemaBuilderEvent extends Event
      */
     public function addSequence(Sequence $sequence): void
     {
-        $name = $sequence->getObjectName()->toString();
-        if ($this->schema->hasSequence($name)) {
-            throw SequenceAlreadyExists::new($name);
-        }
-
-        $this->addedAssets->addSequence($sequence);
-        $this->addedSchema = null;
+        $this->schemaEditor->addSequence($sequence);
+        $this->schema = null;
     }
 
     public function hasTable(string $name): bool
     {
-        return $this->schema->hasTable($name) || $this->getAddedSchema()->hasTable($name);
+        return $this->getSchema()->hasTable($name);
     }
 
     public function hasSequence(string $name): bool
     {
-        return $this->schema->hasSequence($name) || $this->getAddedSchema()->hasSequence($name);
-    }
-
-    /**
-     * @internal for the schema builder, which creates the schema from them
-     *
-     * @return Schema the tables and sequences added with {@see addTable()} and {@see addSequence()}
-     */
-    public function getAddedSchema(): Schema
-    {
-        return $this->addedSchema ??= $this->addedAssets->create();
+        return $this->getSchema()->hasSequence($name);
     }
 }

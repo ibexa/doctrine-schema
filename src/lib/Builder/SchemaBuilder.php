@@ -57,30 +57,23 @@ class SchemaBuilder implements APISchemaBuilder
      */
     public function buildSchema(): Schema
     {
+        $schemaEditor = Schema::editor();
+        if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
+            $this->event = new SchemaBuilderEvent($this, $schemaEditor);
+            try {
+                $this->eventDispatcher->dispatch($this->event, SchemaBuilderEvents::BUILD_SCHEMA);
+            } finally {
+                $this->event = null;
+            }
+        }
+
+        $schema = $schemaEditor->create();
         $config = new SchemaConfig();
         $config->setDefaultTableOptions($this->defaultTableOptions);
 
-        $schema = new Schema([], [], $config);
-        if (!$this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
-            return $schema;
-        }
-
-        $event = new SchemaBuilderEvent($this, $schema);
-        $this->event = $event;
-        try {
-            $this->eventDispatcher->dispatch($event, SchemaBuilderEvents::BUILD_SCHEMA);
-        } finally {
-            $this->event = null;
-        }
-
-        $addedSchema = $event->getAddedSchema();
-
         return new Schema(
-            [
-                ...$schema->getTables(),
-                ...array_map($this->withDefaultTableOptions(...), $addedSchema->getTables()),
-            ],
-            [...$schema->getSequences(), ...$addedSchema->getSequences()],
+            array_map($this->withDefaultTableOptions(...), $schema->getTables()),
+            $schema->getSequences(),
             $config
         );
     }

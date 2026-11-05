@@ -20,7 +20,25 @@ use PHPUnit\Framework\TestCase;
 
 final class SchemaBuilderEventTest extends TestCase
 {
-    public function testLooksUpTablesAndSequencesInTheSchemaAndAmongTheAddedOnes(): void
+    public function testGivesTheSchemaBuiltSoFar(): void
+    {
+        $event = $this->createEvent();
+        $schemaBefore = $event->getSchema();
+
+        $event->addTable(self::createTable('added_table'));
+        self::assertTrue($event->getSchema()->hasTable('added_table'));
+
+        $event->addSequence(self::createSequence('added_sequence'));
+        $schema = $event->getSchema();
+
+        self::assertTrue($schema->hasTable('existing_table'));
+        self::assertTrue($schema->hasTable('added_table'));
+        self::assertTrue($schema->hasSequence('existing_sequence'));
+        self::assertTrue($schema->hasSequence('added_sequence'));
+        self::assertFalse($schemaBefore->hasTable('added_table'));
+    }
+
+    public function testLooksUpTablesAndSequencesInTheSchemaBuiltSoFar(): void
     {
         $event = $this->createEvent();
         $event->addTable(self::createTable('added_table'));
@@ -32,7 +50,6 @@ final class SchemaBuilderEventTest extends TestCase
         self::assertTrue($event->hasSequence('existing_sequence'));
         self::assertTrue($event->hasSequence('added_sequence'));
         self::assertFalse($event->hasSequence('missing_sequence'));
-        self::assertFalse($event->getSchema()->hasTable('added_table'));
     }
 
     /**
@@ -54,7 +71,7 @@ final class SchemaBuilderEventTest extends TestCase
      */
     public static function provideExistingTableNames(): iterable
     {
-        yield 'in the schema' => ['existing_table'];
+        yield 'given with the editor' => ['existing_table'];
         yield 'added' => ['added_table'];
     }
 
@@ -77,7 +94,7 @@ final class SchemaBuilderEventTest extends TestCase
      */
     public static function provideExistingSequenceNames(): iterable
     {
-        yield 'in the schema' => ['existing_sequence'];
+        yield 'given with the editor' => ['existing_sequence'];
         yield 'added' => ['added_sequence'];
     }
 
@@ -85,7 +102,9 @@ final class SchemaBuilderEventTest extends TestCase
     {
         return new SchemaBuilderEvent(
             self::createStub(SchemaBuilderInterface::class),
-            new Schema([self::createTable('existing_table')], [self::createSequence('existing_sequence')])
+            Schema::editor()
+                ->addTable(self::createTable('existing_table'))
+                ->addSequence(self::createSequence('existing_sequence'))
         );
     }
 
