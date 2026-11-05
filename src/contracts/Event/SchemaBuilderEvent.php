@@ -11,6 +11,8 @@ namespace Ibexa\Contracts\DoctrineSchema\Event;
 use Doctrine\DBAL\Schema\Exception\SequenceAlreadyExists;
 use Doctrine\DBAL\Schema\Exception\TableAlreadyExists;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\SchemaEditor;
+use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface;
@@ -26,14 +28,10 @@ class SchemaBuilderEvent extends Event
 
     private Schema $schema;
 
-    /** @var list<Table> */
-    private array $tables = [];
+    private SchemaEditor $addedAssets;
 
-    /** @var list<Sequence> */
-    private array $sequences = [];
-
-    /** The added tables and sequences, to look them up the way a schema does. */
-    private ?Schema $addedAssets = null;
+    /** The added tables and sequences, to look them up, as a schema editor can't. */
+    private ?Schema $addedSchema = null;
 
     public function __construct(
         SchemaBuilderInterface $schemaBuilder,
@@ -41,6 +39,7 @@ class SchemaBuilderEvent extends Event
     ) {
         $this->schemaBuilder = $schemaBuilder;
         $this->schema = $schema;
+        $this->addedAssets = Schema::editor();
     }
 
     /**
@@ -64,67 +63,52 @@ class SchemaBuilderEvent extends Event
      * Adds a table built with {@see Table::editor()} to the schema. It gets the schema's default table options under
      * its own.
      *
-     * @throws TableAlreadyExists
+     * @throws SchemaException if the schema already has a table with that name
      */
     public function addTable(Table $table): void
     {
         $name = $table->getObjectName()->toString();
-        if ($this->hasTable($name)) {
+        if ($this->schema->hasTable($name)) {
             throw TableAlreadyExists::new($name);
         }
 
-        $this->tables[] = $table;
-        $this->addedAssets = null;
+        $this->addedAssets->addTable($table);
+        $this->addedSchema = null;
     }
 
     /**
      * Adds a sequence built with {@see Sequence::editor()} to the schema.
      *
-     * @throws SequenceAlreadyExists
+     * @throws SchemaException if the schema already has a sequence with that name
      */
     public function addSequence(Sequence $sequence): void
     {
         $name = $sequence->getObjectName()->toString();
-        if ($this->hasSequence($name)) {
+        if ($this->schema->hasSequence($name)) {
             throw SequenceAlreadyExists::new($name);
         }
 
-        $this->sequences[] = $sequence;
-        $this->addedAssets = null;
+        $this->addedAssets->addSequence($sequence);
+        $this->addedSchema = null;
     }
 
     public function hasTable(string $name): bool
     {
-        return $this->schema->hasTable($name) || $this->getAddedAssets()->hasTable($name);
+        return $this->schema->hasTable($name) || $this->getAddedSchema()->hasTable($name);
     }
 
     public function hasSequence(string $name): bool
     {
-        return $this->schema->hasSequence($name) || $this->getAddedAssets()->hasSequence($name);
+        return $this->schema->hasSequence($name) || $this->getAddedSchema()->hasSequence($name);
     }
 
     /**
      * @internal for the schema builder, which creates the schema from them
      *
-     * @return list<Table>
+     * @return Schema the tables and sequences added with {@see addTable()} and {@see addSequence()}
      */
-    public function getAddedTables(): array
+    public function getAddedSchema(): Schema
     {
-        return $this->tables;
-    }
-
-    /**
-     * @internal for the schema builder, which creates the schema from them
-     *
-     * @return list<Sequence>
-     */
-    public function getAddedSequences(): array
-    {
-        return $this->sequences;
-    }
-
-    private function getAddedAssets(): Schema
-    {
-        return $this->addedAssets ??= new Schema($this->tables, $this->sequences);
+        return $this->addedSchema ??= $this->addedAssets->create();
     }
 }

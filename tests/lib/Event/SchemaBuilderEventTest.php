@@ -9,9 +9,8 @@ declare(strict_types=1);
 namespace Ibexa\Tests\DoctrineSchema\Event;
 
 use Doctrine\DBAL\Schema\Column;
-use Doctrine\DBAL\Schema\Exception\SequenceAlreadyExists;
-use Doctrine\DBAL\Schema\Exception\TableAlreadyExists;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface;
@@ -45,7 +44,7 @@ final class SchemaBuilderEventTest extends TestCase
         $event = $this->createEvent();
         $event->addTable(self::createTable('added_table'));
 
-        $this->expectException(TableAlreadyExists::class);
+        $this->expectException(SchemaException::class);
 
         $event->addTable(self::createTable($name));
     }
@@ -68,7 +67,7 @@ final class SchemaBuilderEventTest extends TestCase
         $event = $this->createEvent();
         $event->addSequence(self::createSequence('added_sequence'));
 
-        $this->expectException(SequenceAlreadyExists::class);
+        $this->expectException(SchemaException::class);
 
         $event->addSequence(self::createSequence($name));
     }

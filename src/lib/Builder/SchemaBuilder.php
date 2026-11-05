@@ -73,12 +73,14 @@ class SchemaBuilder implements APISchemaBuilder
             $this->event = null;
         }
 
+        $addedSchema = $event->getAddedSchema();
+
         return new Schema(
             [
                 ...$schema->getTables(),
-                ...array_map($this->withDefaultTableOptions(...), $event->getAddedTables()),
+                ...array_map($this->withDefaultTableOptions(...), $addedSchema->getTables()),
             ],
-            [...$schema->getSequences(), ...$event->getAddedSequences()],
+            [...$schema->getSequences(), ...$addedSchema->getSequences()],
             $config
         );
     }
