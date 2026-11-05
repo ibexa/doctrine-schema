@@ -22,9 +22,13 @@ interface SchemaImporterInterface
     /**
      * Import database schema into \Doctrine\DBAL\Schema from file containing custom Yaml format.
      *
-     * @param Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
+     * DBAL 4.5 deprecated changing a schema in place, so the target schema isn't changed: use the returned one, which
+     * holds its tables and sequences, followed by the imported tables. The imported tables don't get the target's
+     * default table options.
      *
-     * @return Schema imported schema
+     * @param Schema|null $targetSchema schema the returned one starts from, if not given, an empty one
+     *
+     * @return Schema the target's tables and sequences, and the imported tables
      *
      * @throws InvalidConfigurationException
      * @throws Exception
@@ -37,9 +41,13 @@ interface SchemaImporterInterface
     /**
      * Import database schema into \Doctrine\DBAL\Schema from string containing custom Yaml format.
      *
-     * @param Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
+     * DBAL 4.5 deprecated changing a schema in place, so the target schema isn't changed: use the returned one, which
+     * holds its tables and sequences, followed by the imported tables. The imported tables don't get the target's
+     * default table options.
      *
-     * @return Schema imported schema
+     * @param Schema|null $targetSchema schema the returned one starts from, if not given, an empty one
+     *
+     * @return Schema the target's tables and sequences, and the imported tables
      *
      * @throws InvalidConfigurationException
      * @throws Exception
