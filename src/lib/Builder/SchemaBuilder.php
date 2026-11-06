@@ -58,13 +58,19 @@ class SchemaBuilder implements APISchemaBuilder
         $config = new SchemaConfig();
         $config->setDefaultTableOptions($this->defaultTableOptions);
 
-        $this->schema = new Schema([], [], $config);
-        if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
-            $event = new SchemaBuilderEvent($this, $this->schema);
-            $this->eventDispatcher->dispatch($event, SchemaBuilderEvents::BUILD_SCHEMA);
+        // A listener may build a schema while this one is being built (e.g. Doctrine's postGenerateSchema),
+        // so the schema under construction is restored afterwards for the remaining listeners and imports.
+        $outerSchema = $this->schema;
+        $this->schema = $schema = new Schema([], [], $config);
+        try {
+            if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
+                $this->eventDispatcher->dispatch(new SchemaBuilderEvent($this, $schema), SchemaBuilderEvents::BUILD_SCHEMA);
+            }
+        } finally {
+            $this->schema = $outerSchema ?? $schema;
         }
 
-        return $this->schema;
+        return $schema;
     }
 
     /**

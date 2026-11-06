@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Ibexa\Tests\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
 use Ibexa\Contracts\DoctrineSchema\SchemaBuilderEvents;
 use Ibexa\Contracts\DoctrineSchema\SchemaImporterInterface;
@@ -51,6 +52,59 @@ class SchemaBuilderTest extends TestCase
         self::assertEquals(
             $expectedSchema,
             $builder->buildSchema()
+        );
+    }
+
+    public function testBuildSchemaIsSafeToCallWhileSchemaIsBeingBuilt(): void
+    {
+        $eventDispatcher = new EventDispatcher();
+
+        $importer = self::createStub(SchemaImporterInterface::class);
+        $importer->method('importFromFile')->willReturnCallback(
+            static function (
+                string $path,
+                Schema $schema
+            ): Schema {
+                $schema->createTable($path);
+
+                return $schema;
+            }
+        );
+
+        $builder = new SchemaBuilder($eventDispatcher, $importer);
+
+        $nestedSchema = null;
+        $nesting = false;
+        $eventDispatcher->addListener(
+            SchemaBuilderEvents::BUILD_SCHEMA,
+            static function (SchemaBuilderEvent $event) use ($builder, &$nestedSchema, &$nesting): void {
+                $event->getSchema()->createTable('outer_before_nested');
+                if (!$nesting) {
+                    $nesting = true;
+                    $nestedSchema = $builder->buildSchema();
+                }
+            },
+            250
+        );
+        $eventDispatcher->addListener(
+            SchemaBuilderEvents::BUILD_SCHEMA,
+            static function () use ($builder): void {
+                $builder->importSchemaFromFile('imported_after_nested');
+            },
+            200
+        );
+
+        $schema = $builder->buildSchema();
+
+        self::assertInstanceOf(Schema::class, $nestedSchema);
+        self::assertNotSame($schema, $nestedSchema);
+        self::assertEqualsCanonicalizing(
+            ['outer_before_nested', 'imported_after_nested'],
+            array_map(static fn (Table $table): string => $table->getName(), $schema->getTables())
+        );
+        self::assertEqualsCanonicalizing(
+            ['outer_before_nested', 'imported_after_nested'],
+            array_map(static fn (Table $table): string => $table->getName(), $nestedSchema->getTables())
         );
     }
 }
