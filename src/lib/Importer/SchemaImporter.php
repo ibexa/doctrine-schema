@@ -404,6 +404,9 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
+     * Table::addIndex() rejected index names with other characters than letters, digits and underscores, DBAL's
+     * editors don't.
+     *
      * @param non-empty-string $name
      * @param non-empty-list<non-empty-string> $columnNames
      * @param array<string, mixed> $options
@@ -417,6 +420,15 @@ class SchemaImporter implements APISchemaImporter
         array $options,
         string $location
     ): Index {
+        if (preg_match('/[^a-zA-Z0-9_]/', $name) === 1) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected an index name of letters, digits and'
+                . ' underscores, found "%s".',
+                $location,
+                $name,
+            ));
+        }
+
         $this->ensureNoExtraKeys($options, $location . '.options', ['lengths']);
         $lengths = $options['lengths'] ?? [];
         if (!is_array($lengths)) {

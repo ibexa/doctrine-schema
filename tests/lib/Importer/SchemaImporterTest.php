@@ -299,6 +299,19 @@ class SchemaImporterTest extends TestCase
             'Unhandled property in schema configuration for "my_table.uniqueConstraints.ux_data.fields". Expected a'
             . ' column of the table, found "missing".',
         ];
+
+        yield 'invalid index name' => [
+            'tables: { my_table: { fields: { data: { type: integer } },'
+            . ' indexes: { "ix-data": { fields: [data] } } } }',
+            'Unhandled property in schema configuration for "my_table.indexes.ix-data". Expected an index name of'
+            . ' letters, digits and underscores, found "ix-data".',
+        ];
+
+        yield 'invalid column index name' => [
+            'tables: { my_table: { fields: { data: { type: integer, index: { name: "ix data" } } } } }',
+            'Unhandled property in schema configuration for "my_table.fields.data.index". Expected an index name of'
+            . ' letters, digits and underscores, found "ix data".',
+        ];
     }
 
     /**
