@@ -10,9 +10,7 @@ namespace Ibexa\Tests\DoctrineSchema\Importer;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
-use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\Table;
 use Doctrine\Deprecations\Deprecation;
 use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\DoctrineSchema\Importer\SchemaImporter;
@@ -226,26 +224,6 @@ class SchemaImporterTest extends TestCase
         yield 'table indexes' => ['06-index.yaml'];
         yield 'index prefix lengths' => ['index-prefix-lengths.yaml'];
         yield 'column indexes and foreign keys' => ['simple-foreign-key.yaml'];
-    }
-
-    /**
-     * @throws InvalidConfigurationException
-     * @throws Exception
-     */
-    public function testImportsIntoANewSchemaLeavingTheTargetUnchanged(): void
-    {
-        $existingTable = Table::editor()
-            ->setUnquotedName('existing_table')
-            ->setColumns(Column::editor()->setUnquotedName('id')->setTypeName('integer')->create())
-            ->create();
-        $targetSchema = new Schema([$existingTable]);
-
-        $schema = (new SchemaImporter())->importFromFile(__DIR__ . '/_fixtures/00-simple_pk.yaml', $targetSchema);
-
-        self::assertNotSame($targetSchema, $schema);
-        self::assertTrue($schema->hasTable('existing_table'));
-        self::assertTrue($schema->hasTable('my_table'));
-        self::assertFalse($targetSchema->hasTable('my_table'));
     }
 
     /**

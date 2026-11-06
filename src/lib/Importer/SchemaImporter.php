@@ -52,24 +52,14 @@ class SchemaImporter implements APISchemaImporter
 {
     private const int DEFAULT_STRING_LENGTH = 255;
 
-    public function importFromFile(
-        string $schemaFilePath,
-        ?Schema $targetSchema = null
-    ): Schema {
-        return $this->importFromArray(
-            Yaml::parseFile($schemaFilePath),
-            $targetSchema
-        );
+    public function importFromFile(string $schemaFilePath): Schema
+    {
+        return $this->importFromArray(Yaml::parseFile($schemaFilePath));
     }
 
-    public function importFromSource(
-        string $schemaDefinition,
-        ?Schema $targetSchema = null
-    ): Schema {
-        return $this->importFromArray(
-            Yaml::parse($schemaDefinition),
-            $targetSchema
-        );
+    public function importFromSource(string $schemaDefinition): Schema
+    {
+        return $this->importFromArray(Yaml::parse($schemaDefinition));
     }
 
     /**
@@ -80,12 +70,9 @@ class SchemaImporter implements APISchemaImporter
      * @throws SchemaException
      * @throws InvalidConfigurationException
      */
-    private function importFromArray(
-        array $schemaDefinition,
-        ?Schema $targetSchema = null
-    ): Schema {
-        // DBAL 4.5 deprecated changing a schema in place, so a new one is created from the target's
-        $schema = $targetSchema?->edit() ?? Schema::editor();
+    private function importFromArray(array $schemaDefinition): Schema
+    {
+        $schema = Schema::editor();
         foreach ($schemaDefinition['tables'] as $tableName => $tableConfiguration) {
             $schema->addTable($this->importSchemaTable($tableName, $tableConfiguration));
         }

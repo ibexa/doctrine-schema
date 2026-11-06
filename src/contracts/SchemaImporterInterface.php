@@ -22,38 +22,20 @@ interface SchemaImporterInterface
     /**
      * Import database schema into \Doctrine\DBAL\Schema from file containing custom Yaml format.
      *
-     * DBAL 4.5 deprecated changing a schema in place, so the target schema isn't changed: use the returned one, which
-     * holds its tables and sequences, followed by the imported tables. The imported tables don't get the target's
-     * default table options.
-     *
-     * @param Schema|null $targetSchema schema the returned one starts from, if not given, an empty one
-     *
-     * @return Schema the target's tables and sequences, and the imported tables
+     * @return Schema imported schema
      *
      * @throws InvalidConfigurationException
      * @throws Exception
      */
-    public function importFromFile(
-        string $schemaFilePath,
-        ?Schema $targetSchema = null
-    ): Schema;
+    public function importFromFile(string $schemaFilePath): Schema;
 
     /**
      * Import database schema into \Doctrine\DBAL\Schema from string containing custom Yaml format.
      *
-     * DBAL 4.5 deprecated changing a schema in place, so the target schema isn't changed: use the returned one, which
-     * holds its tables and sequences, followed by the imported tables. The imported tables don't get the target's
-     * default table options.
-     *
-     * @param Schema|null $targetSchema schema the returned one starts from, if not given, an empty one
-     *
-     * @return Schema the target's tables and sequences, and the imported tables
+     * @return Schema imported schema
      *
      * @throws InvalidConfigurationException
      * @throws Exception
      */
-    public function importFromSource(
-        string $schemaDefinition,
-        ?Schema $targetSchema = null
-    ): Schema;
+    public function importFromSource(string $schemaDefinition): Schema;
 }
