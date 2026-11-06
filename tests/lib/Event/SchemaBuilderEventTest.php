@@ -10,92 +10,29 @@ namespace Ibexa\Tests\DoctrineSchema\Event;
 
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface;
 use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class SchemaBuilderEventTest extends TestCase
 {
-    public function testGivesTheSchemaBuiltSoFar(): void
+    public function testLooksUpTablesAndSequencesInTheSchemaBeingBuilt(): void
     {
         $event = $this->createEvent();
-        $schemaBefore = $event->getSchema();
-
-        $event->addTable(self::createTable('added_table'));
-        self::assertTrue($event->getSchema()->hasTable('added_table'));
-
-        $event->addSequence(self::createSequence('added_sequence'));
-        $schema = $event->getSchema();
-
-        self::assertTrue($schema->hasTable('existing_table'));
-        self::assertTrue($schema->hasTable('added_table'));
-        self::assertTrue($schema->hasSequence('existing_sequence'));
-        self::assertTrue($schema->hasSequence('added_sequence'));
-        self::assertFalse($schemaBefore->hasTable('added_table'));
-    }
-
-    public function testLooksUpTablesAndSequencesInTheSchemaBuiltSoFar(): void
-    {
-        $event = $this->createEvent();
-        $event->addTable(self::createTable('added_table'));
-        $event->addSequence(self::createSequence('added_sequence'));
 
         self::assertTrue($event->hasTable('existing_table'));
-        self::assertTrue($event->hasTable('added_table'));
-        self::assertFalse($event->hasTable('missing_table'));
+        self::assertFalse($event->hasTable('added_table'));
         self::assertTrue($event->hasSequence('existing_sequence'));
+        self::assertFalse($event->hasSequence('added_sequence'));
+
+        $event->getSchemaEditor()
+            ->addTable(self::createTable('added_table'))
+            ->addSequence(self::createSequence('added_sequence'));
+
+        self::assertTrue($event->hasTable('added_table'));
         self::assertTrue($event->hasSequence('added_sequence'));
-        self::assertFalse($event->hasSequence('missing_sequence'));
-    }
-
-    /**
-     * @param non-empty-string $name
-     */
-    #[DataProvider('provideExistingTableNames')]
-    public function testAddingAnExistingTableFails(string $name): void
-    {
-        $event = $this->createEvent();
-        $event->addTable(self::createTable('added_table'));
-
-        $this->expectException(SchemaException::class);
-
-        $event->addTable(self::createTable($name));
-    }
-
-    /**
-     * @return iterable<string, array{non-empty-string}>
-     */
-    public static function provideExistingTableNames(): iterable
-    {
-        yield 'given with the editor' => ['existing_table'];
-        yield 'added' => ['added_table'];
-    }
-
-    /**
-     * @param non-empty-string $name
-     */
-    #[DataProvider('provideExistingSequenceNames')]
-    public function testAddingAnExistingSequenceFails(string $name): void
-    {
-        $event = $this->createEvent();
-        $event->addSequence(self::createSequence('added_sequence'));
-
-        $this->expectException(SchemaException::class);
-
-        $event->addSequence(self::createSequence($name));
-    }
-
-    /**
-     * @return iterable<string, array{non-empty-string}>
-     */
-    public static function provideExistingSequenceNames(): iterable
-    {
-        yield 'given with the editor' => ['existing_sequence'];
-        yield 'added' => ['added_sequence'];
     }
 
     private function createEvent(): SchemaBuilderEvent

@@ -11,6 +11,7 @@ namespace Ibexa\DoctrineSchema\Builder;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
+use Doctrine\DBAL\Schema\SchemaEditor;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface as APISchemaBuilder;
@@ -33,8 +34,8 @@ class SchemaBuilder implements APISchemaBuilder
 
     private SchemaImporterInterface $schemaImporter;
 
-    /** The event being dispatched, which the imported tables are added to. */
-    private ?SchemaBuilderEvent $event = null;
+    /** The editor of the schema being built, which the imported tables are added to. */
+    private ?SchemaEditor $schemaEditor = null;
 
     /** @var mixed[] */
     private array $defaultTableOptions;
@@ -59,11 +60,14 @@ class SchemaBuilder implements APISchemaBuilder
     {
         $schemaEditor = Schema::editor();
         if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
-            $this->event = new SchemaBuilderEvent($this, $schemaEditor);
+            $this->schemaEditor = $schemaEditor;
             try {
-                $this->eventDispatcher->dispatch($this->event, SchemaBuilderEvents::BUILD_SCHEMA);
+                $this->eventDispatcher->dispatch(
+                    new SchemaBuilderEvent($this, $schemaEditor),
+                    SchemaBuilderEvents::BUILD_SCHEMA
+                );
             } finally {
-                $this->event = null;
+                $this->schemaEditor = null;
             }
         }
 
@@ -85,13 +89,13 @@ class SchemaBuilder implements APISchemaBuilder
     public function importSchemaFromFile(string $schemaFilePath): Schema
     {
         $schema = $this->schemaImporter->importFromFile($schemaFilePath);
-        if ($this->event !== null) {
+        if ($this->schemaEditor !== null) {
             foreach ($schema->getTables() as $table) {
-                $this->event->addTable($table);
+                $this->schemaEditor->addTable($table);
             }
 
             foreach ($schema->getSequences() as $sequence) {
-                $this->event->addSequence($sequence);
+                $this->schemaEditor->addSequence($sequence);
             }
         }
 

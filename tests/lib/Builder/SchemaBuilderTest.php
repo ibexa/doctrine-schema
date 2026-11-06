@@ -26,7 +26,7 @@ class SchemaBuilderTest extends TestCase
     {
         $schema = $this->buildSchema(
             static function (SchemaBuilderEvent $event): void {
-                $event->addTable(self::createTable('my_table'));
+                $event->getSchemaEditor()->addTable(self::createTable('my_table'));
             }
         );
 
@@ -37,10 +37,10 @@ class SchemaBuilderTest extends TestCase
     {
         $schema = $this->buildSchema(
             static function (SchemaBuilderEvent $event): void {
-                $event->addTable(
+                $event->getSchemaEditor()->addTable(
                     self::createTable('my_table')->edit()->setOptions(['charset' => 'latin1'])->create()
                 );
-                $event->addSequence(Sequence::editor()->setUnquotedName('my_sequence')->create());
+                $event->getSchemaEditor()->addSequence(Sequence::editor()->setUnquotedName('my_sequence')->create());
             },
             ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_unicode_520_ci'],
         );
