@@ -251,8 +251,8 @@ class SchemaImporterTest extends TestCase
     /**
      * @throws Exception
      */
-    #[DataProvider('provideUnhandledOptions')]
-    public function testImportFailsIfUnhandledOption(
+    #[DataProvider('provideInvalidConfigurations')]
+    public function testImportFailsOnInvalidConfiguration(
         string $schemaDefinition,
         string $expectedMessage
     ): void {
@@ -265,25 +265,39 @@ class SchemaImporterTest extends TestCase
     /**
      * @return iterable<string, array{string, string}>
      */
-    public static function provideUnhandledOptions(): iterable
+    public static function provideInvalidConfigurations(): iterable
     {
-        yield 'column' => [
+        yield 'unhandled column option' => [
             'tables: { my_table: { fields: { data: { type: integer, options: { foo: true } } } } }',
             'Unhandled column option "foo" in schema configuration for "my_table.fields.data".',
         ];
 
-        yield 'index' => [
+        yield 'unhandled index option' => [
             'tables: { my_table: { fields: { data: { type: integer } },'
             . ' indexes: { ix_data: { fields: [data], options: { where: "data > 0" } } } } }',
             'Unhandled property in schema configuration for "my_table.indexes.ix_data.options". "where" keys are not'
             . ' allowed. Allowed keys: "lengths".',
         ];
 
-        yield 'foreign key' => [
+        yield 'unhandled foreign key option' => [
             'tables: { my_table: { fields: { data: { type: integer } }, foreignKeys: { fk_data: { fields: [data],'
             . ' foreignTable: other_table, foreignFields: [id], options: { deferrable: true } } } } }',
             'Unhandled property in schema configuration for "my_table.foreignKeys.fk_data.options". "deferrable" keys'
             . ' are not allowed. Allowed keys: "onDelete", "onUpdate".',
+        ];
+
+        yield 'index on a missing column' => [
+            'tables: { my_table: { fields: { data: { type: integer } },'
+            . ' indexes: { ix_data: { fields: [data, missing] } } } }',
+            'Unhandled property in schema configuration for "my_table.indexes.ix_data.fields". Expected a column of the'
+            . ' table, found "missing".',
+        ];
+
+        yield 'unique constraint on a missing column' => [
+            'tables: { my_table: { id: { id: { type: integer } },'
+            . ' uniqueConstraints: { ux_data: { fields: [missing] } } } }',
+            'Unhandled property in schema configuration for "my_table.uniqueConstraints.ux_data.fields". Expected a'
+            . ' column of the table, found "missing".',
         ];
     }
 

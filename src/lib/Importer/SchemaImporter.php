@@ -117,6 +117,10 @@ class SchemaImporter implements APISchemaImporter
 
         $table = Table::editor()->setUnquotedName($tableName);
         $maxIdentifierLength = (new SchemaConfig())->getMaxIdentifierLength();
+        $tableColumnNames = array_merge(
+            array_keys($tableConfiguration['id'] ?? []),
+            array_keys($tableConfiguration['fields'] ?? [])
+        );
 
         if (isset($tableConfiguration['id'])) {
             $this->addSchemaTableColumns($table, $tableName, $tableConfiguration['id'], $maxIdentifierLength);
@@ -147,24 +151,28 @@ class SchemaImporter implements APISchemaImporter
 
         if (isset($tableConfiguration['indexes'])) {
             foreach ($tableConfiguration['indexes'] as $indexName => $index) {
+                $location = sprintf('%s.indexes.%s', $tableName, $indexName);
+                $this->ensureColumnsExist($index['fields'], $tableColumnNames, $location . '.fields');
                 $table->addIndex($this->createIndex(
                     $indexName,
                     IndexType::REGULAR,
                     $index['fields'],
                     $index['options'] ?? [],
-                    sprintf('%s.indexes.%s', $tableName, $indexName),
+                    $location,
                 ));
             }
         }
 
         if (isset($tableConfiguration['uniqueConstraints'])) {
             foreach ($tableConfiguration['uniqueConstraints'] as $indexName => $index) {
+                $location = sprintf('%s.uniqueConstraints.%s', $tableName, $indexName);
+                $this->ensureColumnsExist($index['fields'], $tableColumnNames, $location . '.fields');
                 $table->addIndex($this->createIndex(
                     $indexName,
                     IndexType::UNIQUE,
                     $index['fields'],
                     $index['options'] ?? [],
-                    sprintf('%s.uniqueConstraints.%s', $tableName, $indexName),
+                    $location,
                 ));
             }
         }
@@ -369,6 +377,30 @@ class SchemaImporter implements APISchemaImporter
         }
 
         return $referentialAction;
+    }
+
+    /**
+     * Table::addIndex() checked that the indexed columns exist, DBAL's editors don't.
+     *
+     * @param non-empty-list<non-empty-string> $columnNames
+     * @param list<non-empty-string> $tableColumnNames
+     *
+     * @throws InvalidConfigurationException
+     */
+    private function ensureColumnsExist(
+        array $columnNames,
+        array $tableColumnNames,
+        string $location
+    ): void {
+        foreach ($columnNames as $columnName) {
+            if (!in_array($columnName, $tableColumnNames, true)) {
+                throw new InvalidConfigurationException(sprintf(
+                    'Unhandled property in schema configuration for "%s". Expected a column of the table, found "%s".',
+                    $location,
+                    $columnName,
+                ));
+            }
+        }
     }
 
     /**
