@@ -16,7 +16,6 @@ use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexType;
 use Doctrine\DBAL\Schema\PrimaryKeyConstraint;
 use Doctrine\DBAL\Schema\Schema;
-use Doctrine\DBAL\Schema\SchemaConfig;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableEditor;
@@ -103,14 +102,13 @@ class SchemaImporter implements APISchemaImporter
         ]);
 
         $table = Table::editor()->setUnquotedName($tableName);
-        $maxIdentifierLength = (new SchemaConfig())->getMaxIdentifierLength();
         $tableColumnNames = array_merge(
             array_keys($tableConfiguration['id'] ?? []),
             array_keys($tableConfiguration['fields'] ?? [])
         );
 
         if (isset($tableConfiguration['id'])) {
-            $this->addSchemaTableColumns($table, $tableName, $tableConfiguration['id'], $maxIdentifierLength);
+            $this->addSchemaTableColumns($table, $tableName, $tableConfiguration['id']);
             $primaryKeyColumns = array_keys($tableConfiguration['id']);
             if ($primaryKeyColumns !== []) {
                 $table->setPrimaryKeyConstraint(
@@ -120,7 +118,7 @@ class SchemaImporter implements APISchemaImporter
         }
 
         if (isset($tableConfiguration['fields'])) {
-            $this->addSchemaTableColumns($table, $tableName, $tableConfiguration['fields'], $maxIdentifierLength);
+            $this->addSchemaTableColumns($table, $tableName, $tableConfiguration['fields']);
         }
 
         if (isset($tableConfiguration['foreignKeys'])) {
@@ -173,7 +171,6 @@ class SchemaImporter implements APISchemaImporter
      * @phpstan-param array<non-empty-string, TColumnConfigurationData> $columnList list of columns with their configuration
      *
      * @param non-empty-string $tableName
-     * @param positive-int $maxIdentifierLength
      *
      * @throws SchemaException
      * @throws InvalidConfigurationException
@@ -181,8 +178,7 @@ class SchemaImporter implements APISchemaImporter
     private function addSchemaTableColumns(
         TableEditor $table,
         string $tableName,
-        array $columnList,
-        int $maxIdentifierLength
+        array $columnList
     ): void {
         foreach ($columnList as $columnName => $columnConfiguration) {
             $location = sprintf('%s.fields.%s', $tableName, $columnName);
@@ -250,11 +246,7 @@ class SchemaImporter implements APISchemaImporter
                 $foreignKeyConfig = $columnConfiguration['foreignKey'];
 
                 $table->addForeignKeyConstraint($this->createForeignKey(
-                    $foreignKeyConfig['name'] ?? $this->generateForeignKeyName(
-                        $tableName,
-                        $columnName,
-                        $maxIdentifierLength
-                    ),
+                    $foreignKeyConfig['name'] ?? $this->generateForeignKeyName($tableName, $columnName),
                     [$columnName],
                     $foreignKeyConfig['table'],
                     [$foreignKeyConfig['field']],
@@ -295,20 +287,16 @@ class SchemaImporter implements APISchemaImporter
 
     /**
      * The name Table::addForeignKeyConstraint() generated for an unnamed foreign key. DBAL 4 creates one without a
-     * name, leaving it to the database, which would name it differently.
-     *
-     * @param positive-int $maxIdentifierLength
+     * name, leaving it to the database, which would name it differently. DBAL cut the name to the maximum identifier
+     * length, which a name of at most 19 characters never reaches.
      *
      * @return non-empty-string
      */
     private function generateForeignKeyName(
         string $tableName,
-        string $columnName,
-        int $maxIdentifierLength
+        string $columnName
     ): string {
-        $hash = dechex(crc32($tableName)) . dechex(crc32($columnName));
-
-        return strtoupper(substr('fk_' . $hash, 0, $maxIdentifierLength));
+        return strtoupper('fk_' . dechex(crc32($tableName)) . dechex(crc32($columnName)));
     }
 
     /**
