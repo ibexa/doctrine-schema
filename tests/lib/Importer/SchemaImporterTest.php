@@ -11,6 +11,7 @@ namespace Ibexa\Tests\DoctrineSchema\Importer;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\MySQL80Platform;
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Deprecations\Deprecation;
 use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
 use Ibexa\DoctrineSchema\Importer\SchemaImporter;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -182,11 +183,113 @@ class SchemaImporterTest extends TestCase
         $importer = new SchemaImporter();
         $actualSchema = $importer->importFromFile($yamlSchemaDefinitionFilePath);
 
+        // A schema created from tables gives them its configuration, which Schema::createTable() didn't
         self::assertEquals(
-            $expectedSchema,
+            $expectedSchema->edit()->create(),
             $actualSchema,
             "Yaml schema definition {$yamlSchemaDefinitionFile} produced unexpected Schema object"
         );
+    }
+
+    /**
+     * DBAL 4.5 deprecated changing a schema or a table, which SchemaBuilderEvent subscribers' tests
+     * then report, through the packages' failOnDeprecation.
+     *
+     * @throws InvalidConfigurationException
+     * @throws Exception
+     */
+    #[DataProvider('provideSchemaFiles')]
+    public function testImportsWithoutDeprecatedDbalApi(string $yamlSchemaDefinitionFile): void
+    {
+        Deprecation::disable();
+        Deprecation::enableTrackingDeprecations();
+
+        try {
+            (new SchemaImporter())->importFromFile(__DIR__ . "/_fixtures/{$yamlSchemaDefinitionFile}");
+            $triggeredDeprecations = array_filter(Deprecation::getTriggeredDeprecations());
+        } finally {
+            Deprecation::disable();
+        }
+
+        self::assertSame([], $triggeredDeprecations);
+    }
+
+    /**
+     * @return iterable<string, array{non-empty-string}>
+     */
+    public static function provideSchemaFiles(): iterable
+    {
+        yield 'composite primary key' => ['02-composite_pk_with_ai.yaml'];
+        yield 'table foreign key' => ['03-foreign_key.yaml'];
+        yield 'table indexes' => ['06-index.yaml'];
+        yield 'index prefix lengths' => ['index-prefix-lengths.yaml'];
+        yield 'column indexes and foreign keys' => ['simple-foreign-key.yaml'];
+    }
+
+    /**
+     * @throws Exception
+     */
+    #[DataProvider('provideInvalidConfigurations')]
+    public function testImportFailsOnInvalidConfiguration(
+        string $schemaDefinition,
+        string $expectedMessage
+    ): void {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        (new SchemaImporter())->importFromSource($schemaDefinition);
+    }
+
+    /**
+     * @return iterable<string, array{string, string}>
+     */
+    public static function provideInvalidConfigurations(): iterable
+    {
+        yield 'unhandled column option' => [
+            'tables: { my_table: { fields: { data: { type: integer, options: { foo: true } } } } }',
+            'Unhandled column option "foo" in schema configuration for "my_table.fields.data".',
+        ];
+
+        yield 'unhandled index option' => [
+            'tables: { my_table: { fields: { data: { type: integer } },'
+            . ' indexes: { ix_data: { fields: [data], options: { where: "data > 0" } } } } }',
+            'Unhandled property in schema configuration for "my_table.indexes.ix_data.options". "where" keys are not'
+            . ' allowed. Allowed keys: "lengths".',
+        ];
+
+        yield 'unhandled foreign key option' => [
+            'tables: { my_table: { fields: { data: { type: integer } }, foreignKeys: { fk_data: { fields: [data],'
+            . ' foreignTable: other_table, foreignFields: [id], options: { deferrable: true } } } } }',
+            'Unhandled property in schema configuration for "my_table.foreignKeys.fk_data.options". "deferrable" keys'
+            . ' are not allowed. Allowed keys: "onDelete", "onUpdate".',
+        ];
+
+        yield 'index on a missing column' => [
+            'tables: { my_table: { fields: { data: { type: integer } },'
+            . ' indexes: { ix_data: { fields: [data, missing] } } } }',
+            'Unhandled property in schema configuration for "my_table.indexes.ix_data.fields". Expected a column of the'
+            . ' table, found "missing".',
+        ];
+
+        yield 'unique constraint on a missing column' => [
+            'tables: { my_table: { id: { id: { type: integer } },'
+            . ' uniqueConstraints: { ux_data: { fields: [missing] } } } }',
+            'Unhandled property in schema configuration for "my_table.uniqueConstraints.ux_data.fields". Expected a'
+            . ' column of the table, found "missing".',
+        ];
+
+        yield 'invalid index name' => [
+            'tables: { my_table: { fields: { data: { type: integer } },'
+            . ' indexes: { "ix-data": { fields: [data] } } } }',
+            'Unhandled property in schema configuration for "my_table.indexes.ix-data". Expected an index name of'
+            . ' letters, digits and underscores, found "ix-data".',
+        ];
+
+        yield 'invalid column index name' => [
+            'tables: { my_table: { fields: { data: { type: integer, index: { name: "ix data" } } } } }',
+            'Unhandled property in schema configuration for "my_table.fields.data.index". Expected an index name of'
+            . ' letters, digits and underscores, found "ix data".',
+        ];
     }
 
     /**

@@ -30,6 +30,10 @@ interface SchemaBuilderInterface
 
     /**
      * Import Schema from Yaml schema definition file into Schema object.
+     *
+     * While the schema is being built, the imported tables are added to it as well.
+     *
+     * @return Schema the imported tables
      */
     public function importSchemaFromFile(string $schemaFilePath): Schema;
 }

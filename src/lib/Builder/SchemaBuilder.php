@@ -11,7 +11,9 @@ namespace Ibexa\DoctrineSchema\Builder;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaConfig;
+use Doctrine\DBAL\Schema\SchemaEditor;
 use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\DBAL\Schema\Table;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface as APISchemaBuilder;
 use Ibexa\Contracts\DoctrineSchema\Event\SchemaBuilderEvent;
 use Ibexa\Contracts\DoctrineSchema\Exception\InvalidConfigurationException;
@@ -32,7 +34,8 @@ class SchemaBuilder implements APISchemaBuilder
 
     private SchemaImporterInterface $schemaImporter;
 
-    private ?Schema $schema = null;
+    /** The editor of the schema being built, which the imported tables are added to. */
+    private ?SchemaEditor $schemaEditor = null;
 
     /** @var mixed[] */
     private array $defaultTableOptions;
@@ -55,16 +58,28 @@ class SchemaBuilder implements APISchemaBuilder
      */
     public function buildSchema(): Schema
     {
+        $schemaEditor = Schema::editor();
+        if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
+            $this->schemaEditor = $schemaEditor;
+            try {
+                $this->eventDispatcher->dispatch(
+                    new SchemaBuilderEvent($this, $schemaEditor),
+                    SchemaBuilderEvents::BUILD_SCHEMA
+                );
+            } finally {
+                $this->schemaEditor = null;
+            }
+        }
+
+        $schema = $schemaEditor->create();
         $config = new SchemaConfig();
         $config->setDefaultTableOptions($this->defaultTableOptions);
 
-        $this->schema = new Schema([], [], $config);
-        if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
-            $event = new SchemaBuilderEvent($this, $this->schema);
-            $this->eventDispatcher->dispatch($event, SchemaBuilderEvents::BUILD_SCHEMA);
-        }
-
-        return $this->schema;
+        return new Schema(
+            array_map($this->withDefaultTableOptions(...), $schema->getTables()),
+            $schema->getSequences(),
+            $config
+        );
     }
 
     /**
@@ -73,6 +88,27 @@ class SchemaBuilder implements APISchemaBuilder
      */
     public function importSchemaFromFile(string $schemaFilePath): Schema
     {
-        return $this->schemaImporter->importFromFile($schemaFilePath, $this->schema);
+        $schema = $this->schemaImporter->importFromFile($schemaFilePath);
+        if ($this->schemaEditor !== null) {
+            foreach ($schema->getTables() as $table) {
+                $this->schemaEditor->addTable($table);
+            }
+
+            foreach ($schema->getSequences() as $sequence) {
+                $this->schemaEditor->addSequence($sequence);
+            }
+        }
+
+        return $schema;
+    }
+
+    /**
+     * Gives the table the default table options under its own, as Schema::createTable() did.
+     */
+    private function withDefaultTableOptions(Table $table): Table
+    {
+        return $table->edit()
+            ->setOptions(array_merge($this->defaultTableOptions, $table->getOptions()))
+            ->create();
     }
 }
