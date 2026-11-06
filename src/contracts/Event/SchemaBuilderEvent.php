@@ -19,17 +19,10 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class SchemaBuilderEvent extends Event
 {
-    private SchemaBuilderInterface $schemaBuilder;
-
-    private SchemaEditor $schemaEditor;
-
     public function __construct(
-        SchemaBuilderInterface $schemaBuilder,
-        SchemaEditor $schemaEditor
-    ) {
-        $this->schemaBuilder = $schemaBuilder;
-        $this->schemaEditor = $schemaEditor;
-    }
+        private readonly SchemaBuilderInterface $schemaBuilder,
+        private readonly SchemaEditor $schemaEditor
+    ) {}
 
     /**
      * The editor of the schema being built. Tables and sequences added or changed with it end up in the built schema,
