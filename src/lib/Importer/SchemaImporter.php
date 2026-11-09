@@ -370,7 +370,7 @@ class SchemaImporter implements APISchemaImporter
         foreach ($columnNames as $columnName) {
             if (!in_array($columnName, $tableColumnNames, true)) {
                 throw new InvalidConfigurationException(sprintf(
-                    'Unhandled property in schema configuration for "%s". Expected a column of the table, found "%s".',
+                    'Invalid schema configuration for "%s". There is no column with name "%s" in the table.',
                     $location,
                     $columnName,
                 ));

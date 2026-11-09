@@ -267,15 +267,15 @@ class SchemaImporterTest extends TestCase
         yield 'index on a missing column' => [
             'tables: { my_table: { fields: { data: { type: integer } },'
             . ' indexes: { ix_data: { fields: [data, missing] } } } }',
-            'Unhandled property in schema configuration for "my_table.indexes.ix_data.fields". Expected a column of the'
-            . ' table, found "missing".',
+            'Invalid schema configuration for "my_table.indexes.ix_data.fields". There is no column with name'
+            . ' "missing" in the table.',
         ];
 
         yield 'unique constraint on a missing column' => [
             'tables: { my_table: { id: { id: { type: integer } },'
             . ' uniqueConstraints: { ux_data: { fields: [missing] } } } }',
-            'Unhandled property in schema configuration for "my_table.uniqueConstraints.ux_data.fields". Expected a'
-            . ' column of the table, found "missing".',
+            'Invalid schema configuration for "my_table.uniqueConstraints.ux_data.fields". There is no column with name'
+            . ' "missing" in the table.',
         ];
 
         yield 'invalid index name' => [
