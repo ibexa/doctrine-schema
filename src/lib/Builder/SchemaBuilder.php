@@ -103,7 +103,7 @@ class SchemaBuilder implements APISchemaBuilder
     }
 
     /**
-     * Gives the table the default table options under its own, as Schema::createTable() did.
+     * The table's own options win over the defaults.
      */
     private function withDefaultTableOptions(Table $table): Table
     {

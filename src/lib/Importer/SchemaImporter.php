@@ -290,8 +290,6 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * Column::setPlatformOptions() took any platform option, DBAL's column editor has a method for each one it supports.
-     *
      * @throws InvalidConfigurationException
      */
     private function setColumnPlatformOptions(
@@ -328,9 +326,7 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * The name Table::addForeignKeyConstraint() generated for an unnamed foreign key. DBAL 4 creates one without a
-     * name, leaving it to the database, which would name it differently. DBAL cut the name to the maximum identifier
-     * length, which a name of at most 19 characters never reaches.
+     * The name Table::addForeignKeyConstraint() gave an unnamed foreign key.
      *
      * @return non-empty-string
      */
@@ -392,7 +388,7 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * A foreign key is deferrable when declared so, or when initially deferred, as for ForeignKeyConstraint.
+     * Initially deferred implies deferrable.
      *
      * @param array<string, mixed> $options
      *
@@ -469,8 +465,6 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * Table::addIndex() checked that the indexed columns exist, DBAL's editors don't.
-     *
      * @param non-empty-list<non-empty-string> $columnNames
      * @param list<non-empty-string> $tableColumnNames
      *
@@ -493,8 +487,7 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * Table::addIndex() rejected index names with other characters than letters, digits and underscores, DBAL's
-     * editors don't.
+     * Index names may only contain letters, digits and underscores.
      *
      * @param non-empty-string $name
      * @param non-empty-list<non-empty-string> $columnNames
@@ -553,7 +546,7 @@ class SchemaImporter implements APISchemaImporter
     }
 
     /**
-     * Schema files give prefix lengths as strings as well, which DBAL deprecated.
+     * Lengths may be given as strings.
      *
      * @return positive-int|null
      *
