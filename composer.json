@@ -8,7 +8,7 @@
     },
     "require": {
         "php": ">=8.5",
-        "doctrine/dbal": "^4.4",
+        "doctrine/dbal": "^4.5",
         "symfony/config": "^8.1",
         "symfony/deprecation-contracts": "^2.5 || ^3.0",
         "symfony/console": "^8.1",
@@ -17,6 +17,7 @@
         "symfony/yaml": "^8.1"
     },
     "require-dev": {
+        "doctrine/deprecations": "^1.1.5",
         "ibexa/code-style": "~2.3.1",
         "ibexa/core": "~6.0.x-dev",
         "ibexa/doctrine-migrations": "~6.0.x-dev",

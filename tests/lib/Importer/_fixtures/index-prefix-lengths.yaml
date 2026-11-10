@@ -1,0 +1,9 @@
+tables:
+    my_table:
+        uniqueConstraints:
+            ux_name: { fields: [name], options: { lengths: [32] } }
+        indexes:
+            ix_name_data: { fields: [name, data], options: { lengths: ['191', ~] } }
+        fields:
+            name: { type: string, length: 255, nullable: false }
+            data: { type: integer, nullable: false }

@@ -22,30 +22,20 @@ interface SchemaImporterInterface
     /**
      * Import database schema into \Doctrine\DBAL\Schema from file containing custom Yaml format.
      *
-     * @param Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
-     *
      * @return Schema imported schema
      *
      * @throws InvalidConfigurationException
      * @throws Exception
      */
-    public function importFromFile(
-        string $schemaFilePath,
-        ?Schema $targetSchema = null
-    ): Schema;
+    public function importFromFile(string $schemaFilePath): Schema;
 
     /**
      * Import database schema into \Doctrine\DBAL\Schema from string containing custom Yaml format.
      *
-     * @param Schema|null $targetSchema existing schema to import into, if not given, an empty one will be created
-     *
      * @return Schema imported schema
      *
      * @throws InvalidConfigurationException
      * @throws Exception
      */
-    public function importFromSource(
-        string $schemaDefinition,
-        ?Schema $targetSchema = null
-    ): Schema;
+    public function importFromSource(string $schemaDefinition): Schema;
 }

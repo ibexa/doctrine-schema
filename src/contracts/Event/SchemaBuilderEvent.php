@@ -8,31 +8,43 @@ declare(strict_types=1);
 
 namespace Ibexa\Contracts\DoctrineSchema\Event;
 
-use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\SchemaEditor;
 use Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
+/**
+ * Gives subscribers the editor of the schema being built. DBAL 4.5 deprecated changing a schema or a table in place,
+ * so subscribers add and change tables and sequences with a schema editor, which the schema builder creates the
+ * schema from once the event has been dispatched.
+ */
 class SchemaBuilderEvent extends Event
 {
-    private SchemaBuilderInterface $schemaBuilder;
-
-    private Schema $schema;
-
     public function __construct(
-        SchemaBuilderInterface $schemaBuilder,
-        Schema $schema
-    ) {
-        $this->schemaBuilder = $schemaBuilder;
-        $this->schema = $schema;
-    }
+        private readonly SchemaBuilderInterface $schemaBuilder,
+        private readonly SchemaEditor $schemaEditor
+    ) {}
 
-    public function getSchema(): Schema
+    /**
+     * The editor of the schema being built. Tables and sequences added or changed with it end up in the built schema,
+     * the tables with the schema's default table options under their own.
+     */
+    public function getSchemaEditor(): SchemaEditor
     {
-        return $this->schema;
+        return $this->schemaEditor;
     }
 
     public function getSchemaBuilder(): SchemaBuilderInterface
     {
         return $this->schemaBuilder;
+    }
+
+    public function hasTable(string $name): bool
+    {
+        return $this->schemaEditor->create()->hasTable($name);
+    }
+
+    public function hasSequence(string $name): bool
+    {
+        return $this->schemaEditor->create()->hasSequence($name);
     }
 }
