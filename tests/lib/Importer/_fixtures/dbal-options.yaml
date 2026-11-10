@@ -1,0 +1,15 @@
+tables:
+    my_main_table:
+        id:
+            id: { type: integer, nullable: false }
+    my_table:
+        id:
+            id: { type: integer, nullable: false }
+        fields:
+            name: { type: string, length: 255, nullable: false, options: { platformOptions: { charset: utf8mb4, collation: utf8mb4_bin } } }
+            status: { type: enum, nullable: false, options: { values: [draft, published] } }
+            main_id: { type: integer, nullable: true }
+        indexes:
+            my_table_published_idx: { fields: [status], options: { where: "status = 'published'" } }
+        foreignKeys:
+            my_table_main_fk: { fields: [main_id], foreignTable: my_main_table, foreignFields: [id], options: { deferrable: true, deferred: true, match: full } }

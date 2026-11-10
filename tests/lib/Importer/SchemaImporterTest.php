@@ -151,6 +151,30 @@ class SchemaImporterTest extends TestCase
         $table->addUniqueIndex(['data4'], 'data4_uidx');
 
         yield ['simple-foreign-key.yaml', $simpleForeignKey];
+
+        $dbalOptions = new Schema();
+        $mainTable = $dbalOptions->createTable('my_main_table');
+        $mainTable->addColumn('id', 'integer');
+        $mainTable->setPrimaryKey(['id']);
+        $table = $dbalOptions->createTable('my_table');
+        $table->addColumn('id', 'integer');
+        $table->setPrimaryKey(['id']);
+        $table->addColumn('name', 'string', [
+            'length' => 255,
+            'platformOptions' => ['charset' => 'utf8mb4', 'collation' => 'utf8mb4_bin'],
+        ]);
+        $table->addColumn('status', 'enum', ['values' => ['draft', 'published']]);
+        $table->addColumn('main_id', 'integer', ['notnull' => false]);
+        $table->addIndex(['status'], 'my_table_published_idx', [], ['where' => "status = 'published'"]);
+        $table->addForeignKeyConstraint(
+            'my_main_table',
+            ['main_id'],
+            ['id'],
+            ['deferrable' => true, 'deferred' => true, 'match' => 'FULL'],
+            'my_table_main_fk'
+        );
+
+        yield ['dbal-options.yaml', $dbalOptions];
     }
 
     public function testStringColumnWithoutLengthGetsTheDefaultLength(): void
@@ -224,6 +248,7 @@ class SchemaImporterTest extends TestCase
         yield 'table indexes' => ['06-index.yaml'];
         yield 'index prefix lengths' => ['index-prefix-lengths.yaml'];
         yield 'column indexes and foreign keys' => ['simple-foreign-key.yaml'];
+        yield 'platform options, values, partial indexes and deferrable foreign keys' => ['dbal-options.yaml'];
     }
 
     /**
@@ -252,16 +277,36 @@ class SchemaImporterTest extends TestCase
 
         yield 'unhandled index option' => [
             'tables: { my_table: { fields: { data: { type: integer } },'
-            . ' indexes: { ix_data: { fields: [data], options: { where: "data > 0" } } } } }',
-            'Unhandled property in schema configuration for "my_table.indexes.ix_data.options". "where" keys are not'
-            . ' allowed. Allowed keys: "lengths".',
+            . ' indexes: { ix_data: { fields: [data], options: { flags: [fulltext] } } } } }',
+            'Unhandled property in schema configuration for "my_table.indexes.ix_data.options". "flags" keys are not'
+            . ' allowed. Allowed keys: "lengths", "where".',
         ];
 
         yield 'unhandled foreign key option' => [
             'tables: { my_table: { fields: { data: { type: integer } }, foreignKeys: { fk_data: { fields: [data],'
-            . ' foreignTable: other_table, foreignFields: [id], options: { deferrable: true } } } } }',
-            'Unhandled property in schema configuration for "my_table.foreignKeys.fk_data.options". "deferrable" keys'
-            . ' are not allowed. Allowed keys: "onDelete", "onUpdate".',
+            . ' foreignTable: other_table, foreignFields: [id], options: { foo: true } } } } }',
+            'Unhandled property in schema configuration for "my_table.foreignKeys.fk_data.options". "foo" keys are not'
+            . ' allowed. Allowed keys: "onDelete", "onUpdate", "deferrable", "deferred", "match".',
+        ];
+
+        yield 'unhandled column platform option' => [
+            'tables: { my_table: { fields: { data: { type: json, options: { platformOptions: { jsonb: true } } } } } }',
+            'Unhandled column platform option "jsonb" in schema configuration for'
+            . ' "my_table.fields.data.options.platformOptions".',
+        ];
+
+        yield 'initially deferred foreign key that is not deferrable' => [
+            'tables: { my_table: { fields: { data: { type: integer } }, foreignKeys: { fk_data: { fields: [data],'
+            . ' foreignTable: other_table, foreignFields: [id], options: { deferrable: false, deferred: true } } } } }',
+            'Invalid schema configuration for "my_table.foreignKeys.fk_data.options". A foreign key can\'t be initially'
+            . ' deferred without being deferrable.',
+        ];
+
+        yield 'unknown match type' => [
+            'tables: { my_table: { fields: { data: { type: integer } }, foreignKeys: { fk_data: { fields: [data],'
+            . ' foreignTable: other_table, foreignFields: [id], options: { match: loose } } } } }',
+            'Unhandled property in schema configuration for "my_table.foreignKeys.fk_data.options.match". Expected a'
+            . ' match type, found string.',
         ];
 
         yield 'index on a missing column' => [

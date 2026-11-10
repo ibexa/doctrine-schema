@@ -11,6 +11,8 @@ namespace Ibexa\DoctrineSchema\Importer;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\ColumnEditor;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint\Deferrability;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint\MatchType;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Index\IndexType;
@@ -274,15 +276,55 @@ class SchemaImporter implements APISchemaImporter
             'fixed' => $column->setFixed($value),
             'length' => $column->setLength($value),
             'notnull' => $column->setNotNull($value),
+            'platformOptions' => $this->setColumnPlatformOptions($column, $value, $location),
             'precision' => $column->setPrecision($value),
             'scale' => $column->setScale($value),
             'unsigned' => $column->setUnsigned($value),
+            'values' => $column->setValues($value),
             default => throw new InvalidConfigurationException(sprintf(
                 'Unhandled column option "%s" in schema configuration for "%s".',
                 $option,
                 $location,
             )),
         };
+    }
+
+    /**
+     * Column::setPlatformOptions() took any platform option, DBAL's column editor has a method for each one it supports.
+     *
+     * @throws InvalidConfigurationException
+     */
+    private function setColumnPlatformOptions(
+        ColumnEditor $column,
+        mixed $platformOptions,
+        string $location
+    ): ColumnEditor {
+        $location .= '.options.platformOptions';
+        if (!is_array($platformOptions)) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected an array, found %s.',
+                $location,
+                get_debug_type($platformOptions),
+            ));
+        }
+
+        foreach ($platformOptions as $option => $value) {
+            $column = match ($option) {
+                'charset' => $column->setCharset($value),
+                'collation' => $column->setCollation($value),
+                'default_constraint_name' => $column->setDefaultConstraintName($value),
+                'enumType' => $column->setEnumType($value),
+                'max' => $column->setMaximumValue($value),
+                'min' => $column->setMinimumValue($value),
+                default => throw new InvalidConfigurationException(sprintf(
+                    'Unhandled column platform option "%s" in schema configuration for "%s".',
+                    $option,
+                    $location,
+                )),
+            };
+        }
+
+        return $column;
     }
 
     /**
@@ -316,7 +358,13 @@ class SchemaImporter implements APISchemaImporter
         array $options,
         string $location
     ): ForeignKeyConstraint {
-        $this->ensureNoExtraKeys($options, $location . '.options', ['onDelete', 'onUpdate']);
+        $this->ensureNoExtraKeys($options, $location . '.options', [
+            'onDelete',
+            'onUpdate',
+            'deferrable',
+            'deferred',
+            'match',
+        ]);
 
         $foreignKey = ForeignKeyConstraint::editor()
             ->setUnquotedName($name)
@@ -332,7 +380,73 @@ class SchemaImporter implements APISchemaImporter
             $foreignKey->setOnUpdateAction($this->getReferentialAction($options['onUpdate'], $location));
         }
 
+        if (isset($options['deferrable']) || isset($options['deferred'])) {
+            $foreignKey->setDeferrability($this->getDeferrability($options, $location));
+        }
+
+        if (isset($options['match'])) {
+            $foreignKey->setMatchType($this->getMatchType($options['match'], $location));
+        }
+
         return $foreignKey->create();
+    }
+
+    /**
+     * A foreign key is deferrable when declared so, or when initially deferred, as for ForeignKeyConstraint.
+     *
+     * @param array<string, mixed> $options
+     *
+     * @throws InvalidConfigurationException
+     */
+    private function getDeferrability(
+        array $options,
+        string $location
+    ): Deferrability {
+        foreach (['deferrable', 'deferred'] as $option) {
+            if (isset($options[$option]) && !is_bool($options[$option])) {
+                throw new InvalidConfigurationException(sprintf(
+                    'Unhandled property in schema configuration for "%s". Expected "%s" to be a boolean, found %s.',
+                    $location . '.options',
+                    $option,
+                    get_debug_type($options[$option]),
+                ));
+            }
+        }
+
+        $isDeferred = $options['deferred'] ?? false;
+        $isDeferrable = $options['deferrable'] ?? $isDeferred;
+        if ($isDeferred && !$isDeferrable) {
+            throw new InvalidConfigurationException(sprintf(
+                'Invalid schema configuration for "%s". A foreign key can\'t be initially deferred without being'
+                . ' deferrable.',
+                $location . '.options',
+            ));
+        }
+
+        if ($isDeferred) {
+            return Deferrability::DEFERRED;
+        }
+
+        return $isDeferrable ? Deferrability::DEFERRABLE : Deferrability::NOT_DEFERRABLE;
+    }
+
+    /**
+     * @throws InvalidConfigurationException
+     */
+    private function getMatchType(
+        mixed $matchType,
+        string $location
+    ): MatchType {
+        $type = is_string($matchType) ? MatchType::tryFrom(strtoupper($matchType)) : null;
+        if ($type === null) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unhandled property in schema configuration for "%s". Expected a match type, found %s.',
+                $location . '.options.match',
+                get_debug_type($matchType),
+            ));
+        }
+
+        return $type;
     }
 
     /**
@@ -404,7 +518,7 @@ class SchemaImporter implements APISchemaImporter
             ));
         }
 
-        $this->ensureNoExtraKeys($options, $location . '.options', ['lengths']);
+        $this->ensureNoExtraKeys($options, $location . '.options', ['lengths', 'where']);
         $lengths = $options['lengths'] ?? [];
         if (!is_array($lengths)) {
             throw new InvalidConfigurationException(sprintf(
@@ -415,6 +529,19 @@ class SchemaImporter implements APISchemaImporter
         }
 
         $index = Index::editor()->setUnquotedName($name)->setType($type);
+        if (isset($options['where'])) {
+            if (!is_string($options['where']) || $options['where'] === '') {
+                throw new InvalidConfigurationException(sprintf(
+                    'Unhandled property in schema configuration for "%s". Expected "where" to be a non-empty string,'
+                    . ' found %s.',
+                    $location,
+                    get_debug_type($options['where']),
+                ));
+            }
+
+            $index->setPredicate($options['where']);
+        }
+
         foreach ($columnNames as $position => $columnName) {
             $index->addUnquotedColumnName(
                 $columnName,
