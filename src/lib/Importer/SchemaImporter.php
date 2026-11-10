@@ -539,6 +539,7 @@ class SchemaImporter implements APISchemaImporter
                 ));
             }
 
+            // DBAL only creates partial indexes on PostgreSQL, elsewhere the index is created without its predicate
             $index->setPredicate($options['where']);
         }
 
