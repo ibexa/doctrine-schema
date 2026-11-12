@@ -19,9 +19,6 @@ services:
     Ibexa\DoctrineSchema\Importer\:
         resource: '../../../lib/Importer/*'
 
-    Ibexa\DoctrineSchema\Filter\:
-        resource: '../../../lib/Filter/*'
-
     Ibexa\DoctrineSchema\Database\DbPlatformFactory:
         arguments:
             $dbPlatforms: !tagged_iterator ibexa.doctrine.db.platform
