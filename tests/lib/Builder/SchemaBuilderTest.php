@@ -67,6 +67,44 @@ class SchemaBuilderTest extends TestCase
     }
 
     /**
+     * A nested buildSchema() happens when an ORM postGenerateSchema listener builds the schema
+     * while the BUILD_SCHEMA subscribers are still running.
+     */
+    public function testImportsIntoTheOuterSchemaAfterANestedBuild(): void
+    {
+        $importer = self::createStub(SchemaImporterInterface::class);
+        $importer->method('importFromFile')->willReturn(new Schema([self::createTable('imported_table')]));
+
+        $eventDispatcher = new EventDispatcher();
+        $builder = new SchemaBuilder($eventDispatcher, $importer);
+
+        $isNested = false;
+        $eventDispatcher->addListener(
+            SchemaBuilderEvents::BUILD_SCHEMA,
+            static function (SchemaBuilderEvent $event) use ($builder, &$isNested): void {
+                $event->getSchemaEditor()->addTable(self::createTable('orm_table'));
+                if (!$isNested) {
+                    $isNested = true;
+                    $builder->buildSchema();
+                }
+            },
+            250
+        );
+        $eventDispatcher->addListener(
+            SchemaBuilderEvents::BUILD_SCHEMA,
+            static function (SchemaBuilderEvent $event): void {
+                $event->getSchemaBuilder()->importSchemaFromFile('schema.yaml');
+            },
+            200
+        );
+
+        $schema = $builder->buildSchema();
+
+        self::assertTrue($schema->hasTable('orm_table'));
+        self::assertTrue($schema->hasTable('imported_table'));
+    }
+
+    /**
      * @param callable(SchemaBuilderEvent): void $onBuildSchema
      * @param array<string, mixed> $defaultTableOptions
      */

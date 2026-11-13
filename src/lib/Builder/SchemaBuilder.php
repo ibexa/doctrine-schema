@@ -60,6 +60,8 @@ class SchemaBuilder implements APISchemaBuilder
     {
         $schemaEditor = Schema::editor();
         if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
+            // Builds can be nested (e.g. by an ORM postGenerateSchema listener), so restore the outer editor.
+            $outerSchemaEditor = $this->schemaEditor;
             $this->schemaEditor = $schemaEditor;
             try {
                 $this->eventDispatcher->dispatch(
@@ -67,7 +69,7 @@ class SchemaBuilder implements APISchemaBuilder
                     SchemaBuilderEvents::BUILD_SCHEMA
                 );
             } finally {
-                $this->schemaEditor = null;
+                $this->schemaEditor = $outerSchemaEditor;
             }
         }
 
