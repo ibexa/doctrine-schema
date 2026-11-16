@@ -1,0 +1,19 @@
+tables:
+    my_main_table:
+        id:
+            id: { type: integer, nullable: false, options: { autoincrement: true } }
+    my_secondary_table:
+        id:
+            id: { type: integer, nullable: false, options: { autoincrement: true } }
+        fields:
+            first_id: { type: integer, nullable: false }
+            second_id: { type: integer, nullable: false }
+            third_id: { type: integer, nullable: false }
+            fourth_id: { type: integer, nullable: false }
+            fifth_id: { type: integer, nullable: false }
+        foreignKeys:
+            fk_my_secondary_table_first: { fields: [first_id], foreignTable: my_main_table, foreignFields: [id], indexName: my_secondary_table_first_idx }
+            fk_my_secondary_table_second: { fields: [second_id], foreignTable: my_main_table, foreignFields: [id], indexName: { name: my_secondary_table_second_idx } }
+            fk_my_secondary_table_third: { fields: [third_id], foreignTable: my_main_table, foreignFields: [id], indexName: { auto_derived: true } }
+            my_secondary_table_fourth_fk: { fields: [fourth_id], foreignTable: my_main_table, foreignFields: [id], indexName: { auto_derived: true } }
+            fk_my_secondary_table_fifth: { fields: [fifth_id], foreignTable: my_main_table, foreignFields: [id] }
