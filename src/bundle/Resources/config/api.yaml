@@ -12,4 +12,3 @@ services:
 
     Ibexa\Contracts\DoctrineSchema\Builder\SchemaBuilderInterface: '@Ibexa\DoctrineSchema\Builder\SchemaBuilder'
 
-    Ibexa\Contracts\DoctrineSchema\SchemaAssetsFilterBypassInterface: '@Ibexa\DoctrineSchema\Filter\SchemaAssetsFilterBypass'
