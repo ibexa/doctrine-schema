@@ -35,6 +35,8 @@ final class SchemaLoader implements LoaderInterface
 {
     use AutoMappingTrait;
 
+    private const int DEFAULT_STRING_LENGTH = 255;
+
     private const array INTEGER_RANGES = [
         SmallIntType::class => [[-32768, 32767], [0, 65535]],
         IntegerType::class => [[-2147483648, 2147483647], [0, 4294967295]],
@@ -192,7 +194,12 @@ final class SchemaLoader implements LoaderInterface
     ): bool {
         $type = $column->getType();
         if ($type instanceof StringType) {
-            return $this->addLengthConstraint($metadata, $propertyName, $column->getLength(), $groups);
+            return $this->addLengthConstraint(
+                $metadata,
+                $propertyName,
+                $column->getLength() ?? self::DEFAULT_STRING_LENGTH,
+                $groups
+            );
         }
 
         foreach (self::INTEGER_RANGES as $typeClass => $ranges) {
@@ -212,10 +219,10 @@ final class SchemaLoader implements LoaderInterface
     private function addLengthConstraint(
         ClassMetadata $metadata,
         string $propertyName,
-        ?int $length,
+        int $length,
         ?array $groups
     ): bool {
-        if ($length === null || $length <= 0) {
+        if ($length <= 0) {
             return false;
         }
 

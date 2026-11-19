@@ -24,6 +24,9 @@ final class ExplicitlyMappedItem
     public string $code = '';
 
     #[SchemaColumn(table: 'test_item')]
+    public ?string $remoteId = null;
+
+    #[SchemaColumn(table: 'test_item')]
     public ?string $description = null;
 
     #[SchemaColumn(table: 'test_item')]

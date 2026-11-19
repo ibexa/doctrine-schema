@@ -38,6 +38,8 @@ final class SchemaLoaderTest extends TestCase
         yield 'string column over its length' => [ExplicitlyMappedItem::class, 'name', str_repeat('a', 11), 1];
         yield 'multibyte string column at its length' => [ExplicitlyMappedItem::class, 'name', str_repeat('ą', 10), 0];
         yield 'named string column over its length' => [ExplicitlyMappedItem::class, 'label', str_repeat('a', 6), 1];
+        yield 'string column without a length at the default length' => [ExplicitlyMappedItem::class, 'remoteId', str_repeat('a', 255), 0];
+        yield 'string column without a length over the default length' => [ExplicitlyMappedItem::class, 'remoteId', str_repeat('a', 256), 1];
         yield 'text column' => [ExplicitlyMappedItem::class, 'description', str_repeat('a', 1000), 0];
         yield 'unsigned smallint column below zero' => [ExplicitlyMappedItem::class, 'priority', -1, 1];
         yield 'unsigned smallint column over its maximum' => [ExplicitlyMappedItem::class, 'priority', 65536, 1];
