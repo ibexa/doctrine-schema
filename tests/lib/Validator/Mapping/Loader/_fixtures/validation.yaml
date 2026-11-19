@@ -1,0 +1,6 @@
+Ibexa\Tests\DoctrineSchema\Validator\Mapping\Loader\Fixtures\YamlMappedItem:
+    properties:
+        title:
+            - Ibexa\Contracts\DoctrineSchema\Validator\Constraints\SchemaColumn:
+                table: test_item
+                column: name

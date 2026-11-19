@@ -26,7 +26,11 @@
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0",
         "phpstan/phpstan-symfony": "^2.0",
-        "phpunit/phpunit": "^11.5"
+        "phpunit/phpunit": "^11.5",
+        "symfony/validator": "^8.1"
+    },
+    "suggest": {
+        "symfony/validator": "Turns the schema columns mapped with the SchemaColumn and SchemaTable constraints into validation constraints"
     },
     "autoload": {
         "psr-4": {
