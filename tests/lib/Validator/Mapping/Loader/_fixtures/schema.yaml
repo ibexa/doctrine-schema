@@ -1,0 +1,11 @@
+tables:
+    test_item:
+        id:
+            id: { type: integer, nullable: false, options: { autoincrement: true } }
+        fields:
+            name: { type: string, nullable: false, length: 10 }
+            display_name: { type: string, nullable: true, length: 5 }
+            description: { type: text, nullable: true }
+            priority: { type: smallint, nullable: false, options: { unsigned: true } }
+            position: { type: integer, nullable: false }
+            owner_id: { type: bigint, nullable: false, options: { unsigned: true } }
