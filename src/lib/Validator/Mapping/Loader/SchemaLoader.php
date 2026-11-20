@@ -51,12 +51,12 @@ final class SchemaLoader implements LoaderInterface
     public function loadClassMetadata(ClassMetadata $metadata): bool
     {
         $tableName = $this->getMappedTableName($metadata);
-        $isAutoMapped = $tableName !== null
+        $isClassAutoMapped = $tableName !== null
             && $this->isAutoMappingEnabledForClass($metadata, $this->classValidatorRegexp);
 
         $loaded = false;
         foreach ($this->getPropertyNames($metadata, $tableName !== null) as $propertyName) {
-            $column = $this->resolveColumn($metadata, $propertyName, $tableName, $isAutoMapped);
+            $column = $this->resolveColumn($metadata, $propertyName, $tableName, $isClassAutoMapped);
             if ($column !== null) {
                 $loaded = $this->addColumnConstraints($metadata, $propertyName, $column[0], $column[1]) || $loaded;
             }
@@ -102,26 +102,9 @@ final class SchemaLoader implements LoaderInterface
         ClassMetadata $metadata,
         string $propertyName,
         ?string $tableName,
-        bool $isAutoMapped
+        bool $isClassAutoMapped
     ): ?array {
-        $marker = null;
-        foreach ($metadata->getPropertyMetadata($propertyName) as $propertyMetadata) {
-            $strategy = $propertyMetadata instanceof GenericMetadata
-                ? $propertyMetadata->getAutoMappingStrategy()
-                : AutoMappingStrategy::NONE;
-            if ($strategy === AutoMappingStrategy::DISABLED) {
-                $isAutoMapped = false;
-            } elseif ($strategy === AutoMappingStrategy::ENABLED && $tableName !== null) {
-                $isAutoMapped = true;
-            }
-
-            foreach ($propertyMetadata->getConstraints() as $constraint) {
-                if ($constraint instanceof SchemaColumn) {
-                    $marker = $constraint;
-                }
-            }
-        }
-
+        $marker = $this->findPropertyConstraint($metadata, $propertyName, SchemaColumn::class);
         if ($marker !== null) {
             return [
                 $this->getColumn(
@@ -134,23 +117,56 @@ final class SchemaLoader implements LoaderInterface
             ];
         }
 
-        if (!$isAutoMapped || $tableName === null) {
+        if ($tableName === null || !$this->isPropertyAutoMapped($metadata, $propertyName, $isClassAutoMapped)) {
             return null;
         }
 
+        $column = $this->findAutoMappedColumn(
+            $metadata->getClassName(),
+            $tableName,
+            self::toColumnName($propertyName)
+        );
+
+        return $column !== null ? [$column, null] : null;
+    }
+
+    private function isPropertyAutoMapped(
+        ClassMetadata $metadata,
+        string $propertyName,
+        bool $isClassAutoMapped
+    ): bool {
+        $isAutoMapped = $isClassAutoMapped;
+        foreach ($metadata->getPropertyMetadata($propertyName) as $propertyMetadata) {
+            if (!$propertyMetadata instanceof GenericMetadata) {
+                continue;
+            }
+
+            $strategy = $propertyMetadata->getAutoMappingStrategy();
+            if ($strategy !== AutoMappingStrategy::NONE) {
+                $isAutoMapped = $strategy === AutoMappingStrategy::ENABLED;
+            }
+        }
+
+        return $isAutoMapped;
+    }
+
+    private function findAutoMappedColumn(
+        string $className,
+        string $tableName,
+        string $columnName
+    ): ?Column {
         $schema = $this->getSchema();
         if (!$schema->hasTable($tableName)) {
             throw new MappingException(sprintf(
                 'Table "%s" mapped to "%s" does not exist in the schema.',
                 $tableName,
-                $metadata->getClassName()
+                $className
             ));
         }
 
         $table = $schema->getTable($tableName);
-        $columnName = self::toColumnName($propertyName);
 
-        return $table->hasColumn($columnName) ? [$table->getColumn($columnName), null] : null;
+        return $table->hasColumn($columnName) ? $table->getColumn($columnName) : null;
     }
 
     private function getColumn(
