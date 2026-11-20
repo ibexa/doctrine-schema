@@ -22,5 +22,7 @@ final class SchemaMappingMarkerValidator extends ConstraintValidator
     public function validate(
         mixed $value,
         Constraint $constraint
-    ): void {}
+    ): void {
+        // The markers only point at a schema column, SchemaLoader adds the Length and Range constraints for it.
+    }
 }
