@@ -13,6 +13,7 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Validator\Mapping\Loader\LoaderInterface;
 
 class DoctrineSchemaExtension extends Extension
 {
@@ -45,6 +46,11 @@ class DoctrineSchemaExtension extends Extension
 
         $loader->load('api.yaml');
         $container->addResource(new FileResource(__DIR__ . '/../Resources/config/api.yaml'));
+
+        if (interface_exists(LoaderInterface::class)) {
+            $loader->load('validator.yaml');
+            $container->addResource(new FileResource(__DIR__ . '/../Resources/config/validator.yaml'));
+        }
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);

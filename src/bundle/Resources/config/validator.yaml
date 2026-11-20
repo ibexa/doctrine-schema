@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Ibexa\DoctrineSchema\Validator\Mapping\Loader\SchemaLoader:
+        tags: [ validator.auto_mapper ]
